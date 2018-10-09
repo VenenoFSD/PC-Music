@@ -1,0 +1,26 @@
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, fieldset, legend, button, input, textarea, th, td {
+    margin: 0;
+    padding: 0;
+}
+body, html {
+    font-family: '微软雅黑', Consolas;
+    font-size: 15px;
+    color: #222;
+}
+ul, ol {
+    list-style: none;
+}
+a {
+    text-decoration: none;
+}
+input {
+    outline: none;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #dfdfdf;
+    border-radius: 8px;
+}
