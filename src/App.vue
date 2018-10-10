@@ -1,12 +1,18 @@
 <template>
     <div id="app">
-        <div class="left-list"></div>
+        <div class="left-list-wrapper">
+            <left-list></left-list>
+        </div>
     </div>
 </template>
 
 <script>
+    import LeftList from './components/left-list/LeftList'
     export default {
-        name: 'App'
+        name: 'App',
+        components: {
+            LeftList
+        }
     }
 </script>
 
@@ -18,11 +24,8 @@
         top: 0;
         bottom: 0;
     }
-    #app .left-list {
+    #app .left-list-wrapper {
         position: relative;
-        width: 230px;
         height: 100%;
-        left: 0;
-        background-color: #eee;
     }
 </style>
