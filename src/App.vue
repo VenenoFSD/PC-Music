@@ -3,6 +3,11 @@
         <div class="left-list-wrapper">
             <left-list></left-list>
         </div>
+        <div class="right-page">
+            <keep-alive>
+                <router-view></router-view>
+            </keep-alive>
+        </div>
     </div>
 </template>
 
@@ -23,9 +28,9 @@
         right: 0;
         top: 0;
         bottom: 0;
+        display: flex;
     }
-    #app .left-list-wrapper {
-        position: relative;
-        height: 100%;
+    #app .right-page {
+        flex: 1;
     }
 </style>

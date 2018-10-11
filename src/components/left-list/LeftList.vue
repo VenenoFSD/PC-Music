@@ -10,8 +10,8 @@
             <div class="list recommend-music">
                 <h2 class="title">推荐音乐</h2>
                 <ul>
-                    <li class="m-item active"><i class="iconfont icon-yinle"></i>发现音乐</li>
-                    <li class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</li>
+                    <router-link tag="li" to="/discovery" class="m-item"><i class="iconfont icon-yinle"></i>发现音乐</router-link>
+                    <router-link tag="li" to="/search" class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</router-link>
                     <li class="m-item"><i class="iconfont icon-FM"></i>私人FM</li>
                     <li class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</li>
                     <li class="m-item"><i class="iconfont icon-paihangbang"></i>排行版</li>
@@ -161,7 +161,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
     }
-    .left-list .list-wrapper .list .active {
+    .left-list .list-wrapper .list .m-item.router-link-active {
         border-left: 4px solid red;
         background-color: #dddde1!important;
     }
