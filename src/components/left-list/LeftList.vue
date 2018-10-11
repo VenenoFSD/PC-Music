@@ -14,7 +14,7 @@
                     <router-link tag="li" to="/search" class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</router-link>
                     <li class="m-item"><i class="iconfont icon-FM"></i>私人FM</li>
                     <li class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</li>
-                    <li class="m-item"><i class="iconfont icon-paihangbang"></i>排行版</li>
+                    <li class="m-item"><i class="iconfont icon-paihangbang"></i>排行榜</li>
                 </ul>
             </div>
             <div class="list my-music">
@@ -162,7 +162,7 @@
         overflow: hidden;
     }
     .left-list .list-wrapper .list .m-item.router-link-active {
-        border-left: 4px solid red;
+        border-left: 4px solid #EC0000;
         background-color: #dddde1!important;
     }
     .left-list .list-wrapper .list .m-item.router-link-active .iconfont {
