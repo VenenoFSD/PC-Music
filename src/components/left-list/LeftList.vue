@@ -165,7 +165,7 @@
         border-left: 4px solid red;
         background-color: #dddde1!important;
     }
-    .left-list .list-wrapper .list .active .iconfont {
+    .left-list .list-wrapper .list .m-item.router-link-active .iconfont {
         margin-left: 16px;
     }
     .iconfont.song-list{
