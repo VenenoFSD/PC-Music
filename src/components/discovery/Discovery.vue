@@ -52,9 +52,13 @@
     }
     .discovery-tab .dt-item.router-link-active {
         color: #ec0000;
-        border-bottom: 2px solid #EC0000;
+        border-bottom: 2px solid #ec0000;
     }
     .discovery-page {
         flex: 1;
+        overflow: hidden;
+    }
+    .discovery-page:hover {
+        overflow: auto;
     }
 </style>

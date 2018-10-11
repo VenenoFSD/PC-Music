@@ -32,5 +32,7 @@
     }
     #app .right-page {
         flex: 1;
+        border-left: 1px solid #ddd;
+        overflow-x: hidden;
     }
 </style>
