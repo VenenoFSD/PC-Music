@@ -28,13 +28,13 @@
             <div class="list created-song-list">
                 <h2 class="title">创建的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in createdSongList"></li>
+                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont icon-gedan song-list"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
             <div class="list collected-song-list">
                 <h2 class="title">收藏的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in collectedSongList"></li>
+                    <li class="m-item" v-for="item in collectedSongList"><i class="iconfont icon-gedan song-list"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
         </div>
@@ -42,6 +42,7 @@
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         name: "LeftList",
         data () {
@@ -51,6 +52,46 @@
                 createdSongList: [],
                 collectedSongList: []
             }
+        },
+        methods: {
+            login (phoneNum, password) {
+                axios.get(`http://localhost:3000/login/cellphone?phone=${phoneNum}&password=${password}`).then((res) => {
+                    if (res.data && res.data.code === 200) {
+                        this.getUserDetail(res.data.account.id);
+                        this.getUserPlaylist(res.data.account.id);
+                    }
+                });
+            },
+            getUserDetail (uid) {
+                axios.get(`http://localhost:3000/user/detail?uid=${uid}`).then((res) => {
+                    if (res.data && res.data.code === 200) {
+                        this.userAvatar = res.data.profile.avatarUrl;
+                        this.userName = res.data.profile.nickname;
+                    }
+                });
+            },
+            getUserPlaylist (uid) {
+                axios.get(`http://localhost:3000/user/playlist?uid=${uid}`).then((res) => {
+                    if (res.data && res.data.code === 200) {
+                        let list = res.data.playlist, i = 1;
+                        for (i; i < list.length; i++) {
+                            let obj = {};
+                            obj.name = list[i].name;
+                            if (!list[i].subscribed) {
+                                this.createdSongList.push(obj);
+                            } else {
+                                this.collectedSongList.push(obj);
+                            }
+                        }
+                    }
+                });
+            }
+        },
+        created () {
+            const phoneNum = '15815048382';
+            const password = 'ygwgbwrk';
+            axios.defaults.withCredentials = true;
+            this.login(phoneNum, password);
         }
     }
 </script>
@@ -98,7 +139,7 @@
         margin: 0 0 10px 20px;
     }
     .left-list .list-wrapper .list .m-item {
-        line-height: 36px;
+        line-height: 40px;
         display: flex;
         align-items: center;
         cursor: pointer;
@@ -111,11 +152,21 @@
     .left-list .list-wrapper .list .m-item:hover {
         background-color: #eee;
     }
+    .left-list .list-wrapper .list .m-item .text {
+        width: 160px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
     .left-list .list-wrapper .list .active {
         border-left: 4px solid red;
         background-color: #dddde1!important;
     }
     .left-list .list-wrapper .list .active .iconfont {
         margin-left: 16px;
+    }
+    .iconfont.song-list{
+        font-size: 14px!important;
+        margin-right: 8px!important;
     }
 </style>
