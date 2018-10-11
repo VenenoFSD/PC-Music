@@ -28,7 +28,7 @@
             <div class="list created-song-list">
                 <h2 class="title">创建的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont icon-gedan song-list"></i><p class="text">{{item.name}}</p></li>
+                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont song-list" :class="item.isPrivate ? 'icon-password' : 'icon-gedan'"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
             <div class="list collected-song-list">
@@ -78,6 +78,11 @@
                             let obj = {};
                             obj.name = list[i].name;
                             if (!list[i].subscribed) {
+                                if (list[i].privacy === 0) {
+                                    obj.isPrivate = false;
+                                } else if (list[i].privacy === 10) {
+                                    obj.isPrivate = true;
+                                }
                                 this.createdSongList.push(obj);
                             } else {
                                 this.collectedSongList.push(obj);
@@ -88,10 +93,8 @@
             }
         },
         created () {
-            const phoneNum = '15815048382';
-            const password = 'ygwgbwrk';
             axios.defaults.withCredentials = true;
-            this.login(phoneNum, password);
+            // this.login(phoneNum, password);
         }
     }
 </script>
