@@ -56,9 +56,9 @@
     }
     .discovery-page {
         flex: 1;
-        overflow: hidden;
-    }
-    .discovery-page:hover {
         overflow: auto;
     }
+    /*.discovery-page:hover {*/
+        /*overflow: auto;*/
+    /*}*/
 </style>
