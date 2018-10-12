@@ -27,3 +27,6 @@ input {
     background-color: #dfdfdf;
     border-radius: 8px;
 }
+* {
+    user-select: none;
+}
