@@ -23,6 +23,7 @@
                     <li class="m-item"><i class="iconfont icon-shoucang1"></i>我喜欢的</li>
                     <li class="m-item"><i class="iconfont icon-unif056"></i>我的收藏</li>
                     <li class="m-item"><i class="iconfont icon-zuijin"></i>播放历史</li>
+                    <li class="m-item"><i class="iconfont icon-yun"></i>我的音乐云盘</li>
                 </ul>
             </div>
             <div class="list created-song-list">
