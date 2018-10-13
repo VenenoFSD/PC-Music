@@ -3,7 +3,7 @@
         <div class="discovery-tab-wrapper">
             <ul class="discovery-tab">
                 <router-link tag="li" to="/discovery/recommend" class="dt-item">个性推荐</router-link>
-                <router-link tag="li" to="/discovery/playlist" class="dt-item">歌单</router-link>
+                <router-link tag="li" to="/discovery/songList" class="dt-item">歌单</router-link>
                 <router-link tag="li" to="/a" class="dt-item">最新音乐</router-link>
                 <router-link tag="li" to="/b" class="dt-item">歌手</router-link>
                 <router-link tag="li" to="/c" class="dt-item">新碟上架</router-link>

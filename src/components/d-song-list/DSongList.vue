@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        name: "DPlaylist"
+        name: "DSongList"
     }
 </script>
 

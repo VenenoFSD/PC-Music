@@ -6,7 +6,7 @@ Vue.use(Router);
 const Discovery = () => import('.././components/discovery/Discovery');
 const Search = () => import('.././components/search/Search');
 const DRecommend = () => import('.././components/d-recommend/DRecommend');
-const DPlaylist = () => import('.././components/d-playlist/DPlaylist');
+const DSonglist = () => import('.././components/d-song-list/DSongList');
 
 export default new Router({
     routes: [
@@ -23,8 +23,8 @@ export default new Router({
                     component: DRecommend
                 },
                 {
-                    path: '/discovery/playlist',
-                    component: DPlaylist
+                    path: '/discovery/songList',
+                    component: DSonglist
                 }
             ]
         },
