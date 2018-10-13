@@ -11,7 +11,7 @@
             </ul>
         </div>
         <div class="discovery-page">
-            <keep-alive>
+            <keep-alive exclude="DSongList">
                 <router-view></router-view>
             </keep-alive>
         </div>
