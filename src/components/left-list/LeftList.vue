@@ -10,7 +10,7 @@
             <div class="list recommend-music">
                 <h2 class="title">推荐音乐</h2>
                 <ul>
-                    <router-link tag="li" to="/discovery/recommend" class="m-item"><i class="iconfont icon-yinle"></i>发现音乐</router-link>
+                    <router-link tag="li" to="/discovery" class="m-item"><i class="iconfont icon-yinle"></i>发现音乐</router-link>
                     <router-link tag="li" to="/search" class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</router-link>
                     <li class="m-item"><i class="iconfont icon-FM"></i>私人FM</li>
                     <li class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</li>
@@ -96,8 +96,8 @@
         created () {
             axios.defaults.withCredentials = true;
             // this.login(phoneNum, password);
-            this.getUserDetail('554398977');
-            this.getUserPlaylist('554398977');
+            // this.getUserDetail('554398977');
+            // this.getUserPlaylist('554398977');
         }
     }
 </script>
