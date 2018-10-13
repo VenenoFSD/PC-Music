@@ -23,7 +23,7 @@
             </ul>
         </div>
         <div class="re-private-content-wrapper">
-            <h2 class="title"><i class="iconfont icon-cl-music"></i>独家放送</h2>
+            <h2 class="title"><i class="iconfont icon-fangsong"></i>独家放送</h2>
             <separate></separate>
             <ul class="list">
                 <li v-for="item in privateContent" class="item pc-item">
@@ -39,7 +39,7 @@
             <h2 class="title"><i class="iconfont icon-cl-music"></i>最新音乐</h2>
             <separate></separate>
             <ul class="list">
-                <li v-for="(item, index) in newSong" class="item ns-item" :class="_nsItemClass(index)">
+                <li v-for="(item, index) in newSong" class="ns-item" :class="_nsItemClass(index)">
                     <p class="num">{{_rankFormat(index)}}</p>
                     <img :src="item.song.album.blurPicUrl" class="ns-img">
                     <div class="desc">
@@ -48,6 +48,42 @@
                             <span class="song-desc" v-if="item.song.alias.length">（{{item.song.alias[0]}}）</span>
                         </p>
                         <p class="singer">{{item.song.artists[0].name}}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="re-mv">
+            <h2 class="title"><i class="iconfont icon-mv"></i>推荐MV</h2>
+            <separate></separate>
+            <ul class="list">
+                <li v-for="item in recommendMV" class="item mv-item">
+                    <div class="img-wrapper">
+                        <img :src="item.picUrl" class="img">
+                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
+                        <div class="cover"></div>
+                    </div>
+                    <div class="desc">
+                        <p class="name">{{item.name}}</p>
+                        <p class="artist-name">{{item.artistName}}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="re-radio">
+            <h2 class="title"><i class="iconfont icon-diantai"></i>推荐电台</h2>
+            <separate></separate>
+            <ul class="list r-list">
+                <li v-for="item in recommendRadio" class="item r-item">
+                    <div class="img-wrapper">
+                        <img :src="item.picUrl" class="img">
+                        <div class="cover"></div>
+                        <div class="icon">
+                            <i class="iconfont icon-play"></i>
+                        </div>
+                    </div>
+                    <div class="desc-wrapper">
+                        <p class="name">{{item.name}}</p>
+                        <p class="desc">{{item.program.radio.name}}</p>
                     </div>
                 </li>
             </ul>
@@ -69,6 +105,8 @@
                 recommendSongList: [],
                 privateContent: [],
                 newSong: [],
+                recommendMV: [],
+                recommendRadio: [],
                 swiperOption: {
                     effect: 'coverflow',
                     centeredSlides: true,
@@ -108,17 +146,6 @@
                     }
                 });
             },
-            playCountFormat (playCount) {
-                playCount = Math.floor(playCount);
-                if (playCount < 100000) {
-                    return playCount;
-                } else {
-                    playCount = playCount.toString();
-                    let len = playCount.length;
-                    let cutLen = len - 4;
-                    return playCount.substr(0, cutLen) + '万';
-                }
-            },
             getPrivateContent () {
                 axios.get(`http://localhost:3000/personalized/privatecontent`).then((res) => {
                     if (res.data && res.data.code === 200) {
@@ -132,6 +159,31 @@
                         this.newSong = res.data.result;
                     }
                 });
+            },
+            getRecommendMV () {
+                axios.get(`http://localhost:3000/personalized/mv`).then((res) => {
+                    if (res.data && res.data.code === 200) {
+                        this.recommendMV = res.data.result;
+                    }
+                });
+            },
+            getRecommendRadio () {
+                axios.get(`http://localhost:3000/personalized/djprogram`).then((res) => {
+                    if (res.data && res.data.code === 200) {
+                        this.recommendRadio = res.data.result;
+                    }
+                });
+            },
+            playCountFormat (playCount) {
+                playCount = Math.floor(playCount);
+                if (playCount < 100000) {
+                    return playCount;
+                } else {
+                    playCount = playCount.toString();
+                    let len = playCount.length;
+                    let cutLen = len - 4;
+                    return playCount.substr(0, cutLen) + '万';
+                }
             },
             _nsItemClass (item) {
                 if (item === 0 || item === 4 || item === 8) {
@@ -157,6 +209,8 @@
             this.getRecommendSongList();
             this.getPrivateContent();
             this.getNewSong();
+            this.getRecommendMV();
+            this.getRecommendRadio();
         },
         computed: {
             showSwiper () {
@@ -176,7 +230,8 @@
     .d-recommend {
         max-width: 1200px;
         margin: 0 auto;
-        transform: translate3d(8px, 0, 0);
+        transform: translate3d(4px, 0, 0);
+        padding: 0 20px;
     }
     .banner-wrapper {
         margin: 30px 0 50px 0;
@@ -247,6 +302,9 @@
         display: flex;
         align-items: center;
     }
+    .list .ns-item:hover {
+        background-color: #eee!important;
+    }
     .list .ns-item.bgc {
         background-color: #f4f4f6;
     }
@@ -257,15 +315,21 @@
     .list .ns-item .num {
         width: 40px;
         text-align: center;
+        flex: 0 0 40px;
     }
     .list .ns-item .ns-img {
         width: 54px;
         height: 54px;
         margin-right: 14px;
+        flex: 0 0 54px;
+    }
+    .list .ns-item .desc {
+        flex: 1;
     }
     .list .ns-item .desc .song-name-wrapper {
         font-size: 16px;
         margin-bottom: 4px;
+        white-space: nowrap;
     }
     .list .ns-item .desc .song-name-wrapper .song-desc {
         color: #aaa;
@@ -273,6 +337,67 @@
     .list .ns-item .desc .singer {
         font-size: 12px;
         color: #aaa;
+    }
+    .list .mv-item {
+        width: 24%;
+        flex: 0 0 24%;
+    }
+    .list .mv-item .desc .name{
+        font-size: 16px;
+        margin: 8px 0 2px 0;
+    }
+    .list .mv-item .desc .artist-name {
+        font-size: 12px;
+        color: #aaa;
+    }
+    .list.r-list {
+        margin-top: 0;
+    }
+    .list .r-item {
+        width: 50%;
+        flex:  0 0 50%;
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    .list .r-item:hover .img-wrapper .cover {
+        opacity: 1;
+    }
+    .list .r-item .img-wrapper {
+        flex: 0 0 70px;
+        margin-right: 10px;
+    }
+    .list .r-item .img {
+        width: 70px;
+        height: 70px;
+    }
+    .list .r-item .icon {
+        position: absolute;
+        right: 4px;
+        bottom: 4px;
+        color: #fff;
+        border-radius: 50%;
+        border: 1px solid #aaa;
+        width: 16px;
+        height: 16px;
+        text-align: center;
+        line-height: 16px;
+        background-color: rgba(0,0,0,.5);
+        z-index: 2;
+    }
+    .list .r-item .icon .iconfont {
+        font-size: 12px;
+        margin-right: -2px;
+    }
+    .list .r-item .desc-wrapper .name {
+        font-size: 16px;
+        color: #000;
+        margin-bottom: 10px;
+    }
+    .list .r-item .desc-wrapper .desc{
+        color: #aaa;
+        font-size: 12px;
     }
     .list .item .text {
         white-space: nowrap;
@@ -308,5 +433,8 @@
     }
     .re-private-content-wrapper {
         margin: 20px 0 50px 0;
+    }
+    .re-mv {
+        margin: 50px 0;
     }
 </style>

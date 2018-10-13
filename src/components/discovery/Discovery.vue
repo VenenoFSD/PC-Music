@@ -41,6 +41,7 @@
         max-width: 1000px;
         height: 50px;
         margin: 0 auto;
+        padding: 0 20px ;
     }
     .discovery-tab .dt-item {
         text-align: center;

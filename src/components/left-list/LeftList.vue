@@ -96,6 +96,8 @@
         created () {
             axios.defaults.withCredentials = true;
             // this.login(phoneNum, password);
+            this.getUserDetail('554398977');
+            this.getUserPlaylist('554398977');
         }
     }
 </script>
