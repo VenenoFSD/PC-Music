@@ -205,12 +205,12 @@
             }
         },
         created () {
-            this.getBanner();
-            this.getRecommendSongList();
-            this.getPrivateContent();
-            this.getNewSong();
-            this.getRecommendMV();
-            this.getRecommendRadio();
+            // this.getBanner();
+            // this.getRecommendSongList();
+            // this.getPrivateContent();
+            // this.getNewSong();
+            // this.getRecommendMV();
+            // this.getRecommendRadio();
         },
         computed: {
             showSwiper () {
