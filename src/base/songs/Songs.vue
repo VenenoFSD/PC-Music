@@ -1,5 +1,5 @@
 <template>
-    $END$
+    <div class="songs"></div>
 </template>
 
 <script>

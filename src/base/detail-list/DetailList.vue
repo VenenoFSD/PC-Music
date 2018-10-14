@@ -1,5 +1,5 @@
 <template>
-    $END$
+    <div class="detail-list"></div>
 </template>
 
 <script>
