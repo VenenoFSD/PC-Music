@@ -1,14 +1,16 @@
 <template>
-    <div class="d-song-list">
-        <div class="tags-wrapper">
-            <div class="current-tag">{{currentTag}}<span class="right">&gt;</span></div>
-            <ul class="tags">
-                <li v-for="item in songListTags" class="tags-item" @click="selectItem(item)">{{item.name}}</li>
-            </ul>
+    <div class="d-song-list-wrapper" ref="dSongListWrapper" @scroll="handleScroll">
+        <div class="d-song-list">
+            <div class="tags-wrapper">
+                <div class="current-tag">{{currentTag}}<span class="right">&gt;</span></div>
+                <ul class="tags">
+                    <li v-for="item in songListTags" class="tags-item" @click="selectItem(item)">{{item.name}}</li>
+                </ul>
+            </div>
+            <keep-alive>
+                <router-view :currentTag="currentTag" ref="songList"></router-view>
+            </keep-alive>
         </div>
-        <keep-alive>
-            <router-view :currentTag="currentTag"></router-view>
-        </keep-alive>
     </div>
 </template>
 
@@ -42,6 +44,14 @@
             selectItem (item) {
                 this.currentTag = item.name;
                 this.$router.push(`/discovery/songList/${item.id}`);
+            },
+            getMore () {
+                this.$refs.songList.getMore();
+            },
+            handleScroll () {
+                this.$refs.dSongListWrapper.addEventListener('scroll', () => {
+                    console.log(1);
+                });
             }
         },
         created () {
@@ -54,11 +64,11 @@
     .d-song-list {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 30px 20px 0 20px;
         transform: translate3d(4px, 0, 0);
-        padding: 0 20px;
     }
     .tags-wrapper {
-        margin: 30px 0 40px 0;
+        margin-bottom: 35px;
         display: flex;
         align-items: center;
         font-size: 12px;
@@ -70,6 +80,7 @@
         border-radius: 3px;
         color: #000;
         font-size: 13px;
+        white-space: nowrap;
     }
     .current-tag .right {
         margin-left: 3px;
@@ -77,9 +88,10 @@
     }
     .tags {
         display: flex;
+        flex-wrap: wrap;
     }
     .tags .tags-item {
-        padding: 0 24px;
+        padding: 4px 24px;
         border-right: 1px solid #ddd;
         height: 12px;
         line-height: 12px;

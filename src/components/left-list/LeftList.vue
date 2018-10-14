@@ -71,7 +71,7 @@
                     }
                 });
             },
-            getUserPlaylist (uid) {
+            getUserSongList (uid) {
                 axios.get(`http://localhost:3000/user/playlist?uid=${uid}`).then((res) => {
                     if (res.data && res.data.code === 200) {
                         let list = res.data.playlist, i = 1;
@@ -97,7 +97,7 @@
             axios.defaults.withCredentials = true;
             // this.login(phoneNum, password);
             // this.getUserDetail('554398977');
-            // this.getUserPlaylist('554398977');
+            // this.getUserSongList('554398977');
         }
     }
 </script>
