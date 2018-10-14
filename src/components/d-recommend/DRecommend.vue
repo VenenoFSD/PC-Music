@@ -1,92 +1,94 @@
 <template>
-    <div class="d-recommend">
-        <div class="banner-wrapper">
-            <swiper :options="swiperOption" v-if="showSwiper">
-                <swiper-slide v-for="(item, index) in banners" :key="index">
-                    <img :src="item.picUrl" class="banner-img">
-                </swiper-slide>
-                <div class="swiper-pagination" slot="pagination"></div>
-            </swiper>
-        </div>
-        <div class="re-song-list-wrapper">
-            <h2 class="title"><i class="iconfont icon-tuijian"></i>推荐歌单</h2>
-            <separate></separate>
-            <ul class="list">
-                <li v-for="item in recommendSongList" :key="item.id" class="item sl-item">
-                    <div class="img-wrapper">
-                        <img :src="item.picUrl" class="img">
-                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
-                        <div class="cover"></div>
-                    </div>
-                    <p class="text">{{item.name}}</p>
-                </li>
-            </ul>
-        </div>
-        <div class="re-private-content-wrapper">
-            <h2 class="title"><i class="iconfont icon-fangsong"></i>独家放送</h2>
-            <separate></separate>
-            <ul class="list">
-                <li v-for="item in privateContent" class="item pc-item">
-                    <div class="img-wrapper">
-                        <img :src="item.sPicUrl" class="img">
-                        <div class="cover"></div>
-                    </div>
-                    <p class="text">{{item.name}}</p>
-                </li>
-            </ul>
-        </div>
-        <div class="re-new-song">
-            <h2 class="title"><i class="iconfont icon-cl-music"></i>最新音乐</h2>
-            <separate></separate>
-            <ul class="list">
-                <li v-for="(item, index) in newSong" class="ns-item" :class="_nsItemClass(index)">
-                    <p class="num">{{_rankFormat(index)}}</p>
-                    <img :src="item.song.album.blurPicUrl" class="ns-img">
-                    <div class="desc">
-                        <p class="song-name-wrapper">
-                            <span class="song-name">{{item.name}}</span>
-                            <span class="song-desc" v-if="item.song.alias.length">（{{item.song.alias[0]}}）</span>
-                        </p>
-                        <p class="singer">{{item.song.artists[0].name}}</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="re-mv">
-            <h2 class="title"><i class="iconfont icon-mv"></i>推荐MV</h2>
-            <separate></separate>
-            <ul class="list">
-                <li v-for="item in recommendMV" class="item mv-item">
-                    <div class="img-wrapper">
-                        <img :src="item.picUrl" class="img">
-                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
-                        <div class="cover"></div>
-                    </div>
-                    <div class="desc">
-                        <p class="name">{{item.name}}</p>
-                        <p class="artist-name">{{item.artistName}}</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="re-radio">
-            <h2 class="title"><i class="iconfont icon-diantai"></i>推荐电台</h2>
-            <separate></separate>
-            <ul class="list r-list">
-                <li v-for="item in recommendRadio" class="item r-item">
-                    <div class="img-wrapper">
-                        <img :src="item.picUrl" class="img">
-                        <div class="cover"></div>
-                        <div class="icon">
-                            <i class="iconfont icon-play"></i>
+    <div class="d-recommend-wrapper">
+        <div class="d-recommend">
+            <div class="banner-wrapper">
+                <swiper :options="swiperOption" v-if="showSwiper">
+                    <swiper-slide v-for="(item, index) in banners" :key="index">
+                        <img :src="item.picUrl" class="banner-img">
+                    </swiper-slide>
+                    <div class="swiper-pagination" slot="pagination"></div>
+                </swiper>
+            </div>
+            <div class="re-song-list-wrapper">
+                <h2 class="title"><i class="iconfont icon-tuijian"></i>推荐歌单</h2>
+                <separate></separate>
+                <ul class="list">
+                    <li v-for="item in recommendSongList" :key="item.id" class="item sl-item">
+                        <div class="img-wrapper">
+                            <img :src="item.picUrl" class="img">
+                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
+                            <div class="cover"></div>
                         </div>
-                    </div>
-                    <div class="desc-wrapper">
-                        <p class="name">{{item.name}}</p>
-                        <p class="desc">{{item.program.radio.name}}</p>
-                    </div>
-                </li>
-            </ul>
+                        <p class="text">{{item.name}}</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="re-private-content-wrapper">
+                <h2 class="title"><i class="iconfont icon-fangsong"></i>独家放送</h2>
+                <separate></separate>
+                <ul class="list">
+                    <li v-for="item in privateContent" class="item pc-item">
+                        <div class="img-wrapper">
+                            <img :src="item.sPicUrl" class="img">
+                            <div class="cover"></div>
+                        </div>
+                        <p class="text">{{item.name}}</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="re-new-song">
+                <h2 class="title"><i class="iconfont icon-cl-music"></i>最新音乐</h2>
+                <separate></separate>
+                <ul class="list">
+                    <li v-for="(item, index) in newSong" class="ns-item" :class="_nsItemClass(index)">
+                        <p class="num">{{_rankFormat(index)}}</p>
+                        <img :src="item.song.album.blurPicUrl" class="ns-img">
+                        <div class="desc">
+                            <p class="song-name-wrapper">
+                                <span class="song-name">{{item.name}}</span>
+                                <span class="song-desc" v-if="item.song.alias.length">（{{item.song.alias[0]}}）</span>
+                            </p>
+                            <p class="singer">{{item.song.artists[0].name}}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="re-mv">
+                <h2 class="title"><i class="iconfont icon-mv"></i>推荐MV</h2>
+                <separate></separate>
+                <ul class="list">
+                    <li v-for="item in recommendMV" class="item mv-item">
+                        <div class="img-wrapper">
+                            <img :src="item.picUrl" class="img">
+                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
+                            <div class="cover"></div>
+                        </div>
+                        <div class="desc">
+                            <p class="name">{{item.name}}</p>
+                            <p class="artist-name">{{item.artistName}}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="re-radio">
+                <h2 class="title"><i class="iconfont icon-diantai"></i>推荐电台</h2>
+                <separate></separate>
+                <ul class="list r-list">
+                    <li v-for="item in recommendRadio" class="item r-item">
+                        <div class="img-wrapper">
+                            <img :src="item.picUrl" class="img">
+                            <div class="cover"></div>
+                            <div class="icon">
+                                <i class="iconfont icon-play"></i>
+                            </div>
+                        </div>
+                        <div class="desc-wrapper">
+                            <p class="name">{{item.name}}</p>
+                            <p class="desc">{{item.program.radio.name}}</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -227,14 +229,18 @@
 </script>
 
 <style scoped>
+    .d-recommend-wrapper {
+        flex: 1;
+        overflow: auto;
+    }
     .d-recommend {
         max-width: 1200px;
         margin: 0 auto;
         transform: translate3d(4px, 0, 0);
-        padding: 0 20px;
+        padding: 30px 20px 0 20px;
     }
     .banner-wrapper {
-        margin: 30px 0 50px 0;
+        margin-bottom: 50px;
         text-align: center;
     }
     .swiper-container .swiper-wrapper .swiper-slide {

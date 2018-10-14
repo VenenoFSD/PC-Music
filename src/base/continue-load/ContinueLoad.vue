@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        name: "Load"
+        name: "ContinueLoad"
     }
 </script>
 
@@ -14,9 +14,9 @@
     .load {
         font-size: 0;
         text-align: center;
-        margin-top: 300px;
+        margin-top: -10px;
     }
     .load img {
-        width: 60px;
+        width: 30px;
     }
 </style>
