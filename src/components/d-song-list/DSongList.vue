@@ -1,6 +1,6 @@
 <template>
-    <div class="d-song-list-wrapper" ref="dSongListWrapper" @scroll="handleScroll">
-        <div class="d-song-list">
+    <div class="d-song-list-wrapper" @scroll="handleScroll" ref="DSongListWrapper">
+        <div class="d-song-list" ref="DSongList">
             <div class="tags-wrapper">
                 <div class="current-tag">{{currentTag}}<span class="right">&gt;</span></div>
                 <ul class="tags">
@@ -16,13 +16,18 @@
 
 <script>
     import axios from 'axios'
+
+    const TAB_HEIGHT = 51;
+    let clientHeight = 0;
+    let songListHeight = 0;
+
     export default {
         name: "DSongList",
         data () {
             return {
                 songListTags: [],
-                songLists: [],
-                currentTag: ''
+                currentTag: '',
+                canLoad: true
             }
         },
         methods: {
@@ -46,12 +51,28 @@
                 this.$router.push(`/discovery/songList/${item.id}`);
             },
             getMore () {
-                this.$refs.songList.getMore();
+                let timer = null;
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    this.canLoad = true;
+                    this.$refs.songList.getMore();
+                }, 2000);
             },
             handleScroll () {
-                this.$refs.dSongListWrapper.addEventListener('scroll', () => {
-                    console.log(1);
-                });
+                let timer = null;
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    this.scrollToEnd();
+                }, 300);
+            },
+            scrollToEnd () {
+                clientHeight = window.innerHeight;
+                songListHeight = this.$refs.DSongList.offsetHeight;
+                let scrollTop = this.$refs.DSongListWrapper.scrollTop;
+                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad) {
+                    this.canLoad = false;
+                    this.getMore();
+                }
             }
         },
         created () {
@@ -61,6 +82,10 @@
 </script>
 
 <style scoped>
+    .d-song-list-wrapper {
+        flex: 1;
+        overflow: auto;
+    }
     .d-song-list {
         max-width: 1200px;
         margin: 0 auto;
