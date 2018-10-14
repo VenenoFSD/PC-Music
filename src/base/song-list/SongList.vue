@@ -3,7 +3,7 @@
         <ul class="song-list" v-show="showList">
             <li v-for="item in songList" class="sl-item">
                 <div class="img-wrapper">
-                    <img :src="item.coverImgUrl" class="img">
+                    <img v-lazy="item.coverImgUrl" class="img">
                     <div class="cover"></div>
                     <div class="author">
                         <i class="iconfont icon-yonghu"></i>
@@ -14,13 +14,15 @@
             </li>
         </ul>
         <load v-show="showLoad"></load>
+        <continue-load v-show="showList && hasMore"></continue-load>
     </div>
 </template>
 
 <script>
     import axios from 'axios'
     import Load from '../../base/load/Load'
-    const SINGLE_LOAD_COUNT = 25;
+    import ContinueLoad from '../../base/continue-load/ContinueLoad'
+    const SINGLE_LOAD_COUNT = 30;
     export default {
         name: "SongList",
         data () {
@@ -66,7 +68,7 @@
                 this.timer = setTimeout(() => {
                     this.showLoad = false;
                     this.showList = true;
-                }, 2500);
+                }, 2000);
             },
             _dataInit () {
                 this.hasMore = false;
@@ -87,7 +89,8 @@
             }
         },
         components: {
-            Load
+            Load,
+            ContinueLoad
         }
     }
 </script>
@@ -99,9 +102,9 @@
         flex-wrap: wrap;
     }
     .sl-item {
-        width: 18.3%;
-        flex: 0 0 18.3%;
-        margin-bottom: 40px;
+        width: 18.4%;
+        flex: 0 0 18.4%;
+        margin-bottom: 30px;
     }
     .sl-item .img-wrapper {
         position: relative;
