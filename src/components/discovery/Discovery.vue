@@ -10,11 +10,9 @@
                 <router-link tag="li" to="/c" class="dt-item">主播电台</router-link>
             </ul>
         </div>
-        <div class="discovery-page">
-            <keep-alive exclude="DSongList">
-                <router-view></router-view>
-            </keep-alive>
-        </div>
+        <keep-alive exclude="DSongList">
+            <router-view></router-view>
+        </keep-alive>
     </div>
 </template>
 
@@ -59,7 +57,4 @@
         flex: 1;
         overflow: auto;
     }
-    /*.discovery-page:hover {*/
-        /*overflow: auto;*/
-    /*}*/
 </style>
