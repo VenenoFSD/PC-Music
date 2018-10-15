@@ -8,7 +8,7 @@ const Discovery = () => import('.././components/discovery/Discovery');
 const Search = () => import('.././components/search/Search');
 const DRecommend = () => import('.././components/d-recommend/DRecommend');
 const DSongList = () => import('.././components/d-song-list/DSongList');
-const DNewSong = () => import('.././components/d-new-song/DNewSong');
+const DNewDisc = () => import('.././components/d-new-disc/DNewDisc');
 const SongList = () => import('.././base/song-list/SongList');
 
 const defaultSongList = store.state.songListTags || '';
@@ -42,8 +42,8 @@ export default new Router({
                     ]
                 },
                 {
-                    path: '/discovery/newSong',
-                    component: DNewSong
+                    path: '/discovery/newDisc',
+                    component: DNewDisc
                 }
             ]
         },
