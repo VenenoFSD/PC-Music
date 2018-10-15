@@ -4,9 +4,8 @@
             <ul class="discovery-tab">
                 <router-link tag="li" to="/discovery/recommend" class="dt-item">个性推荐</router-link>
                 <router-link tag="li" to="/discovery/songList" class="dt-item">歌单</router-link>
-                <router-link tag="li" to="/discovery/newSong" class="dt-item">最新音乐</router-link>
+                <router-link tag="li" to="/discovery/newDisc" class="dt-item">新碟上架</router-link>
                 <router-link tag="li" to="/b" class="dt-item">歌手</router-link>
-                <router-link tag="li" to="/c" class="dt-item">新碟上架</router-link>
                 <router-link tag="li" to="/c" class="dt-item">主播电台</router-link>
             </ul>
         </div>
@@ -36,15 +35,14 @@
     .discovery-tab {
         display: flex;
         justify-content: space-between;
-        max-width: 1000px;
+        max-width: 700px;
         height: 50px;
         margin: 0 auto;
-        padding: 0 20px ;
+        padding: 0 20px;
     }
     .discovery-tab .dt-item {
         text-align: center;
         line-height: 66px;
-        cursor: pointer;
         height: 100%;
         box-sizing: border-box;
         margin-top: 1px;
