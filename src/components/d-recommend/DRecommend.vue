@@ -1,6 +1,6 @@
 <template>
     <div class="d-recommend-wrapper">
-        <div class="d-recommend">
+        <div class="d-recommend" v-show="dRecommendShow">
             <div class="banner-wrapper">
                 <swiper :options="swiperOption" v-if="showSwiper">
                     <swiper-slide v-for="(item, index) in banners" :key="index">
@@ -90,11 +90,13 @@
                 </ul>
             </div>
         </div>
+        <load v-show="showLoad"></load>
     </div>
 </template>
 
 <script>
     import Separate from '../../base/separate/Separate'
+    import Load from '../../base/load/Load'
     import axios  from 'axios'
     import 'swiper/dist/css/swiper.css'
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
@@ -125,7 +127,9 @@
                     autoplay: 5000,
                     speed: 800,
                     autoplayDisableOnInteraction: false
-                }
+                },
+                showLoad: true,
+                dRecommendShow: false
             }
         },
         methods: {
@@ -137,11 +141,6 @@
                 });
             },
             getRecommendSongList () {
-                // axios.get(`http://localhost:3000/recommend/resource`).then((res) => {
-                //     if (res.data && res.data.code === 200) {
-                //         this.recommendSongList = res.data.recommend;
-                //     }
-                // });
                 axios.get(`http://localhost:3000/personalized`).then((res) => {
                     if (res.data && res.data.code === 200) {
                         this.recommendSongList = res.data.result.slice(0, 10);
@@ -187,6 +186,14 @@
                     return playCount.substr(0, cutLen) + '万';
                 }
             },
+            _loadPage() {
+                this.getBanner();
+                this.getRecommendSongList();
+                this.getPrivateContent();
+                this.getNewSong();
+                this.getRecommendMV();
+                this.getRecommendRadio();
+            },
             _nsItemClass (item) {
                 if (item === 0 || item === 4 || item === 8) {
                     return 'bgc border';
@@ -207,23 +214,23 @@
             }
         },
         created () {
-            // this.getBanner();
-            // this.getRecommendSongList();
-            // this.getPrivateContent();
-            // this.getNewSong();
-            // this.getRecommendMV();
-            // this.getRecommendRadio();
+            this._loadPage();
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.showLoad = false;
+                this.dRecommendShow = true;
+            }, 2500);
         },
         computed: {
             showSwiper () {
                 return this.banners.length;
             }
-
         },
         components: {
             swiper,
             swiperSlide,
-            Separate
+            Separate,
+            Load
         }
     }
 </script>
