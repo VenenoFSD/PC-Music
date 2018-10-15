@@ -17,7 +17,6 @@
 <script>
     import axios from 'axios'
 
-    const TAB_HEIGHT = 51;
     let clientHeight = 0;
     let songListHeight = 0;
 
@@ -34,13 +33,7 @@
             getSongListTag () {
                 axios.get('http://localhost:3000/playlist/hot').then((res) => {
                     if (res.data && res.data.code === 200) {
-                        let tags = res.data.tags;
-                        for (let i = 0; i < tags.length; i++) {
-                            let obj = {};
-                            obj.name = tags[i].name;
-                            obj.id = tags[i].id;
-                            this.songListTags.push(obj);
-                        }
+                        this.songListTags = res.data.tags;
                         this.currentTag = this.songListTags[0].name;
                         this.$router.push(`/discovery/songList/${this.songListTags[0].id}`);
                     }
@@ -54,8 +47,8 @@
                 let timer = null;
                 clearTimeout(timer);
                 timer = setTimeout(() => {
-                    this.canLoad = true;
                     this.$refs.songList.getMore();
+                    this.canLoad = true;
                 }, 2000);
             },
             handleScroll () {

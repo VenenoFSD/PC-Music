@@ -214,12 +214,12 @@
             }
         },
         created () {
-            this._loadPage();
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.showLoad = false;
-                this.dRecommendShow = true;
-            }, 2500);
+            // this._loadPage();
+            // clearTimeout(this.timer);
+            // this.timer = setTimeout(() => {
+            //     this.showLoad = false;
+            //     this.dRecommendShow = true;
+            // }, 2500);
         },
         computed: {
             showSwiper () {
