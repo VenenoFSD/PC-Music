@@ -59,7 +59,7 @@
                 axios.get(`http://localhost:3000/login/cellphone?phone=${phoneNum}&password=${password}`).then((res) => {
                     if (res.data && res.data.code === 200) {
                         this.getUserDetail(res.data.account.id);
-                        this.getUserPlaylist(res.data.account.id);
+                        this.getUserSongList(res.data.account.id);
                     }
                 });
             },
@@ -95,7 +95,6 @@
         },
         created () {
             axios.defaults.withCredentials = true;
-            // this.login(phoneNum, password);
             // this.getUserDetail('554398977');
             // this.getUserSongList('554398977');
         }
