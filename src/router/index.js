@@ -12,8 +12,9 @@ const DNewDisc = () => import('.././components/d-new-disc/DNewDisc');
 const DSinger = () => import('.././components/d-singer/DSinger');
 const DRanking = () => import('.././components/d-ranking/DRanking');
 const Search = () => import('.././components/search/Search');
-
-const defaultSongList = store.state.songListTags || '';
+const SingerDetail = () => import('.././components/singer-detail/SingerDetail');
+const SongListDetail = () => import('.././components/song-list-detail/SongListDetail');
+const DiscDetail = () => import('.././components/disc-detail/DiscDetail');
 
 export default new Router({
     routes: [

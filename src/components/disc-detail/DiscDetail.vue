@@ -1,10 +1,12 @@
 <template>
-    <div class="detail-list"></div>
+    <div class="disc-detail">
+
+    </div>
 </template>
 
 <script>
     export default {
-        name: "DetailList"
+        name: "DiscDetail"
     }
 </script>
 
