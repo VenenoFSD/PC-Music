@@ -1,6 +1,6 @@
 <template>
-    <div class="d-singer-wrapper">
-        <div class="d-singer">
+    <div class="d-singer-wrapper" @scroll="handleScroll" ref="dSingerWrapper">
+        <div class="d-singer" ref="dSinger">
             <div class="singer-tag-wrapper">
                 <div class="singer-tag">
                     <h2 class="tag-title">{{sLang.title}}：</h2>
@@ -21,24 +21,45 @@
                     </ul>
                 </div>
             </div>
-            <div class="singer-list-wrapper">
+            <div class="singer-list-wrapper" v-show="showList">
                 <div class="singer-list-title">
                     <h1 class="title">{{currentSinger}}</h1>
                     <p class="back" v-show="showBack" @click="back">所有热门歌手 >></p>
                 </div>
-                <div class="singer-list">
-                    <ul>
-                        <li v-for="item in singerList">{{item.name}}</li>
-                    </ul>
-                </div>
+                <ul class="single-list">
+                    <li v-for="item in singerList" class="sl-item" :key="item.id">
+                        <div class="img-wrapper">
+                            <img v-lazy="item.img1v1Url" class="img">
+                            <div class="cover"></div>
+                        </div>
+                        <div class="desc">
+                            <p class="name">{{item.name}}</p>
+                            <i class="iconfont icon-yonghu"></i>
+                        </div>
+                    </li>
+                </ul>
             </div>
+            <load v-show="showLoad"></load>
+            <continue-load v-show="showList && hasMore"></continue-load>
         </div>
     </div>
 </template>
 
 <script>
-    const REQUEST_COUNT = 48;
+    //  数据请求受限100个
+
+    import Load from '../../base/load/Load'
+    import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import axios from 'axios'
+
+    const REQUEST_COUNT = 40;
+    let clientHeight = 0,
+        songListHeight = 0,
+        scrollTop = 0,
+        timer_1 = null,
+        timer_2 = null,
+        timer_3 = null;
+
     export default {
         name: "DSinger",
         data () {
@@ -93,22 +114,30 @@
                 currentSort: {},
                 currentFilter: '热门',
                 singerList: [],
-                offset: 0
+                offset: 0,
+                showLoad: true,
+                showList: false,
+                hasMore: false,
+                canLoad: true
             }
         },
         methods: {
             firstGet () {
+                this.canLoad = true;
                 axios.get(`http://localhost:3000/top/artists?limit=${REQUEST_COUNT}`).then((res) => {
                     if (res.data && res.data.code === 200) {
                         this.singerList = res.data.artists;
+                        this.hasMore = res.data.more;
                     }
                 });
             },
             changeGet () {
+                this.canLoad = true;
                 let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
                 axios.get(`http://localhost:3000/artist/list?limit=${REQUEST_COUNT}&cat=${this.requestCode}&initial=${initial}`).then((res) => {
                     if (res.data && res.data.code === 200) {
                         this.singerList = res.data.artists;
+                        this.hasMore = res.data.more;
                     }
                 });
             },
@@ -116,14 +145,14 @@
                 this.currentLang = this.sLang.lists[index];
                 if (this._isEmptyObject(this.currentSort)) {  //  第一次进入页面
                     this.currentSort = this.sSort.lists[0];
-                    this.changeGet();
+                    this._changeGet();
                 }
             },
             sortSelect (index) {
                 this.currentSort = this.sSort.lists[index];
                 if (this._isEmptyObject(this.currentLang)) {
                     this.currentLang = this.sLang.lists[0];
-                    this.changeGet();
+                    this._changeGet();
                 }
             },
             filterSelect (index) {
@@ -137,9 +166,50 @@
                 this.currentLang = {};
                 this.currentSort = {};
                 if (this.currentFilter === '热门') {
-                    this.firstGet();
+                    this._firstGet();
                 } else {
                     this.currentFilter = '热门';
+                }
+            },
+            loadShow (fn) {
+                this.showLoad = true;
+                this.showList = false;
+                fn();
+                clearTimeout(timer_1);
+                timer_1 = setTimeout(() => {
+                    this.showLoad = false;
+                    this.showList = true;
+                }, 2500);
+            },
+            getMore () {
+                if (!this.hasMore) {
+                    return;
+                }
+                let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
+                clearTimeout(timer_3);
+                timer_3 = setTimeout(() => {
+                    axios.get(`http://localhost:3000/artist/list?limit=30&offset=${this.offset}&cat=${this.requestCode}&initial=${initial}`).then((res) => {
+                        if (res.data && res.data.code === 200) {
+                            this.singerList = this.singerList.concat(res.data.artists);
+                            this.hasMore = res.data.more;
+                            this.canLoad = true;
+                        }
+                    });
+                }, 2000);
+            },
+            handleScroll () {
+                clearTimeout(timer_2);
+                timer_2 = setTimeout(() => {
+                    this.scrollToEnd();
+                }, 200);
+            },
+            scrollToEnd () {
+                clientHeight = window.innerHeight;
+                songListHeight = this.$refs.dSinger.offsetHeight;
+                scrollTop = this.$refs.dSingerWrapper.scrollTop;
+                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad) {
+                    this.canLoad = false;
+                    this.getMore();
                 }
             },
             _isEmptyObject (obj) {
@@ -147,6 +217,12 @@
                     return false;
                 }
                 return true;
+            },
+            _changeGet () {
+                this.loadShow(this.changeGet);
+            },
+            _firstGet () {
+                this.loadShow(this.firstGet);
             }
         },
         computed: {
@@ -172,20 +248,27 @@
                 if (this._isEmptyObject(newSort) || this._isEmptyObject(oldSort)) {  //  返回全部热门页面或者第一次进入页面的情况
                     return;
                 }
-                this.changeGet();
+                this._changeGet();
             },
             currentSort (newSort, oldSort) {
                 if (this._isEmptyObject(newSort) || this._isEmptyObject(oldSort)) {
                     return;
                 }
-                this.changeGet();
+                this._changeGet();
             },
             currentFilter () {
-                this.changeGet();
+                this._changeGet();
+            },
+            singerList (newList) {
+                this.offset = newList.length;
             }
         },
         created () {
-            this.firstGet();
+            this._firstGet();
+        },
+        components: {
+            Load,
+            ContinueLoad
         }
     }
 </script>
@@ -247,5 +330,54 @@
     .singer-list-title .back {
         font-size: 12px;
         color: #999;
+    }
+    .single-list {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .single-list .sl-item {
+        width: 18.5%;
+        flex: 0 0 18.5%;
+        margin-bottom: 30px;
+    }
+    .single-list .sl-item:hover .img-wrapper .cover {
+        opacity: 1;
+    }
+    .single-list .sl-item .img-wrapper {
+        position: relative;
+        font-size: 0;
+    }
+    .single-list .sl-item .img-wrapper .cover {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        background-color: rgba(0,0,0,.3);
+        opacity: 0;
+        transition: opacity 0.6s;
+    }
+    .single-list .sl-item .img-wrapper img {
+        width: 100%;
+    }
+    .single-list .sl-item .desc {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 6px;
+        font-size: 15px;
+        align-items: center;
+        color: #000;
+    }
+    .single-list .sl-item .desc .name {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .single-list .sl-item .desc .iconfont {
+        color: #dd0000;
+        font-size: 13px;
+        font-weight: bold;
     }
 </style>

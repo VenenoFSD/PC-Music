@@ -17,8 +17,10 @@
 <script>
     import axios from 'axios'
 
-    let clientHeight = 0;
-    let songListHeight = 0;
+    let clientHeight = 0,
+        songListHeight = 0,
+        timer_1 = null,
+        timer_2 = null;
 
     export default {
         name: "DSongList",
@@ -44,19 +46,17 @@
                 this.$router.push(`/discovery/songList/${item.id}`);
             },
             getMore () {
-                let timer = null;
-                clearTimeout(timer);
-                timer = setTimeout(() => {
+                clearTimeout(timer_1);
+                timer_1 = setTimeout(() => {
                     this.$refs.songList.getMore();
                     this.canLoad = true;
                 }, 2000);
             },
             handleScroll () {
-                let timer = null;
-                clearTimeout(timer);
-                timer = setTimeout(() => {
+                clearTimeout(timer_2);
+                timer_2 = setTimeout(() => {
                     this.scrollToEnd();
-                }, 300);
+                }, 200);
             },
             scrollToEnd () {
                 clientHeight = window.innerHeight;

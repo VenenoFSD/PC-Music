@@ -27,7 +27,9 @@
     const DEFAULT_DISC_COUNT = 25;
     let clientHeight = 0,
         songListHeight = 0,
-        scrollTop = 0;
+        scrollTop = 0,
+        timer_1 = null,
+        timer_2 = null;
 
     export default {
         name: "DNewDisc",
@@ -55,9 +57,8 @@
                 if (!this.hasMore) {
                     return;
                 }
-                let timer = null;
-                clearTimeout(timer);
-                timer = setTimeout(() => {
+                clearTimeout(timer_1);
+                timer_1 = setTimeout(() => {
                     axios.get(`http://localhost:3000/top/album?limit=${DEFAULT_DISC_COUNT}&offset=${this.offset}`).then((res) => {
                         if (res.data && res.data.code === 200) {
                             this.newDisc = this.newDisc.concat(res.data.albums);
@@ -67,11 +68,10 @@
                 }, 2000);
             },
             handleScroll () {
-                let timer = null;
-                clearTimeout(timer);
-                timer = setTimeout(() => {
+                clearTimeout(timer_2);
+                timer_2 = setTimeout(() => {
                     this.scrollToEnd();
-                }, 300);
+                }, 200);
             },
             scrollToEnd () {
                 clientHeight = window.innerHeight;
