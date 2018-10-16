@@ -21,12 +21,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="singer-list-wrapper" v-show="showList">
+            <div class="singer-list-wrapper">
                 <div class="singer-list-title">
                     <h1 class="title">{{currentSinger}}</h1>
                     <p class="back" v-show="showBack" @click="back">所有热门歌手 >></p>
                 </div>
-                <ul class="single-list">
+                <ul class="single-list" v-show="showList">
                     <li v-for="item in singerList" class="sl-item" :key="item.id">
                         <div class="img-wrapper">
                             <img v-lazy="item.img1v1Url" class="img">

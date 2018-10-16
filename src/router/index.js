@@ -7,7 +7,6 @@ Vue.use(Router);
 const Discovery = () => import('.././components/discovery/Discovery');
 const DRecommend = () => import('.././components/d-recommend/DRecommend');
 const DSongList = () => import('.././components/d-song-list/DSongList');
-const SongList = () => import('.././base/song-list/SongList');
 const DNewDisc = () => import('.././components/d-new-disc/DNewDisc');
 const DSinger = () => import('.././components/d-singer/DSinger');
 const DRanking = () => import('.././components/d-ranking/DRanking');
@@ -36,13 +35,7 @@ export default new Router({
                 },
                 {
                     path: '/discovery/songList',
-                    component: DSongList,
-                    children: [
-                        {
-                            path: ':id',
-                            component: SongList
-                        }
-                    ]
+                    component: DSongList
                 },
                 {
                     path: '/discovery/newDisc',
