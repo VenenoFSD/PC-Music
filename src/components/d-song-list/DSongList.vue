@@ -77,7 +77,7 @@
 <style scoped>
     .d-song-list-wrapper {
         flex: 1;
-        overflow: auto;
+        overflow-y: auto;
     }
     .d-song-list {
         max-width: 1200px;
@@ -109,7 +109,7 @@
         flex-wrap: wrap;
     }
     .tags .tags-item {
-        padding: 4px 24px;
+        padding: 0 23px;
         border-right: 1px solid #ddd;
         height: 12px;
         line-height: 12px;

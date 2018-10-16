@@ -5,7 +5,7 @@
                 <router-link tag="li" to="/discovery/recommend" class="dt-item">个性推荐</router-link>
                 <router-link tag="li" to="/discovery/songList" class="dt-item">歌单</router-link>
                 <router-link tag="li" to="/discovery/newDisc" class="dt-item">新碟上架</router-link>
-                <router-link tag="li" to="/b" class="dt-item">歌手</router-link>
+                <router-link tag="li" to="/discovery/singer" class="dt-item">歌手</router-link>
                 <router-link tag="li" to="/c" class="dt-item">主播电台</router-link>
             </ul>
         </div>
