@@ -1,9 +1,9 @@
 import * as types from './mutation-types'
 
 const mutations = {
-    // [types.SET_SONG_LIST_TAGS] (state, tags) {
-    //     state.songListTags = tags;
-    // }
+    [types.SET_SINGER] (state, singer) {
+        state.singer = singer;
+    }
 };
 
 export default mutations

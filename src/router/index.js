@@ -43,7 +43,13 @@ export default new Router({
                 },
                 {
                     path: '/discovery/singer',
-                    component: DSinger
+                    component: DSinger,
+                    children: [
+                        {
+                            path: ':id',
+                            component: SingerDetail
+                        }
+                    ]
                 },
                 {
                     path: '/discovery/ranking',

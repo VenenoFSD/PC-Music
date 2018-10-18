@@ -27,7 +27,7 @@
                     <p class="back" v-show="showBack" @click="back">所有热门歌手 >></p>
                 </div>
                 <ul class="single-list" v-show="showList">
-                    <li v-for="item in singerList" class="sl-item" :key="item.id">
+                    <li v-for="item in singerList" class="sl-item" :key="item.id" @click="selectSinger(item)">
                         <div class="img-wrapper">
                             <img v-lazy="item.img1v1Url" class="img">
                             <div class="cover"></div>
@@ -42,6 +42,7 @@
             <load v-show="showLoad"></load>
             <continue-load v-show="showList && hasMore"></continue-load>
         </div>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -51,6 +52,7 @@
     import Load from '../../base/load/Load'
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import axios from 'axios'
+    import {mapMutations} from 'vuex'
 
     const REQUEST_COUNT = 40;
     let clientHeight = 0,
@@ -212,6 +214,10 @@
                     this.getMore();
                 }
             },
+            selectSinger (singer) {
+                this.setSinger(singer);
+                this.$router.push(`/discovery/singer/${singer.id}`);
+            },
             _isEmptyObject (obj) {
                 for (let item in obj) {
                     return false;
@@ -223,7 +229,10 @@
             },
             _firstGet () {
                 this.loadShow(this.firstGet);
-            }
+            },
+            ...mapMutations({
+                setSinger: 'SET_SINGER'
+            })
         },
         computed: {
             currentSinger () {

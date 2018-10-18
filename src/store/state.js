@@ -1,5 +1,5 @@
 const state = {
-    // songListTags: {}
+    singer: {}
 };
 
 export default state

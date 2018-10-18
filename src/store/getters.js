@@ -1,1 +1,1 @@
-// export const songListTags = state => state.songListTags;
+export const singer = state => state.singer;
