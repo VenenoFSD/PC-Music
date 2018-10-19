@@ -14,12 +14,20 @@
                     <p class="count-wrapper"><i class="iconfont icon-mv"></i>MV数：<span class="count">{{singerDetail.mvSize}}</span></p>
                 </div>
             </div>
+            <ul class="singer-select">
+                <li class="ss-item" v-for="item in select" :class="{'active': currentSelect === item.code}" @click="selectItem(item)">{{item.name}}</li>
+            </ul>
         </div>
+        <songs v-show="currentSelect === 'hot'" :songs="songs"></songs>
+        <singer-album v-show="currentSelect === 'album'"></singer-album>
+        <singer-desc v-show="currentSelect === 'desc'" ></singer-desc>
     </div>
 </template>
 
 <script>
     import Songs from '../../base/songs/Songs'
+    import SingerAlbum from '../singer-album/SingerAlbum'
+    import SingerDesc from '../singer-desc/SingerDesc'
     import {mapGetters} from 'vuex'
     import axios from 'axios'
 
@@ -28,7 +36,22 @@
         data () {
             return {
                 singerDetail: {},
-                songs: []
+                songs: [],
+                select: [
+                    {
+                        name: '热门50',
+                        code: 'hot'
+                    },
+                    {
+                        name: '专辑',
+                        code: 'album'
+                    },
+                    {
+                        name: '歌手详情',
+                        code: 'desc'
+                    }
+                ],
+                currentSelect: 'hot'
             }
         },
         methods: {
@@ -50,6 +73,9 @@
                     str += '; ' + trans;
                 }
                 return str;
+            },
+            selectItem (item) {
+                this.currentSelect = item.code;
             }
         },
         computed: {
@@ -61,7 +87,9 @@
             this.getSingerDetail();
         },
         components: {
-            Songs
+            Songs,
+            SingerAlbum,
+            SingerDesc
         }
     }
 </script>
@@ -76,19 +104,21 @@
         z-index: 3;
         background-color: #fafafc;
         border-left: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
     }
     .singer-detail {
         position: relative;
-        height: 300px;
         overflow: hidden;
         background: linear-gradient(to bottom, rgba(255,255,255,.6), #fafafc);
         padding: 16px 30px 0 30px;
         box-sizing: border-box;
         color: #444;
         border-bottom: 1px solid #ddd;
+        flex: 0 0 310px;
     }
     .background {
-        height: 100%;
+        height: 90%;
         z-index: -2;
         position: absolute;
         left: -2%;
@@ -136,5 +166,18 @@
         color: #444;
         margin-right: 4px;
         vertical-align: middle;
+    }
+    .singer-select {
+        width: 230px;
+        height: 36px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        color: #000;
+        line-height: 36px;
+    }
+    .singer-select .ss-item.active {
+        color: #ec0000;
+        border-bottom: 2px solid #ec0000;
     }
 </style>
