@@ -9,7 +9,7 @@
                 <router-link tag="li" to="/discovery/ranking" class="dt-item">排行榜</router-link>
             </ul>
         </div>
-        <keep-alive exclude="DSongList">
+        <keep-alive>
             <router-view></router-view>
         </keep-alive>
     </div>

@@ -1,27 +1,32 @@
 <template>
-    <div class="singer-detail-wrapper">
-        <div class="singer-detail">
-            <div class="background" :style="{background: 'url(' + singerDetail.img1v1Url + ') no-repeat 0 20%'}">
-            </div>
-            <p class="title">歌手</p>
-            <div class="singer-desc">
-                <img :src="singerDetail.img1v1Url" class="img">
-                <div class="desc">
-                    <p class="name">{{singerDetail.name}}</p>
-                    <p class="alias" v-if="singerDetail.alias">{{alias(singerDetail.alias, singerDetail.trans)}}</p>
-                    <p class="count-wrapper"><i class="iconfont icon-diantai"></i>单曲数：<span class="count">{{singerDetail.musicSize}}</span></p>
-                    <p class="count-wrapper"><i class="iconfont icon-cl-music"></i>专辑数：<span class="count">{{singerDetail.albumSize}}</span></p>
-                    <p class="count-wrapper"><i class="iconfont icon-mv"></i>MV数：<span class="count">{{singerDetail.mvSize}}</span></p>
+    <transition>
+        <div class="singer-detail-wrapper">
+            <div class="singer-detail">
+                <div class="background" :style="{background: 'url(' + singerDetail.img1v1Url + ') no-repeat 0 20%'}">
                 </div>
+                <p class="title">歌手</p>
+                <div class="singer-detail-header">
+                    <img :src="singerDetail.img1v1Url" class="img">
+                    <div class="desc">
+                        <p class="name">{{singerDetail.name}}</p>
+                        <p class="alias" v-if="singerDetail.alias">{{alias(singerDetail.alias, singerDetail.trans)}}</p>
+                        <p class="count-wrapper"><i class="iconfont icon-diantai"></i>单曲数：<span class="count">{{singerDetail.musicSize}}</span></p>
+                        <p class="count-wrapper"><i class="iconfont icon-cl-music"></i>专辑数：<span class="count">{{singerDetail.albumSize}}</span></p>
+                        <p class="count-wrapper"><i class="iconfont icon-mv"></i>MV数：<span class="count">{{singerDetail.mvSize}}</span></p>
+                    </div>
+                </div>
+                <div class="singer-select-wrapper">
+                    <ul class="singer-select">
+                        <li class="ss-item" v-for="item in select" :class="{'active': currentSelect === item.code}" @click="selectItem(item)">{{item.name}}</li>
+                    </ul>
+                </div>
+                <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
             </div>
-            <ul class="singer-select">
-                <li class="ss-item" v-for="item in select" :class="{'active': currentSelect === item.code}" @click="selectItem(item)">{{item.name}}</li>
-            </ul>
+            <songs v-show="currentSelect === 'hot'" :songs="songs"></songs>
+            <singer-album v-show="currentSelect === 'album'" :singerId="singer.id"></singer-album>
+            <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singerDetail.name"></singer-desc>
         </div>
-        <songs v-show="currentSelect === 'hot'" :songs="songs"></songs>
-        <singer-album v-show="currentSelect === 'album'"></singer-album>
-        <singer-desc v-show="currentSelect === 'desc'" ></singer-desc>
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -76,6 +81,9 @@
             },
             selectItem (item) {
                 this.currentSelect = item.code;
+            },
+            back () {
+                this.$router.back();
             }
         },
         computed: {
@@ -95,6 +103,13 @@
 </script>
 
 <style scoped>
+    .v-enter, .v-leave-to{
+        opacity: 0;
+        transform: translate3d(6%, 0, 0)
+    }
+    .v-enter-active, .v-leave-active{
+        transition: all .5s;
+    }
     .singer-detail-wrapper {
         position: fixed;
         left: 210px;
@@ -114,8 +129,16 @@
         padding: 16px 30px 0 30px;
         box-sizing: border-box;
         color: #444;
-        border-bottom: 1px solid #ddd;
         flex: 0 0 310px;
+    }
+    .back {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+    }
+    .back .iconfont {
+        font-size: 36px;
+        color: #888;
     }
     .background {
         height: 90%;
@@ -132,40 +155,43 @@
         font-size: 13px;
         margin-bottom: 20px;
     }
-    .singer-desc {
+    .singer-detail-header {
         display: flex;
         height: 200px;
     }
-    .singer-desc .img {
+    .singer-detail-header .img {
         width: 200px;
         height: 200px;
         flex: 0 0 200px;
     }
-    .singer-desc .desc {
+    .singer-detail-header .desc {
         flex: 1;
         padding: 4px 0 0 20px;
     }
-    .singer-desc .desc .name {
+    .singer-detail-header .desc .name {
         font-size: 22px;
         color: #000;
     }
-    .singer-desc .desc .alias {
+    .singer-detail-header .desc .alias {
         font-size: 12px;
         color: #777;
         margin: 20px 0 10px 0;
     }
-    .singer-desc .desc .count-wrapper {
+    .singer-detail-header .desc .count-wrapper {
         color: #000;
         font-size: 12px;
         line-height: 24px;
     }
-    .singer-desc .desc .count-wrapper .count {
+    .singer-detail-header .desc .count-wrapper .count {
         color: #777;
     }
-    .singer-desc .desc .count-wrapper .iconfont {
+    .singer-detail-header .desc .count-wrapper .iconfont {
         color: #444;
         margin-right: 4px;
         vertical-align: middle;
+    }
+    .singer-select-wrapper {
+        border-bottom: 1px solid #ddd;
     }
     .singer-select {
         width: 230px;

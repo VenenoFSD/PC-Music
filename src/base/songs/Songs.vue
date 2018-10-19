@@ -1,13 +1,14 @@
 <template>
     <div class="songs-wrapper" v-if="songs.length">
-        <div class="play"><span class="iconfont icon-play"></span>播放全部(50)</div>
+        <div class="play"><i class="iconfont icon-bofang-2"></i>播放全部(50)</div>
         <ul>
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
-                <span class="num">{{numFormat(index)}}</span>
-                <span class="song-name">{{item.name}}</span>
-                <span class="artist-name">{{artistsFormat(item.ar)}}</span>
-                <span class="album-name">{{item.al.name}}</span>
-                <span class="song-duration">{{durationFormat(item.dt)}}</span>
+                <p class="num">{{numFormat(index)}}</p>
+                <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia.length">（{{item.alia[0]}}）</span></p>
+                <p class="play-wrapper"><span class="iconfont icon-bofang-2"></span></p>
+                <p class="artist-name">{{artistsFormat(item.ar)}}</p>
+                <p class="album-name">{{item.al.name}}</p>
+                <p class="song-duration">{{durationFormat(item.dt)}}</p>
             </li>
         </ul>
     </div>
@@ -60,25 +61,19 @@
         align-items: center;
         font-size: 15px;
         color: #000;
-        width: 110px;
+        width: 120px;
     }
     .play .iconfont {
         color: #ec0000;
-        font-size: 12px;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        border: 1px solid #ec0000;
-        padding: 1px 0 0 2px;
-        box-sizing: border-box;
-        margin-right: 6px;
+        font-size: 20px;
+        margin-right: 4px;
     }
     .s-item {
         line-height: 45px;
         font-size: 12px;
         color: #999;
         display: flex;
+        padding: 0 20px 0 8px;
     }
     .s-item.bg {
         background-color: #f4f4f6;
@@ -90,21 +85,42 @@
         color: #000;
         width: 20px;
         flex: 0 0 20px;
-        margin: 0 24px 0 8px;
+        margin-right: 24px;
     }
     .s-item .song-name {
         font-size: 14px;
         color: #000;
-        flex: 0 0 40%;
+        flex: 0 0 38%;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
     }
+    .s-item .song-name .song-alia {
+        color: #aaa;
+    }
+    .s-item .play-wrapper {
+        flex: 0 0 54px;
+        display: flex;
+        align-items: center;
+        padding: 0 20px 0 10px;
+        box-sizing: border-box;
+    }
+    .s-item .play-wrapper .iconfont {
+        font-size: 24px;
+        color: #888;
+        display: none;
+    }
+    .s-item:hover .play-wrapper .iconfont {
+        display: inline-block;
+    }
     .s-item .artist-name {
         flex: 0 0 18%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     .s-item .album-name {
-        flex: 0 0 32%;
+        flex: 0 0 30%;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
