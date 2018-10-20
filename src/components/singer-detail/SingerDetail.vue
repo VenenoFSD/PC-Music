@@ -23,8 +23,8 @@
                 <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
             </div>
             <songs v-show="currentSelect === 'hot'" :songs="songs"></songs>
-            <singer-album v-show="currentSelect === 'album'" :singerId="singer.id"></singer-album>
-            <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singerDetail.name"></singer-desc>
+            <singer-album v-show="currentSelect === 'album'" :singerId="singer.id" :currentSelect="currentSelect"></singer-album>
+            <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singer.name"></singer-desc>
         </div>
     </transition>
 </template>

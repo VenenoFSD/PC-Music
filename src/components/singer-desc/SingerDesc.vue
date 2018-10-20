@@ -22,7 +22,7 @@
         props: {
             singerId: {
                 type: Number,
-                default: -1
+                default: 0
             },
             name: {
                 type: String,
@@ -31,10 +31,13 @@
         },
         methods: {
             getSingerDesc () {
+                if (!this.singerId) {
+                    return;
+                }
                 axios.get(`http://localhost:3000/artist/desc?id=${this.singerId}`).then((res) => {
                     if (res.data && res.data.code === 200) {
-                        if (res.data.introduction.length) {
-                            this.desc = res.data.introduction;
+                        this.desc = res.data.introduction;
+                        if (res.data.briefDesc) {
                             this.desc.unshift({
                                 ti: this.name + '简介',
                                 txt: res.data.briefDesc
