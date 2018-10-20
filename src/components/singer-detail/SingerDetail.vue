@@ -1,5 +1,5 @@
 <template>
-    <transition>
+    <fade>
         <div class="singer-detail-wrapper">
             <div class="singer-detail">
                 <div class="background" :style="{background: 'url(' + singerDetail.img1v1Url + ') no-repeat 0 20%'}">
@@ -26,11 +26,12 @@
             <singer-album v-show="currentSelect === 'album'" :singerId="singer.id" :currentSelect="currentSelect"></singer-album>
             <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singer.name"></singer-desc>
         </div>
-    </transition>
+    </fade>
 </template>
 
 <script>
     import Songs from '../../base/songs/Songs'
+    import Fade from '../../base/fade/Fade'
     import SingerAlbum from '../singer-album/SingerAlbum'
     import SingerDesc from '../singer-desc/SingerDesc'
     import {mapGetters} from 'vuex'
@@ -97,19 +98,13 @@
         components: {
             Songs,
             SingerAlbum,
-            SingerDesc
+            SingerDesc,
+            Fade
         }
     }
 </script>
 
 <style scoped>
-    .v-enter, .v-leave-to{
-        opacity: 0;
-        transform: translate3d(6%, 0, 0)
-    }
-    .v-enter-active, .v-leave-active{
-        transition: all .5s;
-    }
     .singer-detail-wrapper {
         position: fixed;
         left: 210px;
