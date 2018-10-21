@@ -97,9 +97,9 @@
 <script>
     import Separate from '../../base/separate/Separate'
     import Load from '../../base/load/Load'
-    import axios  from 'axios'
     import 'swiper/dist/css/swiper.css'
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
+    import get from '../../common/js/api'
 
     export default {
         name: "DRecommend",
@@ -134,45 +134,33 @@
         },
         methods: {
             getBanner () {
-                axios.get(`http://localhost:3000/banner`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.banners = res.data.banners;
-                    }
+                get('/banner').then((res) => {
+                    this.banners = res.banners;
                 });
             },
             getRecommendSongList () {
-                axios.get(`http://localhost:3000/personalized`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.recommendSongList = res.data.result.slice(0, 10);
-                    }
+                get('/personalized').then((res) => {
+                    this.recommendSongList = res.result.slice(0, 10);
                 });
             },
             getPrivateContent () {
-                axios.get(`http://localhost:3000/personalized/privatecontent`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.privateContent = res.data.result;
-                    }
+                get('/personalized/privatecontent').then((res) => {
+                    this.privateContent = res.result;
                 });
             },
             getNewSong () {
-                axios.get(`http://localhost:3000/personalized/newsong`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.newSong = res.data.result;
-                    }
+                get('/personalized/newsong').then((res) => {
+                    this.newSong = res.result;
                 });
             },
             getRecommendMV () {
-                axios.get(`http://localhost:3000/personalized/mv`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.recommendMV = res.data.result;
-                    }
+                get('/personalized/mv').then((res) => {
+                    this.recommendMV = res.result;
                 });
             },
             getRecommendRadio () {
-                axios.get(`http://localhost:3000/personalized/djprogram`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.recommendRadio = res.data.result;
-                    }
+                get('/personalized/djprogram').then((res) => {
+                    this.recommendRadio = res.result;
                 });
             },
             playCountFormat (playCount) {
@@ -215,11 +203,11 @@
         },
         created () {
             // this._loadPage();
-            // clearTimeout(this.timer);
-            // this.timer = setTimeout(() => {
-            //     this.showLoad = false;
-            //     this.dRecommendShow = true;
-            // }, 2500);
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.showLoad = false;
+                this.dRecommendShow = true;
+            }, 3000);
         },
         computed: {
             showSwiper () {
@@ -338,11 +326,14 @@
     }
     .list .ns-item .desc {
         flex: 1;
+        overflow: hidden;
     }
     .list .ns-item .desc .song-name-wrapper {
         font-size: 16px;
         margin-bottom: 4px;
         white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     .list .ns-item .desc .song-name-wrapper .song-desc {
         color: #aaa;
@@ -358,6 +349,9 @@
     .list .mv-item .desc .name{
         font-size: 16px;
         margin: 8px 0 2px 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     .list .mv-item .desc .artist-name {
         font-size: 12px;
@@ -403,10 +397,16 @@
         font-size: 12px;
         margin-right: -2px;
     }
+    .list .r-item .desc-wrapper {
+        overflow: hidden;
+    }
     .list .r-item .desc-wrapper .name {
         font-size: 16px;
         color: #000;
         margin-bottom: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
     .list .r-item .desc-wrapper .desc{
         color: #aaa;

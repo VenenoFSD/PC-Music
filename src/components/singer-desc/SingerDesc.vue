@@ -11,7 +11,8 @@
 </template>
 
 <script>
-    import axios from 'axios'
+    import get from "../../common/js/api";
+
     export default {
         name: "SingerDesc",
         data () {
@@ -34,15 +35,15 @@
                 if (!this.singerId) {
                     return;
                 }
-                axios.get(`http://localhost:3000/artist/desc?id=${this.singerId}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.desc = res.data.introduction;
-                        if (res.data.briefDesc) {
-                            this.desc.unshift({
-                                ti: this.name + '简介',
-                                txt: res.data.briefDesc
-                            });
-                        }
+                get('/artist/desc', {
+                    id: this.singerId
+                }).then((res) => {
+                    this.desc = res.introduction;
+                    if (res.briefDesc) {
+                        this.desc.unshift({
+                            ti: this.name + '简介',
+                            txt: res.briefDesc
+                        });
                     }
                 });
             }

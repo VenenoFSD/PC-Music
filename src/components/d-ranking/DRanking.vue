@@ -39,9 +39,9 @@
 </template>
 
 <script>
-    import axios from 'axios'
     import Separate from '../../base/separate/Separate'
     import Load from '../../base/load/Load'
+    import get from '../../common/js/api'
 
     export default {
         name: "DRanking",
@@ -55,11 +55,9 @@
         },
         methods: {
             getRankingList () {
-                axios.get('http://localhost:3000/toplist/detail').then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.officialList = res.data.list.slice(0, 4);
-                        this.globalList = res.data.list.slice(4);
-                    }
+                get('/toplist/detail').then((res) => {
+                    this.officialList = res.list.slice(0, 4);
+                    this.globalList = res.list.slice(4);
                 });
             }
         },
@@ -69,7 +67,7 @@
             setTimeout(() => {
                 this.showList = true;
                 this.showLoad = false;
-            }, 1500);
+            }, 2000);
         },
         components: {
             Separate,

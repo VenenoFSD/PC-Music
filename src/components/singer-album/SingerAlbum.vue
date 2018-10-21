@@ -16,17 +16,14 @@
             <li class="empty"></li>
             <li class="empty"></li>
         </ul>
+        <continue-load v-show="this.album.length && this.hasMore"></continue-load>
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
-
-    let clientHeight = 0,
-        songListHeight = 0,
-        scrollTop = 0,
-        timer_1 = null,
-        timer_2 = null;
+    import get from "../../common/js/api";
+    import scrollToEnd from "../../common/js/scroll";
+    import ContinueLoad from '../../base/continue-load/ContinueLoad'
 
     export default {
         name: "SingerAlbum",
@@ -51,19 +48,22 @@
         },
         methods: {
             getSingerDesc () {
+                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
-                clearTimeout(timer_2);
-                timer_2 = setTimeout(() => {
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
                     this.canLoad = true;
                 }, 1500);
-                axios.get(`http://localhost:3000/artist/album?id=${this.singerId}&limit=48&offset=${this.offset}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.album = this.album.concat(res.data.hotAlbums);
-                        this.hasMore = res.data.more;
-                        this.offset = this.album.length;
-                    }
+                get('/artist/album', {
+                    id: this.singerId,
+                    limit: 48,
+                    offset: this.offset
+                }).then((res) => {
+                    this.album = this.album.concat(res.hotAlbums);
+                    this.hasMore = res.more;
+                    this.offset = this.album.length;
                 });
             },
             timeFormat (time) {
@@ -74,20 +74,7 @@
                 return `${year}-${month}-${day}`;
             },
             handleScroll () {
-                clearTimeout(timer_1);
-                timer_1 = setTimeout(() => {
-                    this.scrollToEnd();
-                }, 200);
-            },
-            scrollToEnd () {
-                clientHeight = this.$refs.singerAlbum.clientHeight;
-                songListHeight = this.$refs.singerAlbumList.offsetHeight;
-                scrollTop = this.$refs.singerAlbum.scrollTop;
-                console.log(clientHeight, songListHeight, scrollTop);
-                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad) {
-                    this.canLoad = false;
-                    this.getSingerDesc();
-                }
+                scrollToEnd(this.$refs.singerAlbum, this.$refs.singerAlbumList, this.getSingerDesc, this.canLoad);
             }
         },
         watch: {
@@ -97,6 +84,9 @@
                     this.getSingerDesc();
                 }
             }
+        },
+        components: {
+            ContinueLoad
         }
     }
 </script>

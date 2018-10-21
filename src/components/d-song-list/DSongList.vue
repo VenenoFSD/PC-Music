@@ -27,18 +27,14 @@
 </template>
 
 <script>
-    import axios from 'axios'
     import Load from '../../base/load/Load'
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
+    import get from "../../common/js/api";
+    import scrollToEnd from "../../common/js/scroll";
 
     const SINGLE_LOAD_COUNT = 30;
-    let clientHeight = 0,
-        songListHeight = 0,
-        scrollTop = 0,
-        timer_1 = null,
-        timer_2 = null,
-        timer_3 = null,
-        timer_4 = null;
+    let timer_1 = null,
+        timer_2 = null;
 
     export default {
         name: "DSongList",
@@ -57,53 +53,45 @@
         },
         methods: {
             firstGet () {
-                axios.get('http://localhost:3000/playlist/hot').then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.songListTags = res.data.tags;
-                        this.currentTag = this.songListTags[0].name;
-                        this.getSongList();
-                    }
+                get('/playlist/hot').then((res) => {
+                    this.songListTags = res.tags;
+                    this.currentTag = this.songListTags[0].name;
+                    this.getSongList();
                 });
             },
             getSongList () {
-                axios.get(`http://localhost:3000/top/playlist?cat=${this.currentTag}&limit=${SINGLE_LOAD_COUNT}&offset=${this.offset}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.songList = this.songList.concat(res.data.playlists);
-                        this.offset = this.songList.length;
-                        this.hasMore = res.data.more;
-                    }
+                get('/top/playlist', {
+                    cat: this.currentTag,
+                    limit: SINGLE_LOAD_COUNT,
+                    offset: this.offset
+                }).then((res) => {
+                    this.songList = this.songList.concat(res.playlists);
+                    this.offset = this.songList.length;
+                    this.hasMore = res.more;
                 });
             },
             selectItem (item) {
                 this.currentTag = item.name;
             },
             getMore () {
-                clearTimeout(timer_4);
-                timer_4 = setTimeout(() => {
-                    this.getSongList();
+                this.canLoad = false;
+                if (!this.hasMore) {
+                    return;
+                }
+                clearTimeout(timer_1);
+                timer_1 = setTimeout(() => {
                     this.canLoad = true;
-                }, 2000);
+                }, 1500);
+                this.getSongList();
             },
             handleScroll () {
-                clearTimeout(timer_3);
-                timer_3 = setTimeout(() => {
-                    this.scrollToEnd();
-                }, 200);
-            },
-            scrollToEnd () {
-                clientHeight = window.innerHeight;
-                songListHeight = this.$refs.DSongList.offsetHeight;
-                scrollTop = this.$refs.DSongListWrapper.scrollTop;
-                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad && this.hasMore) {
-                    this.canLoad = false;
-                    this.getMore();
-                }
+                scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getMore, this.canLoad);
             }
         },
         created () {
             this.firstGet();
-            clearTimeout(timer_1);
-            timer_1 = setTimeout(() => {
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
                 this.showLoad = false;
                 this.showPage = true;
             }, 2000);

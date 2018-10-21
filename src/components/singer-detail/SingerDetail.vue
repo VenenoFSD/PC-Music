@@ -35,7 +35,7 @@
     import SingerAlbum from '../singer-album/SingerAlbum'
     import SingerDesc from '../singer-desc/SingerDesc'
     import {mapGetters} from 'vuex'
-    import axios from 'axios'
+    import get from "../../common/js/api";
 
     export default {
         name: "SingerDetail",
@@ -66,11 +66,11 @@
                     this.$router.push('/discovery/singer');
                     return;
                 }
-                axios.get(`http://localhost:3000/artists?id=${this.singer.id}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.singerDetail = res.data.artist;
-                        this.songs = res.data.hotSongs;
-                    }
+                get('/artists', {
+                    id: this.singer.id
+                }).then((res) => {
+                    this.singerDetail = res.artist;
+                    this.songs = res.hotSongs;
                 });
             },
             alias (alias, trans) {

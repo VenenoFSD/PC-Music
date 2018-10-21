@@ -51,16 +51,12 @@
 
     import Load from '../../base/load/Load'
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
-    import axios from 'axios'
+    import get from '../../common/js/api'
     import {mapMutations} from 'vuex'
+    import scrollToEnd from "../../common/js/scroll";
 
     const REQUEST_COUNT = 40;
-    let clientHeight = 0,
-        songListHeight = 0,
-        scrollTop = 0,
-        timer_1 = null,
-        timer_2 = null,
-        timer_3 = null;
+    let timer = null;
 
     export default {
         name: "DSinger",
@@ -126,21 +122,23 @@
         methods: {
             firstGet () {
                 this.canLoad = true;
-                axios.get(`http://localhost:3000/top/artists?limit=${REQUEST_COUNT}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.singerList = res.data.artists;
-                        this.hasMore = res.data.more;
-                    }
+                get('/top/artists', {
+                    limit: REQUEST_COUNT
+                }).then((res) => {
+                    this.singerList = res.artists;
+                    this.hasMore = res.more;
                 });
             },
             changeGet () {
                 this.canLoad = true;
                 let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
-                axios.get(`http://localhost:3000/artist/list?limit=${REQUEST_COUNT}&cat=${this.requestCode}&initial=${initial}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.singerList = res.data.artists;
-                        this.hasMore = res.data.more;
-                    }
+                get('/artist/list', {
+                    limit: REQUEST_COUNT,
+                    cat: this.requestCode,
+                    initial
+                }).then((res) => {
+                    this.singerList = res.artists;
+                    this.hasMore = res.more;
                 });
             },
             langSelect (index) {
@@ -177,42 +175,35 @@
                 this.showLoad = true;
                 this.showList = false;
                 fn();
-                clearTimeout(timer_1);
-                timer_1 = setTimeout(() => {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
                     this.showLoad = false;
                     this.showList = true;
                 }, 2500);
             },
             getMore () {
+                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
                 let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
-                clearTimeout(timer_3);
-                timer_3 = setTimeout(() => {
-                    axios.get(`http://localhost:3000/artist/list?limit=30&offset=${this.offset}&cat=${this.requestCode}&initial=${initial}`).then((res) => {
-                        if (res.data && res.data.code === 200) {
-                            this.singerList = this.singerList.concat(res.data.artists);
-                            this.hasMore = res.data.more;
-                            this.canLoad = true;
-                        }
-                    });
-                }, 2000);
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    this.canLoad = true;
+                }, 1500);
+                get('/artist/list', {
+                    limit: 30,
+                    offset: this.offset,
+                    cat: this.requestCode,
+                    initial
+                }).then((res) => {
+                    this.singerList = this.singerList.concat(res.artists);
+                    this.hasMore = res.more;
+                    this.canLoad = true;
+                });
             },
             handleScroll () {
-                clearTimeout(timer_2);
-                timer_2 = setTimeout(() => {
-                    this.scrollToEnd();
-                }, 200);
-            },
-            scrollToEnd () {
-                clientHeight = window.innerHeight;
-                songListHeight = this.$refs.dSinger.offsetHeight;
-                scrollTop = this.$refs.dSingerWrapper.scrollTop;
-                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad) {
-                    this.canLoad = false;
-                    this.getMore();
-                }
+                scrollToEnd(this.$refs.dSingerWrapper, this.$refs.dSinger, this.getMore, this.canLoad);
             },
             selectSinger (singer) {
                 this.setSinger(singer);

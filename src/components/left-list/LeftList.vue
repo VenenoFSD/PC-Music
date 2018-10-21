@@ -28,7 +28,7 @@
             <div class="list created-song-list">
                 <h2 class="title">创建的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont song-list" :class="item.isPrivate ? 'icon-password' : 'icon-gedan'"></i><p class="text">{{item.name}}</p></li>
+                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont song-list" :class="item.privacy ? 'icon-password' : 'icon-gedan'"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
             <div class="list collected-song-list">
@@ -42,7 +42,9 @@
 </template>
 
 <script>
+    import get from "../../common/js/api";
     import axios from 'axios'
+
     export default {
         name: "LeftList",
         data () {
@@ -54,39 +56,33 @@
             }
         },
         methods: {
-            login (phoneNum, password) {
-                axios.get(`http://localhost:3000/login/cellphone?phone=${phoneNum}&password=${password}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.getUserDetail(res.data.account.id);
-                        this.getUserSongList(res.data.account.id);
-                    }
+            login (phone, password) {
+                get('/login/cellphone', {
+                    phone,
+                    password
+                }).then((res) => {
+                    this.getUserDetail(res.account.id);
+                    this.getUserSongList(res.account.id);
                 });
             },
             getUserDetail (uid) {
-                axios.get(`http://localhost:3000/user/detail?uid=${uid}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.userAvatar = res.data.profile.avatarUrl;
-                        this.userName = res.data.profile.nickname;
-                    }
+                get('/user/detail', {
+                    uid
+                }).then((res) => {
+                    this.userAvatar = res.profile.avatarUrl;
+                    this.userName = res.profile.nickname;
                 });
             },
             getUserSongList (uid) {
-                axios.get(`http://localhost:3000/user/playlist?uid=${uid}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        let list = res.data.playlist, i = 1;
-                        for (i; i < list.length; i++) {
-                            let obj = {};
-                            obj.name = list[i].name;
-                            if (!list[i].subscribed) {
-                                if (list[i].privacy === 0) {
-                                    obj.isPrivate = false;
-                                } else if (list[i].privacy === 10) {
-                                    obj.isPrivate = true;
-                                }
-                                this.createdSongList.push(obj);
-                            } else {
-                                this.collectedSongList.push(obj);
-                            }
+                get('/user/playlist', {
+                    uid
+                }).then((res) => {
+                    let list = res.playlist, i = 1;
+                    for (i; i < list.length; i++) {
+                        if (!list[i].subscribed) {
+                            this.createdSongList.push(list[i]);
+                        } else {
+                            this.collectedSongList.push(list[i]);
                         }
                     }
                 });
@@ -146,7 +142,6 @@
         line-height: 40px;
         display: flex;
         align-items: center;
-        cursor: pointer;
     }
     .left-list .list-wrapper .list .m-item .iconfont {
         font-size: 16px;

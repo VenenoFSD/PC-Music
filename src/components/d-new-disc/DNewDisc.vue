@@ -22,14 +22,11 @@
 <script>
     import Load from '../../base/load/Load'
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
-    import axios from 'axios'
+    import get from "../../common/js/api";
+    import scrollToEnd from "../../common/js/scroll";
 
     const DEFAULT_DISC_COUNT = 25;
-    let clientHeight = 0,
-        songListHeight = 0,
-        scrollTop = 0,
-        timer_1 = null,
-        timer_2 = null;
+    let cTimer = null;
 
     export default {
         name: "DNewDisc",
@@ -39,48 +36,31 @@
                 offset: 0,
                 showLoad: true,
                 showDisc: false,
-                hasMore: false,
+                hasMore: true,
                 total: 0,
                 canLoad: true
             }
         },
         methods: {
-            firstGet () {
-                axios.get(`http://localhost:3000/top/album?limit=${DEFAULT_DISC_COUNT}`).then((res) => {
-                    if (res.data && res.data.code === 200) {
-                        this.newDisc = res.data.albums;
-                        this.total = res.data.total;
-                    }
-                });
-            },
-            getMore () {
+            getNewDisc () {
+                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
-                clearTimeout(timer_1);
-                timer_1 = setTimeout(() => {
-                    axios.get(`http://localhost:3000/top/album?limit=${DEFAULT_DISC_COUNT}&offset=${this.offset}`).then((res) => {
-                        if (res.data && res.data.code === 200) {
-                            this.newDisc = this.newDisc.concat(res.data.albums);
-                            this.canLoad = true;
-                        }
-                    });
-                }, 2000);
+                clearTimeout(cTimer);
+                cTimer = setTimeout(() => {
+                    this.canLoad = true;
+                }, 1500);
+                get('/top/album', {
+                    limit: DEFAULT_DISC_COUNT,
+                    offset: this.offset
+                }).then((res) => {
+                    this.newDisc = this.newDisc.concat(res.albums);
+                    this.total = res.total;
+                });
             },
             handleScroll () {
-                clearTimeout(timer_2);
-                timer_2 = setTimeout(() => {
-                    this.scrollToEnd();
-                }, 200);
-            },
-            scrollToEnd () {
-                clientHeight = window.innerHeight;
-                songListHeight = this.$refs.dNewDisc.offsetHeight;
-                scrollTop = this.$refs.dNewDiscWrapper.scrollTop;
-                if ((clientHeight + scrollTop >= songListHeight) && this.canLoad) {
-                    this.canLoad = false;
-                    this.getMore();
-                }
+                scrollToEnd(this.$refs.dNewDiscWrapper, this.$refs.dNewDisc, this.getNewDisc, this.canLoad);
             }
         },
         watch: {
@@ -92,7 +72,7 @@
             }
         },
         created () {
-            this.firstGet();
+            this.getNewDisc();
             clearTimeout(this.timer);
             this.timer = setTimeout(() => {
                 this.showLoad = false;
