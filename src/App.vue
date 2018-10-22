@@ -8,15 +8,18 @@
                 <router-view></router-view>
             </keep-alive>
         </div>
+        <player></player>
     </div>
 </template>
 
 <script>
     import LeftList from './components/left-list/LeftList'
+    import Player from './components/player/Player'
     export default {
         name: 'App',
         components: {
-            LeftList
+            LeftList,
+            Player
         }
     }
 </script>
@@ -27,7 +30,7 @@
         left: 0;
         right: 0;
         top: 0;
-        bottom: 0;
+        bottom: 61px;
         display: flex;
     }
     #app .right-page {

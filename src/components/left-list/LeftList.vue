@@ -103,6 +103,7 @@
         background-color: #f8f8f8;
         color: #333;
         padding-top: 40px;
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
     }
@@ -132,6 +133,9 @@
     }
     .left-list .list-wrapper .list {
         margin-bottom: 30px;
+    }
+    .left-list .list-wrapper .list:last-child {
+        margin-bottom: 0;
     }
     .left-list .list-wrapper .list .title {
         font-size: 13px;

@@ -22,7 +22,7 @@
                 </div>
                 <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
             </div>
-            <songs v-show="currentSelect === 'hot'" :songs="songs"></songs>
+            <songs v-show="currentSelect === 'hot'" :songs="songs" @select="selectSong"></songs>
             <singer-album v-show="currentSelect === 'album'" :singerId="singer.id" :currentSelect="currentSelect"></singer-album>
             <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singer.name"></singer-desc>
         </div>
@@ -34,7 +34,7 @@
     import Fade from '../../base/fade/Fade'
     import SingerAlbum from '../singer-album/SingerAlbum'
     import SingerDesc from '../singer-desc/SingerDesc'
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapActions} from 'vuex'
     import get from "../../common/js/api";
 
     export default {
@@ -85,7 +85,16 @@
             },
             back () {
                 this.$router.back();
-            }
+            },
+            selectSong (song, index) {
+                this.selectPlay({
+                    list: this.songs,
+                    index
+                });
+            },
+            ...mapActions([
+                'selectPlay'
+            ])
         },
         computed: {
             ...mapGetters([
@@ -110,7 +119,7 @@
         left: 210px;
         top: 0;
         right: 0;
-        bottom: 0;
+        bottom: 60px;
         z-index: 3;
         background-color: #fafafc;
         border-left: 1px solid #ddd;

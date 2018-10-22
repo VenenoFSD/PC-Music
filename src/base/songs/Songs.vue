@@ -5,7 +5,7 @@
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
                 <p class="num">{{numFormat(index)}}</p>
                 <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia.length">（{{item.alia[0]}}）</span></p>
-                <p class="play-wrapper"><span class="iconfont icon-bofang-2"></span></p>
+                <p class="play-wrapper"><span class="iconfont icon-bofang-2" @click="selectItem(item, index)"></span></p>
                 <p class="artist-name">{{artistsFormat(item.ar)}}</p>
                 <p class="album-name">{{item.al.name}}</p>
                 <p class="song-duration">{{durationFormat(item.dt)}}</p>
@@ -42,6 +42,9 @@
             },
             isOdd (index) {
                 return (index + 1) % 2;
+            },
+            selectItem (item, index) {
+                this.$emit('select', item, index);
             },
             _pad (num) {
                 return num < 10 ? '0' + num : num;
