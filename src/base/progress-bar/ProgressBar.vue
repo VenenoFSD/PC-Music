@@ -1,13 +1,20 @@
 <template>
-    <div>
-        <div class="progress-bar-desc">
-            <p class="song-desc">{{songName}}<span class="desc-normal"> - {{artistsFormat(artistName)}}</span></p>
-            <p class="time-desc">00:00<span class="desc-normal"> / {{durationFormat(durationTime)}}</span></p>
-        </div>
-        <div class="progress-bar">
-            <div class="progress"></div>
-            <div class="progress-btn">
-                <span></span>
+    <div class="pb-wrapper"
+         @mousemove.prevent="mouseMove"
+         @mouseup="mouseEnd">
+        <div class="pb-content">
+            <div class="progress-bar-desc">
+                <p class="song-desc">{{songName}}<span class="desc-normal"> - {{artistsFormat(artistName)}}</span></p>
+                <p class="time-desc">{{currentTimeFormat(currentTime)}}<span class="desc-normal"> / {{durationFormat(durationTime)}}</span></p>
+            </div>
+            <div class="pb" @click="progressClick">
+                <div class="progress-bar" ref="progressBar">
+                    <div class="progress" ref="progress"></div>
+                    <div class="progress-btn" ref="progressBtn"
+                         @mousedown.prevent="mouseStart">
+                        <span></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -23,9 +30,17 @@
             },
             artistName: {
                 type: Array,
-                default: []
+                default: () => []
             },
             durationTime: {
+                type: Number,
+                default: 0
+            },
+            currentTime: {
+                type: Number,
+                default: 0
+            },
+            percent: {
                 type: Number,
                 default: 0
             }
@@ -44,14 +59,71 @@
                 let second = this._pad(time % 60);
                 return `${minute}:${second}`;
             },
+            currentTimeFormat (time) {
+                time = time | 0;
+                let minute = time / 60 | 0;
+                let second = this._pad(time % 60);
+                return `${minute}:${second}`;
+            },
+            mouseStart (e) {
+                this.touch.initiated = true;
+                this.touch.startX = e.screenX;
+                this.touch.left = this.$refs.progress.clientWidth;
+            },
+            mouseMove (e) {
+                if (!this.touch.initiated) {
+                    return;
+                }
+                let deltaX = e.screenX - this.touch.startX;
+                let offsetWidth = Math.min(this.$refs.progressBar.clientWidth, Math.max(0, this.touch.left + deltaX));
+                this._offset(offsetWidth);
+            },
+            mouseEnd () {
+                if (!this.touch.initiated) {
+                    return;
+                }
+                this._triggerPercent();
+                this.touch.initiated = false;
+            },
+            progressClick (e) {
+                this._offset(e.offsetX);
+                this._triggerPercent();
+            },
             _pad (num) {
                 return num < 10 ? '0' + num : num;
+            },
+            _offset (offsetWidth) {
+                this.$refs.progress.style.width = `${offsetWidth}px`;
+                this.$refs.progressBtn.style.transform = `translate3d(${offsetWidth}px,0,0)`;
+            },
+            _triggerPercent () {
+                let newPercent =  this.$refs.progress.clientWidth / this.$refs.progressBar.clientWidth;
+                this.$emit('percentChange', newPercent);
+            }
+        },
+        created () {
+            this.touch = {};
+        },
+        watch: {
+            percent (newPercent) {
+                if (newPercent >= 0 && !this.touch.initiated) {
+                    let barWidth = this.$refs.progressBar.clientWidth;
+                    this._offset(barWidth * newPercent);
+                }
             }
         }
     }
 </script>
 
 <style scoped>
+    .pb-wrapper {
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    .pb-content {
+        flex: 1;
+    }
     .progress-bar-desc {
         width: 100%;
         display: flex;
@@ -59,40 +131,44 @@
         color: #fff;
     }
     .progress-bar-desc .desc-normal {
-        color: #ccc;
+        color: #ddd;
+    }
+    .pb {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px 0;
     }
     .progress-bar {
         width: 100%;
         height: 2px;
         background-color: #ccc;
-        margin: 20px 0 10px 0;
         position: relative;
     }
     .progress-bar .progress {
         position: absolute;
         height: 100%;
-        width: 100px;
+        width: 0;
         left: 0;
         top: 0;
         background-color: #c73d3b;
     }
     .progress-bar .progress-btn {
         position: absolute;
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
-        left: 91px;
-        top: -8px;
-        background-color: #eee;
+        left: -8px;
+        top: -7px;
+        background-color: #ddd;
     }
     .progress-btn span {
         display: inline-block;
         width: 4px;
         height: 4px;
         border-radius: 50%;
-        background-color: #c73d3b;
+        background-color: #b03836;
         position: absolute;
-        top: 7px;
-        left: 7px;
+        top: 6px;
+        left: 6px;
     }
 </style>

@@ -20,17 +20,24 @@
                     </div>
                 </div>
                 <div class="bottom">
-                    <div class="prev left-btn">
+                    <div class="prev left-btn" @click="prev">
                         <i class="iconfont icon-shangyishou"></i>
                     </div>
                     <div class="play left-btn" @click="togglePlaying">
                         <i class="iconfont" :class="playIcon"></i>
                     </div>
-                    <div class="next left-btn">
+                    <div class="next left-btn" @click="next">
                         <i class="iconfont icon-xiayishou"></i>
                     </div>
                     <div class="progress-bar-wrapper">
-                        <progress-bar :songName="currentSong.name" :artistName="currentSong.ar" :durationTime="currentSong.dt"></progress-bar>
+                        <progress-bar
+                            :songName="currentSong.name"
+                            :artistName="currentSong.ar"
+                            :durationTime="currentSong.dt"
+                            :currentTime="currentTime"
+                            :percent="percent"
+                            @percentChange="changePercent"
+                        ></progress-bar>
                     </div>
                     <div class="store right-btn">
                         <i class="iconfont icon-shoucang1"></i>
@@ -55,21 +62,31 @@
                 </div>
             </div>
             <div class="mlb-wrapper">
-                <div class="prev m-left-btn">
+                <div class="prev m-left-btn" @click="prev">
                     <i class="iconfont icon-shangyishou"></i>
                 </div>
                 <div class="play m-left-btn" @click="togglePlaying">
                     <i class="iconfont" :class="playIcon"></i>
                 </div>
-                <div class="next m-left-btn">
+                <div class="next m-left-btn" @click="next">
                     <i class="iconfont icon-xiayishou"></i>
                 </div>
             </div>
             <div class="progress-bar-wrapper">
-                <!--<progress-bar></progress-bar>-->
+                <progress-bar
+                    :songName="currentSong.name"
+                    :artistName="currentSong.ar"
+                    :durationTime="currentSong.dt"
+                    :currentTime="currentTime"
+                    :percent="percent"
+                    @percentChange="changePercent"
+                ></progress-bar>
+            </div>
+            <div class="playlist">
+                <i class="iconfont icon-liebiao"></i>
             </div>
         </div>
-        <audio :src="songId" ref="audio" v-if="playlist.length"></audio>
+        <audio :src="songId" ref="audio" v-if="playlist.length" @canplay="ready" @error="error" @timeupdate="updateTime"></audio>
     </div>
 </template>
 
@@ -79,6 +96,12 @@
 
     export default {
         name: "Player",
+        data () {
+            return {
+                songReady: false,
+                currentTime: 0
+            }
+        },
         methods: {
             hide () {
                 this.setFullScreen(false);
@@ -94,11 +117,58 @@
                 this.setFullScreen(true);
             },
             togglePlaying () {
+                if (!this.songReady) {
+                    return;
+                }
                 this.setPlayingState(!this.playingState);
+            },
+            prev () {
+                if (!this.songReady) {
+                    return;
+                }
+                let index = this.currentIndex - 1;
+                if (index === -1) {
+                    index = this.playlist.length - 1;
+                }
+                this.setCurrentIndex(index);
+                if (!this.playingState) {
+                    this.togglePlaying();
+                }
+                this.songReady = false;
+            },
+            next () {
+                if (!this.songReady) {
+                    return;
+                }
+                let index = this.currentIndex + 1;
+                if (index === this.playlist.length) {
+                    index = 0;
+                }
+                this.setCurrentIndex(index);
+                if (!this.playingState) {
+                    this.togglePlaying();
+                }
+                this.songReady = false;
+            },
+            ready () {
+                this.songReady = true;
+            },
+            error () {
+                this.songReady = true;
+            },
+            updateTime (e) {
+                this.currentTime = e.target.currentTime;
+            },
+            changePercent (newPercent) {
+                this.$refs.audio.currentTime = this.currentSong.dt / 1000 * newPercent;
+                if (!this.playingState) {
+                    this.togglePlaying();
+                }
             },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
-                setPlayingState: 'SET_PLAYING_STATE'
+                setPlayingState: 'SET_PLAYING_STATE',
+                setCurrentIndex: 'SET_CURRENT_INDEX'
             })
         },
         computed: {
@@ -111,11 +181,15 @@
             imgWrapperAnimate () {
                 return this.playingState ? 'play' : 'play pause';
             },
+            percent () {
+                return this.currentTime * 1000 / this.currentSong.dt;
+            },
             ...mapGetters([
                 'fullScreen',
                 'playlist',
                 'currentSong',
-                'playingState'
+                'playingState',
+                'currentIndex'
             ])
         },
         watch: {
@@ -268,7 +342,7 @@
         font-size: 24px;
     }
     .left-btn .iconfont {
-        color: #fff;
+        color: #f3f3f3;
     }
     .bottom .play {
         margin: 0 30px;
@@ -285,7 +359,8 @@
     .right-btn .iconfont {
         color: #eee;
     }
-    .progress-bar-wrapper {
+    .normal-player .progress-bar-wrapper {
+        height: 100%;
         flex: 1;
         padding: 0 40px;
     }
@@ -303,7 +378,7 @@
     }
     .mlb-wrapper {
         flex: 0 0 140px;
-        padding: 0 50px;
+        padding: 0 40px;
         display: flex;
         justify-content: space-between;
         height: 100%;
@@ -325,16 +400,15 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,.4);
+        background-color: rgba(0,0,0,.6);
         display: none;
-        text-align: center;
-        padding: 5px;
+        padding: 10px 0 0 10px;
         box-sizing: border-box;
         overflow: hidden;
     }
     .img-wrapper .show-normal .iconfont {
         color: #fff;
-        font-size: 50px;
+        font-size: 40px;
     }
     .mini-player .m-left-btn {
         color: #fff;
@@ -359,5 +433,28 @@
     }
     .mini-player .progress-bar-wrapper {
         flex: 1;
+        height: 100%;
+    }
+    .mini-player .progress-bar-wrapper >>> .pb {
+        margin-top: 2px;
+    }
+    .mini-player .progress-bar-wrapper >>> .progress-bar-desc {
+        color: #222;
+        font-size: 12px;
+    }
+    .mini-player .progress-bar-wrapper >>> .desc-normal {
+        color: #888;
+    }
+    .mini-player .progress-bar-wrapper >>> .progress-bar .progress-btn {
+        background-color: #fff;
+        box-shadow: 0 0 2px #000;
+    }
+    .mini-player .playlist {
+        padding: 0 30px;
+        box-sizing: border-box;
+        flex: 0 0 76px;
+    }
+    .mini-player .playlist .iconfont {
+        color: #999;
     }
 </style>
