@@ -48,8 +48,15 @@
                     <div class="voice right-btn">
                         <i class="iconfont icon-yinliang"></i>
                     </div>
-                    <div class="playlist right-btn">
-                        <i class="iconfont icon-liebiao"></i>
+                    <div class="voice-pb-wrapper" @mousemove="mouseMove" @mouseup="mouseUp">
+                        <div class="voice-pb" @click="volumeClick">
+                            <div class="voice-progress-bar">
+                                <div class="voice-progress" ref="voiceProgress"></div>
+                                <div class="voice-progress-btn" @mousedown.prevent="mouseDown" ref="voiceProgressBtn">
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,11 +172,45 @@
                     this.togglePlaying();
                 }
             },
+            mouseDown (e) {
+                this.volumeTouch.initiated = true;
+                this.volumeTouch.startX = e.screenX;
+                this.volumeTouch.left = this.$refs.voiceProgress.clientWidth;
+            },
+            mouseMove (e) {
+                if (!this.volumeTouch.initiated) {
+                    return;
+                }
+                let deltaX = e.screenX - this.volumeTouch.startX;
+                let offsetWidth = Math.min(100, Math.max(0, this.volumeTouch.left + deltaX));
+                this._offset(offsetWidth);
+                this.changeVolume(this.$refs.voiceProgress.clientWidth / 100);
+            },
+            mouseUp () {
+                if (!this.volumeTouch.initiated) {
+                    return;
+                }
+                this.volumeTouch.initiated = false;
+            },
+            volumeClick (e) {
+                this._offset(e.offsetX);
+                this.changeVolume(this.$refs.voiceProgress.clientWidth / 100);
+            },
+            _offset (offsetWidth) {
+                this.$refs.voiceProgress.style.width = `${offsetWidth}px`;
+                this.$refs.voiceProgressBtn.style.transform = `translate3d(${offsetWidth}px,0,0)`;
+            },
+            changeVolume (newPercent) {
+                this.$refs.audio.volume = newPercent;
+            },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
                 setPlayingState: 'SET_PLAYING_STATE',
                 setCurrentIndex: 'SET_CURRENT_INDEX'
             })
+        },
+        created () {
+            this.volumeTouch = {};
         },
         computed: {
             songId () {
@@ -359,6 +400,53 @@
     .right-btn .iconfont {
         color: #eee;
     }
+    .right-btn.voice {
+        margin-right: 10px;
+    }
+    .voice-pb-wrapper {
+        flex: 0 0 100px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        margin-left: 6px;
+    }
+    .voice-pb {
+        width: 100%;
+        padding: 6px 0;
+    }
+    .voice-progress-bar {
+        flex: 1;
+        height: 2px;
+        background-color: #ccc;
+        position: relative;
+    }
+    .voice-progress-bar .voice-progress {
+        position: absolute;
+        height: 100%;
+        width: 0;
+        left: 0;
+        top: 0;
+        background-color: #c73d3b;
+    }
+    .voice-progress-bar .voice-progress-btn {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        left: -7px;
+        top: -6px;
+        background-color: #ddd;
+    }
+    .voice-progress-btn span {
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: #b03836;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+    }
     .normal-player .progress-bar-wrapper {
         height: 100%;
         flex: 1;
@@ -443,7 +531,10 @@
         font-size: 12px;
     }
     .mini-player .progress-bar-wrapper >>> .desc-normal {
-        color: #888;
+        color: #999;
+    }
+    .mini-player .progress-bar-wrapper >>> .progress-bar {
+        background-color: #e4e4e4;
     }
     .mini-player .progress-bar-wrapper >>> .progress-bar .progress-btn {
         background-color: #fff;
@@ -455,6 +546,6 @@
         flex: 0 0 76px;
     }
     .mini-player .playlist .iconfont {
-        color: #999;
+        color: #aaa;
     }
 </style>
