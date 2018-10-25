@@ -22,7 +22,7 @@
                 </div>
                 <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
             </div>
-            <songs v-show="currentSelect === 'hot'" :songs="songs" @select="selectSong"></songs>
+            <songs v-show="currentSelect === 'hot'" :songs="songs" @select="selectSong" @playAll="playAll"></songs>
             <singer-album v-show="currentSelect === 'album'" :singerId="singer.id" :currentSelect="currentSelect"></singer-album>
             <singer-desc v-show="currentSelect === 'desc'" :singerId="singer.id" :name="singer.name"></singer-desc>
         </div>
@@ -92,8 +92,14 @@
                     index
                 });
             },
+            playAll () {
+                this.sequencePlay({
+                    list: this.songs
+                });
+            },
             ...mapActions([
-                'selectPlay'
+                'selectPlay',
+                'sequencePlay'
             ])
         },
         computed: {
@@ -119,7 +125,7 @@
         left: 210px;
         top: 0;
         right: 0;
-        bottom: 60px;
+        bottom: 0;
         z-index: 3;
         background-color: #fafafc;
         border-left: 1px solid #ddd;

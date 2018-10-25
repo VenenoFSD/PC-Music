@@ -1,7 +1,7 @@
 <template>
-    <div class="player">
-        <transition>
-            <div class="normal-player" v-if="playlist.length && fullScreen">
+    <div class="player" v-if="playlist.length">
+        <transition name="normal">
+            <div class="normal-player" v-show="fullScreen">
                 <div class="back" :style="{background: 'url(' + currentSong.al.picUrl + ') no-repeat center center'}"></div>
                 <div class="hide" @click="hide"><i class="iconfont icon-shouqi_m"></i></div>
                 <div class="top">
@@ -43,14 +43,14 @@
                         <i class="iconfont icon-shoucang1"></i>
                     </div>
                     <div class="play-order right-btn">
-                        <i class="iconfont icon-shunxu"></i>
+                        <i class="iconfont" :class="iconMode" @click="changePlayMode"></i>
                     </div>
                     <div class="voice right-btn">
                         <i class="iconfont icon-yinliang"></i>
                     </div>
                     <div class="voice-pb-wrapper" @mousemove.prevent="mouseMove" @mouseup="mouseUp">
                         <div class="voice-pb" @click="volumeClick">
-                            <div class="voice-progress-bar">
+                            <div class="voice-progress-bar" ref="voiceProgressBar">
                                 <div class="voice-progress" ref="voiceProgress"></div>
                                 <div class="voice-progress-btn" @mousedown.prevent="mouseDown" ref="voiceProgressBtn"></div>
                             </div>
@@ -60,44 +60,46 @@
             </div>
         </transition>
         <div class="mini-player">
-            <div class="img-wrapper">
-                <img :src="currentSong.al.picUrl" width="60" height="60" v-if="playlist.length">
-                <div class="show-normal" @click="showNormal">
-                    <i class="iconfont icon-fangda"></i>
+                <div class="img-wrapper">
+                    <img :src="currentSong.al.picUrl" width="60" height="60">
+                    <div class="show-normal" @click="showNormal">
+                        <i class="iconfont icon-fangda"></i>
+                    </div>
+                </div>
+                <div class="mlb-wrapper">
+                    <div class="prev m-left-btn" @click="prev">
+                        <i class="iconfont icon-shangyishou"></i>
+                    </div>
+                    <div class="play m-left-btn" @click="togglePlaying">
+                        <i class="iconfont" :class="playIcon"></i>
+                    </div>
+                    <div class="next m-left-btn" @click="next">
+                        <i class="iconfont icon-xiayishou"></i>
+                    </div>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <progress-bar
+                        :songName="currentSong.name"
+                        :artistName="currentSong.ar"
+                        :durationTime="currentSong.dt"
+                        :currentTime="currentTime"
+                        :percent="percent"
+                        @percentChange="changePercent"
+                    ></progress-bar>
+                </div>
+                <div class="playlist">
+                    <i class="iconfont icon-liebiao"></i>
                 </div>
             </div>
-            <div class="mlb-wrapper">
-                <div class="prev m-left-btn" @click="prev">
-                    <i class="iconfont icon-shangyishou"></i>
-                </div>
-                <div class="play m-left-btn" @click="togglePlaying">
-                    <i class="iconfont" :class="playIcon"></i>
-                </div>
-                <div class="next m-left-btn" @click="next">
-                    <i class="iconfont icon-xiayishou"></i>
-                </div>
-            </div>
-            <div class="progress-bar-wrapper">
-                <progress-bar
-                    :songName="currentSong.name"
-                    :artistName="currentSong.ar"
-                    :durationTime="currentSong.dt"
-                    :currentTime="currentTime"
-                    :percent="percent"
-                    @percentChange="changePercent"
-                ></progress-bar>
-            </div>
-            <div class="playlist">
-                <i class="iconfont icon-liebiao"></i>
-            </div>
-        </div>
-        <audio :src="songId" ref="audio" v-if="playlist.length" @canplay="ready" @error="error" @timeupdate="updateTime"></audio>
+        <audio :src="songId" ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
 <script>
     import ProgressBar from '../../base/progress-bar/ProgressBar'
     import {mapGetters, mapMutations} from 'vuex'
+    import playMode from "../../common/js/config";
+    import {shuffle} from "../../common/js/util";
 
     export default {
         name: "Player",
@@ -162,6 +164,17 @@
                 alert('该歌曲暂无版权！');
                 this.songReady = true;
             },
+            end () {
+                if (this.playMode === playMode.loop) {
+                    this.loop();
+                } else {
+                    this.next();
+                }
+            },
+            loop () {
+                this.$refs.audio.currentTime = 0;
+                this.$refs.audio.play();
+            },
             updateTime (e) {
                 this.currentTime = e.target.currentTime;
             },
@@ -192,10 +205,9 @@
                 this.volumeTouch.initiated = false;
             },
             volumeClick (e) {
-                if (e.offsetX < 7) {
-                    return;
-                }
-                this._offset(e.offsetX);
+                const rect = this.$refs.voiceProgressBar.getBoundingClientRect();
+                const offsetWidth = e.pageX - rect.left;
+                this._offset(offsetWidth);
                 this.changeVolume(this.$refs.voiceProgress.clientWidth / 100);
             },
             _offset (offsetWidth) {
@@ -205,14 +217,35 @@
             changeVolume (newPercent) {
                 this.$refs.audio.volume = newPercent;
             },
+            changePlayMode () {
+                const mode = (this.playMode + 1) % 3;
+                this.setPlayMode(mode);
+                let list = null;
+                if (mode === playMode.random) {
+                    list = shuffle(this.sequenceList);
+                } else {
+                    list = this.sequenceList;
+                }
+                this.resetCurrentIndex(list);
+                this.setPlaylist(list);
+            },
+            resetCurrentIndex (list) {
+                let index = list.findIndex((item) => {
+                    return item.id === this.currentSong.id;
+                });
+                this.setCurrentIndex(index);
+            },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
                 setPlayingState: 'SET_PLAYING_STATE',
-                setCurrentIndex: 'SET_CURRENT_INDEX'
+                setCurrentIndex: 'SET_CURRENT_INDEX',
+                setPlayMode: 'SET_PLAY_MODE',
+                setPlaylist: 'SET_PLAYLIST'
             })
         },
         created () {
             this.volumeTouch = {};
+            this.firstPlay = true;
         },
         computed: {
             songId () {
@@ -224,6 +257,9 @@
             imgWrapperAnimate () {
                 return this.playingState ? 'play' : 'play pause';
             },
+            iconMode () {
+                return this.playMode === playMode.sequence ? 'icon-shunxu' : this.playMode === playMode.loop ? 'icon-danquxunhuan' : 'icon-suijibofang';
+            },
             percent () {
                 return this.currentTime * 1000 / this.currentSong.dt;
             },
@@ -232,12 +268,22 @@
                 'playlist',
                 'currentSong',
                 'playingState',
-                'currentIndex'
+                'currentIndex',
+                'playMode',
+                'sequenceList'
             ])
         },
         watch: {
-            currentSong () {
+            currentSong (newSong, oldSong) {
+                if (newSong.id === oldSong.id) {
+                    return;
+                }
                 this.$nextTick(() => {
+                    if (this.firstPlay) {
+                        this._offset(40);
+                        this.changeVolume(0.4);
+                        this.firstPlay = false;
+                    }
                     this.$refs.audio.play();
                 });
             },
@@ -255,12 +301,12 @@
 </script>
 
 <style scoped>
-    .v-enter, .v-leave-to{
+    .normal-enter, .normal-leave-to{
         opacity: 0;
         transform: translate3d(0, 20%, 0);
     }
-    .v-enter-active, .v-leave-active{
-        transition: all 1s cubic-bezier(.51,-1.3,.62,2.2);
+    .normal-enter-active, .normal-leave-active{
+        transition: all 0.8s cubic-bezier(.51,-1.3,.62,2.2);
     }
     .normal-player {
         position: fixed;
@@ -403,7 +449,7 @@
         color: #eee;
     }
     .right-btn.voice {
-        margin-right: 10px;
+        margin-right: 6px;
     }
     .voice-pb-wrapper {
         flex: 0 0 100px;
@@ -419,7 +465,7 @@
     .voice-progress-bar {
         flex: 1;
         height: 2px;
-        background-color: #ccc;
+        background-color: #ddd;
         position: relative;
     }
     .voice-progress-bar .voice-progress {

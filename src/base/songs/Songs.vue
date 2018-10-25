@@ -1,6 +1,6 @@
 <template>
     <div class="songs-wrapper" v-if="songs.length">
-        <div class="play"><i class="iconfont icon-bofang-2"></i>播放全部(50)</div>
+        <div class="play" @click="playAll"><i class="iconfont icon-bofang-2"></i>播放全部(50)</div>
         <ul>
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
                 <p class="num">{{numFormat(index)}}</p>
@@ -45,6 +45,9 @@
             },
             selectItem (item, index) {
                 this.$emit('select', item, index);
+            },
+            playAll () {
+                this.$emit('playAll');
             },
             _pad (num) {
                 return num < 10 ? '0' + num : num;
