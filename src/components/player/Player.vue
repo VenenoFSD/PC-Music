@@ -48,13 +48,11 @@
                     <div class="voice right-btn">
                         <i class="iconfont icon-yinliang"></i>
                     </div>
-                    <div class="voice-pb-wrapper" @mousemove="mouseMove" @mouseup="mouseUp">
+                    <div class="voice-pb-wrapper" @mousemove.prevent="mouseMove" @mouseup="mouseUp">
                         <div class="voice-pb" @click="volumeClick">
                             <div class="voice-progress-bar">
                                 <div class="voice-progress" ref="voiceProgress"></div>
-                                <div class="voice-progress-btn" @mousedown.prevent="mouseDown" ref="voiceProgressBtn">
-                                    <span></span>
-                                </div>
+                                <div class="voice-progress-btn" @mousedown.prevent="mouseDown" ref="voiceProgressBtn"></div>
                             </div>
                         </div>
                     </div>
@@ -161,6 +159,7 @@
                 this.songReady = true;
             },
             error () {
+                alert('该歌曲暂无版权！');
                 this.songReady = true;
             },
             updateTime (e) {
@@ -193,6 +192,9 @@
                 this.volumeTouch.initiated = false;
             },
             volumeClick (e) {
+                if (e.offsetX < 7) {
+                    return;
+                }
                 this._offset(e.offsetX);
                 this.changeVolume(this.$refs.voiceProgress.clientWidth / 100);
             },
@@ -383,7 +385,7 @@
         font-size: 24px;
     }
     .left-btn .iconfont {
-        color: #f3f3f3;
+        color: #eee;
     }
     .bottom .play {
         margin: 0 30px;
@@ -430,22 +432,13 @@
     }
     .voice-progress-bar .voice-progress-btn {
         position: absolute;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        left: -7px;
-        top: -6px;
-        background-color: #ddd;
-    }
-    .voice-progress-btn span {
-        display: inline-block;
         width: 4px;
         height: 4px;
         border-radius: 50%;
+        left: -7px;
+        top: -6px;
         background-color: #b03836;
-        position: absolute;
-        top: 5px;
-        left: 5px;
+        border: 5px solid #ddd;
     }
     .normal-player .progress-bar-wrapper {
         height: 100%;
@@ -534,10 +527,10 @@
         color: #999;
     }
     .mini-player .progress-bar-wrapper >>> .progress-bar {
-        background-color: #e4e4e4;
+        background-color: #ddd;
     }
     .mini-player .progress-bar-wrapper >>> .progress-bar .progress-btn {
-        background-color: #fff;
+        border: 6px solid #fff;
         box-shadow: 0 0 2px #000;
     }
     .mini-player .playlist {

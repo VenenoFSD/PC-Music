@@ -11,9 +11,7 @@
                 <div class="progress-bar" ref="progressBar">
                     <div class="progress" ref="progress"></div>
                     <div class="progress-btn" ref="progressBtn"
-                         @mousedown.prevent="mouseStart">
-                        <span></span>
-                    </div>
+                         @mousedown.prevent="mouseStart"></div>
                 </div>
             </div>
         </div>
@@ -82,10 +80,13 @@
                 if (!this.touch.initiated) {
                     return;
                 }
-                this._triggerPercent();
                 this.touch.initiated = false;
+                this._triggerPercent();
             },
             progressClick (e) {
+                if (e.offsetX < 8) {
+                    return;
+                }
                 this._offset(e.offsetX);
                 this._triggerPercent();
             },
@@ -128,10 +129,10 @@
         width: 100%;
         display: flex;
         justify-content: space-between;
-        color: #fff;
+        color: #333;
     }
     .progress-bar-desc .desc-normal {
-        color: #ddd;
+        color: #555;
     }
     .pb {
         width: 100%;
@@ -154,21 +155,12 @@
     }
     .progress-bar .progress-btn {
         position: absolute;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        left: -8px;
-        top: -7px;
-        background-color: #ddd;
-    }
-    .progress-btn span {
-        display: inline-block;
         width: 4px;
         height: 4px;
         border-radius: 50%;
+        left: -8px;
+        top: -7px;
+        border: 6px solid #ddd;
         background-color: #b03836;
-        position: absolute;
-        top: 6px;
-        left: 6px;
     }
 </style>
