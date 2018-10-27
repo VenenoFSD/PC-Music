@@ -179,7 +179,7 @@
                 this.songReady = true;
             },
             error () {
-                alert('该歌曲暂无版权！');
+                alert('该歌曲由于版权问题，暂时无法播放！');
                 this.songReady = true;
             },
             end () {
