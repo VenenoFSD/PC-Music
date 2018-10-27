@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" ref="app">
         <div class="left-list-wrapper">
             <left-list></left-list>
         </div>
@@ -15,8 +15,17 @@
 <script>
     import LeftList from './components/left-list/LeftList'
     import Player from './components/player/Player'
+    import {playlistMixin} from "./common/js/mixin";
+
     export default {
+        mixins: [playlistMixin],
         name: 'App',
+        methods: {
+            handlePlaylist (playlist) {
+                const bottom = playlist.length ? '61px' : '0';
+                this.$refs.app.style.bottom = bottom;
+            }
+        },
         components: {
             LeftList,
             Player

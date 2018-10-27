@@ -1,6 +1,6 @@
 <template>
     <fade>
-        <div class="singer-detail-wrapper">
+        <div class="singer-detail-wrapper" ref="singerDetailWrapper">
             <div class="singer-detail">
                 <div class="background" :style="{background: 'url(' + singerDetail.img1v1Url + ') no-repeat 0 20%'}">
                 </div>
@@ -36,8 +36,10 @@
     import SingerDesc from '../singer-desc/SingerDesc'
     import {mapGetters, mapActions} from 'vuex'
     import get from "../../common/js/api";
+    import {playlistMixin} from "../../common/js/mixin";
 
     export default {
+        mixins: [playlistMixin],
         name: "SingerDetail",
         data () {
             return {
@@ -96,6 +98,10 @@
                 this.sequencePlay({
                     list: this.songs
                 });
+            },
+            handlePlaylist (playlist) {
+                const bottom = playlist.length ? '61px' : '0';
+                this.$refs.singerDetailWrapper.style.bottom = bottom;
             },
             ...mapActions([
                 'selectPlay',
