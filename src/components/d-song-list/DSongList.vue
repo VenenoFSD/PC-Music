@@ -123,7 +123,8 @@
 <style scoped>
     .d-song-list-wrapper {
         flex: 1;
-        overflow-y: auto;
+        overflow-x: hidden;
+        overflow-y: scroll;
     }
     .d-song-list {
         max-width: 1200px;

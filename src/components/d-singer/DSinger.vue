@@ -276,7 +276,8 @@
 <style scoped>
     .d-singer-wrapper {
         flex: 1;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: scroll;
     }
     .d-singer {
         max-width: 1200px;

@@ -1,7 +1,7 @@
 <template>
     <div class="songs-wrapper" v-if="songs.length">
         <div class="play" @click="playAll"><i class="iconfont icon-bofang-2"></i>播放全部(50)</div>
-        <ul>
+        <ul class="song-list">
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
                 <p class="num">{{numFormat(index)}}</p>
                 <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia.length">（{{item.alia[0]}}）</span></p>
@@ -58,10 +58,14 @@
 
 <style scoped>
     .songs-wrapper {
-        padding: 0 26px 0 30px;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+    .song-list {
+        padding: 0 calc(241px + 100% - 100vw) 0 30px;
     }
     .play {
+        margin-left: 30px;
         padding: 14px 0;
         display: flex;
         align-items: center;

@@ -89,7 +89,8 @@
 <style scoped>
     .d-new-disc-wrapper {
         flex: 1;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .d-new-disc {
         max-width: 1200px;

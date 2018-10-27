@@ -4,7 +4,7 @@
             <div class="banner-wrapper">
                 <swiper :options="swiperOption" v-if="showSwiper">
                     <swiper-slide v-for="(item, index) in banners" :key="index">
-                        <img :src="item.picUrl" class="banner-img">
+                        <img :src="item.imageUrl" class="banner-img">
                     </swiper-slide>
                     <div class="swiper-pagination" slot="pagination"></div>
                 </swiper>
@@ -13,7 +13,7 @@
                 <h2 class="title"><i class="iconfont icon-tuijian"></i>推荐歌单</h2>
                 <separate></separate>
                 <ul class="list">
-                    <li v-for="item in recommendSongList" :key="item.id" class="item sl-item">
+                    <li v-for="item in recommendSongList" :key="item.id" class="item sl-item" @click="selectItem(item)">
                         <div class="img-wrapper">
                             <img :src="item.picUrl" class="img">
                             <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
@@ -91,6 +91,7 @@
             </div>
         </div>
         <load v-show="showLoad"></load>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -100,6 +101,7 @@
     import 'swiper/dist/css/swiper.css'
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import get from '../../common/js/api'
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "DRecommend",
@@ -174,13 +176,17 @@
                     return playCount.substr(0, cutLen) + '万';
                 }
             },
+            selectItem (item) {
+                this.$router.push(`/discovery/recommend/${item.id}`);
+                this.setSongList(item);
+            },
             _loadPage() {
-                this.getBanner();
+                // this.getBanner();
                 this.getRecommendSongList();
-                this.getPrivateContent();
-                this.getNewSong();
-                this.getRecommendMV();
-                this.getRecommendRadio();
+                // this.getPrivateContent();
+                // this.getNewSong();
+                // this.getRecommendMV();
+                // this.getRecommendRadio();
             },
             _nsItemClass (item) {
                 if (item === 0 || item === 4 || item === 8) {
@@ -199,10 +205,13 @@
                 } else {
                     return index + 1;
                 }
-            }
+            },
+            ...mapMutations({
+                setSongList: 'SET_SONG_LIST'
+            })
         },
         created () {
-            // this._loadPage();
+            this._loadPage();
             clearTimeout(this.timer);
             this.timer = setTimeout(() => {
                 this.showLoad = false;
@@ -226,7 +235,8 @@
 <style scoped>
     .d-recommend-wrapper {
         flex: 1;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: scroll;
     }
     .d-recommend {
         max-width: 1200px;

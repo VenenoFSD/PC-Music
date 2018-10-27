@@ -79,7 +79,8 @@
 <style scoped>
     .d-ranking-wrapper {
         flex: 1;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
     .d-ranking {
         max-width: 1200px;
