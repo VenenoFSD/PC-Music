@@ -7,7 +7,8 @@ const state = {
     playlist: [],
     sequenceList: [],
     playMode: playMode.sequence,
-    currentIndex: -1
+    currentIndex: -1,
+    songList: {}
 };
 
 export default state
