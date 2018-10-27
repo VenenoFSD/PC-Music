@@ -15,7 +15,10 @@
                         <h2 class="song-name">{{currentSong.name}}</h2>
                         <p class="desc-wrapper">歌手：<span class="desc">{{artistsFormat(currentSong.ar)}}</span>专辑：<span class="desc">{{currentSong.al.name}}</span></p>
                         <div class="lyric-wrapper">
-
+                            <p class="no-lyric" v-show="!currentLyric">纯音乐，无歌词</p>
+                            <ul v-if="currentLyric" ref="lyricList">
+                                <li v-for="(line, index) in currentLyric.lines" class="lyric-text" :class="{'current': index === currentLineNum}">{{line.txt}}</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -100,13 +103,17 @@
     import {mapGetters, mapMutations} from 'vuex'
     import playMode from "../../common/js/config";
     import {shuffle} from "../../common/js/util";
+    import get from '../../common/js/api'
+    import Lyric from 'lyric-parser'
 
     export default {
         name: "Player",
         data () {
             return {
                 songReady: false,
-                currentTime: 0
+                currentTime: 0,
+                currentLyric: null,
+                currentLineNum: 0
             }
         },
         methods: {
@@ -128,18 +135,25 @@
                     return;
                 }
                 this.setPlayingState(!this.playingState);
+                if (this.currentLyric) {
+                    this.currentLyric.togglePlay();
+                }
             },
             prev () {
                 if (!this.songReady) {
                     return;
                 }
-                let index = this.currentIndex - 1;
-                if (index === -1) {
-                    index = this.playlist.length - 1;
-                }
-                this.setCurrentIndex(index);
-                if (!this.playingState) {
-                    this.togglePlaying();
+                if (this.playlist.length === 1) {
+                    this.loop();
+                } else {
+                    let index = this.currentIndex - 1;
+                    if (index === -1) {
+                        index = this.playlist.length - 1;
+                    }
+                    this.setCurrentIndex(index);
+                    if (!this.playingState) {
+                        this.togglePlaying();
+                    }
                 }
                 this.songReady = false;
             },
@@ -147,13 +161,17 @@
                 if (!this.songReady) {
                     return;
                 }
-                let index = this.currentIndex + 1;
-                if (index === this.playlist.length) {
-                    index = 0;
-                }
-                this.setCurrentIndex(index);
-                if (!this.playingState) {
-                    this.togglePlaying();
+                if (this.playlist.length === 1) {
+                    this.loop();
+                } else {
+                    let index = this.currentIndex + 1;
+                    if (index === this.playlist.length) {
+                        index = 0;
+                    }
+                    this.setCurrentIndex(index);
+                    if (!this.playingState) {
+                        this.togglePlaying();
+                    }
                 }
                 this.songReady = false;
             },
@@ -174,14 +192,21 @@
             loop () {
                 this.$refs.audio.currentTime = 0;
                 this.$refs.audio.play();
+                if (this.currentLyric) {
+                    this.currentLyric.seek(0);
+                }
             },
             updateTime (e) {
                 this.currentTime = e.target.currentTime;
             },
             changePercent (newPercent) {
-                this.$refs.audio.currentTime = this.currentSong.dt / 1000 * newPercent;
+                const currentTime = this.currentSong.dt * newPercent;
+                this.$refs.audio.currentTime = currentTime / 1000;
                 if (!this.playingState) {
                     this.togglePlaying();
+                }
+                if (this.currentLyric) {
+                    this.currentLyric.seek(currentTime);
                 }
             },
             mouseDown (e) {
@@ -235,6 +260,31 @@
                 });
                 this.setCurrentIndex(index);
             },
+            getLyric () {
+                get('/lyric', {
+                    id: this.currentSong.id
+                }).then((res) => {
+                    if (res.nolyric) {
+                        this.currentLyric = null;
+                    } else {
+                        this.currentLyric = new Lyric(res.lrc.lyric, this.handleLyric);
+                        if (this.playingState) {
+                            this.currentLyric.play();
+                        }
+                    }
+                }).catch(() => {
+                    this.currentLyric = null;
+                    this.currentLineNum = 0;
+                });
+            },
+            handleLyric ({lineNum, txt}) {
+                this.currentLineNum = lineNum;
+                if (this.currentLineNum > 7) {
+                    this.$refs.lyricList.style.transform = `translate3d(0,${-(this.currentLineNum - 7) * 40}px,0)`;
+                } else {
+                    this.$refs.lyricList.style.transform = `translate3d(0,0,0)`;
+                }
+            },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
                 setPlayingState: 'SET_PLAYING_STATE',
@@ -278,14 +328,21 @@
                 if (newSong.id === oldSong.id) {
                     return;
                 }
+                if (this.currentLyric) {
+                    this.currentLyric.stop();
+                }
                 this.$nextTick(() => {
                     if (this.firstPlay) {
                         this._offset(40);
                         this.changeVolume(0.4);
                         this.firstPlay = false;
                     }
-                    this.$refs.audio.play();
+                    this.getLyric();
                 });
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    this.$refs.audio.play();
+                }, 1000);
             },
             playingState (newState) {
                 this.$nextTick(() => {
@@ -420,6 +477,29 @@
     }
     .top .song-wrapper .lyric-wrapper {
         flex: 1;
+        overflow: hidden;
+        margin: 40px 0 20px 0;
+        max-height: 600px;
+        position: relative;
+    }
+    .lyric-wrapper .no-lyric {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 50%;
+        margin-top: -20px;
+    }
+    .lyric-wrapper ul {
+        transition: all 0.6s;
+    }
+    .lyric-wrapper .lyric-text, .lyric-wrapper .no-lyric {
+        color: #000;
+        font-size: 15px;
+        line-height: 40px;
+    }
+    .lyric-wrapper .lyric-text.current {
+        color: #fff;
+        font-size: 16px;
     }
     .bottom {
         height: 100px;

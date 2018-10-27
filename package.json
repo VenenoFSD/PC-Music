@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "lyric-parser": "^1.0.1",
     "vue": "^2.5.2",
     "vue-awesome-swiper": "^2.6.7",
     "vue-lazyload": "^1.2.6",
