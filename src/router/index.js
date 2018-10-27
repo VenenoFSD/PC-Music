@@ -31,7 +31,13 @@ export default new Router({
             children: [
                 {
                     path: '/discovery/recommend',
-                    component: DRecommend
+                    component: DRecommend,
+                    children: [
+                        {
+                            path: ':id',
+                            component: SongListDetail
+                        }
+                    ]
                 },
                 {
                     path: '/discovery/songList',
