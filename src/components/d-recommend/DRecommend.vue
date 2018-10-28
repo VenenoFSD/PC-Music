@@ -181,12 +181,12 @@
                 this.setSongList(item);
             },
             _loadPage() {
-                // this.getBanner();
+                this.getBanner();
                 this.getRecommendSongList();
-                // this.getPrivateContent();
-                // this.getNewSong();
-                // this.getRecommendMV();
-                // this.getRecommendRadio();
+                this.getPrivateContent();
+                this.getNewSong();
+                this.getRecommendMV();
+                this.getRecommendRadio();
             },
             _nsItemClass (item) {
                 if (item === 0 || item === 4 || item === 8) {
@@ -211,12 +211,12 @@
             })
         },
         created () {
-            this._loadPage();
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.showLoad = false;
-                this.dRecommendShow = true;
-            }, 3000);
+            // this._loadPage();
+            // clearTimeout(this.timer);
+            // this.timer = setTimeout(() => {
+            //     this.showLoad = false;
+            //     this.dRecommendShow = true;
+            // }, 3000);
         },
         computed: {
             showSwiper () {

@@ -1,6 +1,6 @@
 <template>
     <div class="songs-wrapper" v-if="songs.length">
-        <div class="play" @click="playAll"><i class="iconfont icon-bofang-2"></i>播放全部(50)</div>
+        <div class="play" @click="playAll"><i class="iconfont icon-bofang-2"></i>播放全部({{songs.length}})</div>
         <ul class="song-list">
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
                 <p class="num">{{numFormat(index)}}</p>
@@ -20,7 +20,7 @@
         props: {
             songs: {
                 type: Array,
-                default: []
+                default: () => []
             }
         },
         methods: {
@@ -71,7 +71,7 @@
         align-items: center;
         font-size: 15px;
         color: #000;
-        width: 120px;
+        width: 130px;
     }
     .play .iconfont {
         color: #ec0000;

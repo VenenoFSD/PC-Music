@@ -41,7 +41,13 @@ export default new Router({
                 },
                 {
                     path: '/discovery/songList',
-                    component: DSongList
+                    component: DSongList,
+                    children: [
+                        {
+                            path: ':id',
+                            component: SongListDetail
+                        }
+                    ]
                 },
                 {
                     path: '/discovery/newDisc',

@@ -8,7 +8,7 @@
                 </ul>
             </div>
             <ul class="song-list" v-show="showList">
-                <li v-for="item in songList" class="sl-item">
+                <li v-for="item in songList" class="sl-item" @click="selectList(item)">
                     <div class="img-wrapper">
                         <img v-lazy="item.coverImgUrl" class="img">
                         <div class="cover"></div>
@@ -23,6 +23,7 @@
         </div>
         <load v-show="showLoad"></load>
         <continue-load v-show="showPage && showList && hasMore"></continue-load>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -31,6 +32,7 @@
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import get from "../../common/js/api";
     import scrollToEnd from "../../common/js/scroll";
+    import {mapMutations} from 'vuex'
 
     const SINGLE_LOAD_COUNT = 30;
     let timer_1 = null,
@@ -86,7 +88,14 @@
             },
             handleScroll () {
                 scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getMore, this.canLoad);
-            }
+            },
+            selectList(item) {
+                this.$router.push(`/discovery/songList/${item.id}`);
+                this.setSongList(item);
+            },
+            ...mapMutations({
+                setSongList: 'SET_SONG_LIST'
+            })
         },
         created () {
             this.firstGet();
