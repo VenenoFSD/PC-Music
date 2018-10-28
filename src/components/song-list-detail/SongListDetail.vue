@@ -3,9 +3,12 @@
         <div class="song-list-detail-wrapper" ref="songListDetailWrapper">
             <div class="song-list-detail">
                 <div class="background" :style="{background: 'url(' + songListDetail.coverImgUrl + ') no-repeat 0 20%'}"></div>
-                <p class="title">歌单</p>
+                <p class="title">{{$route.query.title}}</p>
                 <div class="song-list-detail-header">
-                    <img :src="songListDetail.coverImgUrl" class="img">
+                    <div class="img-wrapper">
+                        <img :src="songListDetail.coverImgUrl" class="img">
+                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(songList.playCount)}}</span></div>
+                    </div>
                     <div class="desc">
                         <p class="name">{{songList.name}}</p>
                         <div class="creator" v-if="songListDetail.creator">
@@ -64,6 +67,17 @@
             },
             tagsFormat(tags) {
                 return tags.join(' / ');
+            },
+            playCountFormat (playCount) {
+                playCount = Math.floor(playCount);
+                if (playCount < 100000) {
+                    return playCount;
+                } else {
+                    playCount = playCount.toString();
+                    let len = playCount.length;
+                    let cutLen = len - 4;
+                    return playCount.substr(0, cutLen) + '万';
+                }
             },
             selectSong (song, index) {
                 this.selectPlay({
@@ -149,6 +163,19 @@
     .song-list-detail-header {
         display: flex;
         height: 200px;
+    }
+    .img-wrapper {
+        position: relative;
+    }
+    .img-wrapper .playCount {
+        position: absolute;
+        z-index: 2;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+        padding: 1px 4px 0 2px;
+        color: #fff;
+        background: linear-gradient(to right, transparent , rgba(0,0,0,.2));
     }
     .song-list-detail-header .img {
         width: 200px;

@@ -90,7 +90,12 @@
                 scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getMore, this.canLoad);
             },
             selectList(item) {
-                this.$router.push(`/discovery/songList/${item.id}`);
+                this.$router.push({
+                    path: `/discovery/songList/${item.id}`,
+                    query: {
+                        title: '歌单'
+                    }
+                });
                 this.setSongList(item);
             },
             ...mapMutations({

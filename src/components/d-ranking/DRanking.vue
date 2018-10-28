@@ -5,7 +5,7 @@
                 <h2 class="title">官方榜</h2>
                 <separate></separate>
                 <ul class="list">
-                    <li v-for="item in officialList" class="l-item">
+                    <li v-for="item in officialList" class="l-item" @click="selectItem(item)">
                         <div class="img-wrapper">
                             <img :src="item.coverImgUrl" class="img">
                             <div class="update-time">{{item.updateFrequency}}</div>
@@ -21,7 +21,7 @@
                 <h2 class="title">全球榜</h2>
                 <separate></separate>
                 <ul class="list">
-                    <li v-for="item in globalList" class="l-item">
+                    <li v-for="item in globalList" class="l-item" @click="selectItem(item)">
                         <div class="img-wrapper">
                             <img :src="item.coverImgUrl" class="img">
                             <div class="update-time">{{item.updateFrequency}}</div>
@@ -35,6 +35,7 @@
             </div>
         </div>
         <load v-show="showLoad"></load>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -42,6 +43,7 @@
     import Separate from '../../base/separate/Separate'
     import Load from '../../base/load/Load'
     import get from '../../common/js/api'
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "DRanking",
@@ -59,7 +61,19 @@
                     this.officialList = res.list.slice(0, 4);
                     this.globalList = res.list.slice(4);
                 });
-            }
+            },
+            selectItem (item) {
+                this.$router.push({
+                    path: `/discovery/ranking/${item.id}`,
+                    query: {
+                        title: '排行榜'
+                    }
+                });
+                this.setSongList(item);
+            },
+            ...mapMutations({
+                setSongList: 'SET_SONG_LIST'
+            })
         },
         created () {
             this.getRankingList();

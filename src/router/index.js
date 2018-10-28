@@ -65,7 +65,14 @@ export default new Router({
                 },
                 {
                     path: '/discovery/ranking',
-                    component: DRanking
+                    component: DRanking,
+                    children: [
+                        {
+                            path: ':id',
+                            component: SongListDetail,
+                            props: true
+                        }
+                    ]
                 }
             ]
         },

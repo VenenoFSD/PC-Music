@@ -177,7 +177,12 @@
                 }
             },
             selectItem (item) {
-                this.$router.push(`/discovery/recommend/${item.id}`);
+                this.$router.push({
+                    path: `/discovery/recommend/${item.id}`,
+                    query: {
+                        title: '歌单'
+                    }
+                });
                 this.setSongList(item);
             },
             _loadPage() {
