@@ -7,3 +7,4 @@ export const playMode = state => state.playMode;
 export const currentIndex = state => state.currentIndex;
 export const currentSong = state => state.playlist[state.currentIndex] || {};
 export const songList = state => state.songList;
+export const newDisc = state => state.newDisc;

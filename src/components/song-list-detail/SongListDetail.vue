@@ -166,6 +166,7 @@
     }
     .img-wrapper {
         position: relative;
+        flex: 0 0 200px;
     }
     .img-wrapper .playCount {
         position: absolute;
@@ -180,7 +181,6 @@
     .song-list-detail-header .img {
         width: 200px;
         height: 200px;
-        flex: 0 0 200px;
     }
     .song-list-detail-header .desc {
         flex: 1;

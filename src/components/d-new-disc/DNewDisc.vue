@@ -2,7 +2,7 @@
     <div class="d-new-disc-wrapper" ref="dNewDiscWrapper" @scroll="handleScroll">
         <div class="d-new-disc" v-show="showDisc" ref="dNewDisc">
             <ul class="new-disc">
-                <li class="nd-item" v-for="item in newDisc">
+                <li class="nd-item" v-for="item in newDisc" @click="selectItem(item)">
                     <div class="img-wrapper">
                         <img v-lazy="item.picUrl" class="img">
                         <div class="cover"></div>
@@ -16,6 +16,7 @@
         </div>
         <load v-show="showLoad"></load>
         <continue-load v-show="showDisc && hasMore"></continue-load>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -24,6 +25,7 @@
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import get from "../../common/js/api";
     import scrollToEnd from "../../common/js/scroll";
+    import {mapMutations} from 'vuex'
 
     const DEFAULT_DISC_COUNT = 25;
     let cTimer = null;
@@ -61,7 +63,14 @@
             },
             handleScroll () {
                 scrollToEnd(this.$refs.dNewDiscWrapper, this.$refs.dNewDisc, this.getNewDisc, this.canLoad);
-            }
+            },
+            selectItem (item) {
+                this.$router.push(`/discovery/newDisc/${item.id}`);
+                this.setNewDisc(item);
+            },
+            ...mapMutations({
+                setNewDisc: 'SET_NEW_DISC'
+            })
         },
         watch: {
             newDisc () {

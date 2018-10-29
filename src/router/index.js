@@ -51,7 +51,13 @@ export default new Router({
                 },
                 {
                     path: '/discovery/newDisc',
-                    component: DNewDisc
+                    component: DNewDisc,
+                    children: [
+                        {
+                            path: ':id',
+                            component: DiscDetail
+                        }
+                    ]
                 },
                 {
                     path: '/discovery/singer',

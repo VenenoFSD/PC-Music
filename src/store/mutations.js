@@ -24,6 +24,9 @@ const mutations = {
     },
     [types.SET_SONG_LIST] (state, list) {
         state.songList = list;
+    },
+    [types.SET_NEW_DISC] (state, disc) {
+        state.newDisc = disc;
     }
 };
 
