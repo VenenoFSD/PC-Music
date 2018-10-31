@@ -16,6 +16,7 @@
             <li class="empty"></li>
             <li class="empty"></li>
         </ul>
+        <p v-show="album && !album.length" class="no-album">暂无该歌手的专辑</p>
         <continue-load v-show="this.album.length && this.hasMore"></continue-load>
     </div>
 </template>
@@ -147,5 +148,11 @@
         margin-top: 2px;
         font-size: 12px;
         color: #aaa;
+    }
+    .no-album {
+        text-align: center;
+        font-size: 16px;
+        color: #aaa;
+        margin-top: 100px;
     }
 </style>
