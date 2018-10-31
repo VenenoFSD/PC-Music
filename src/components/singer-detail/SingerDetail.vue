@@ -2,14 +2,14 @@
     <fade>
         <div class="singer-detail-wrapper" ref="singerDetailWrapper">
             <div class="singer-detail">
-                <div class="background" :style="{background: 'url(' + singerDetail.img1v1Url + ') no-repeat 0 20%'}">
+                <div class="background" :style="{background: 'url(' + singer.img1v1Url + ') no-repeat 0 20%'}">
                 </div>
                 <p class="title">歌手</p>
                 <div class="singer-detail-header">
-                    <img :src="singerDetail.img1v1Url" class="img">
+                    <img :src="singer.img1v1Url" class="img">
                     <div class="desc">
-                        <p class="name">{{singerDetail.name}}</p>
-                        <p class="alias" v-if="singerDetail.alias">{{alias(singerDetail.alias, singerDetail.trans)}}</p>
+                        <p class="name">{{singer.name}}</p>
+                        <p class="alias"><span v-if="singer.alias.length || singer.trans.length">{{alias(singer.alias, singer.trans)}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-diantai"></i>单曲数：<span class="count">{{singerDetail.musicSize}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-cl-music"></i>专辑数：<span class="count">{{singerDetail.albumSize}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-mv"></i>MV数：<span class="count">{{singerDetail.mvSize}}</span></p>
@@ -76,11 +76,11 @@
                 });
             },
             alias (alias, trans) {
-                let str =  alias.join('; ');
-                if (trans !== '') {
-                    str += '; ' + trans;
+                if (alias.length) {
+                    let str =  alias.join('; ');
+                    return trans.length ? `${str}; ${trans}` : str;
                 }
-                return str;
+                return trans;
             },
             selectItem (item) {
                 this.currentSelect = item.code;
@@ -189,6 +189,7 @@
         color: #000;
     }
     .singer-detail-header .desc .alias {
+        height: 16px;
         font-size: 12px;
         color: #777;
         margin: 20px 0 10px 0;
