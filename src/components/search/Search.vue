@@ -1,15 +1,15 @@
 <template>
     <div class="search">
         <div class="input-wrapper">
-            <input type="text" placeholder="搜索音乐、歌手、歌词、用户" class="input" v-model="query" @focus="focusChange(true)" @blur="focusChange(false)">
+            <input type="text" placeholder="搜索音乐、歌手、歌词、用户" class="input" v-model="query" @keyup.enter="showSearchResult">
             <span class="clear-btn" v-show="query" @click="clearQuery">
                 <i class="iconfont icon-shanchu"></i>
             </span>
-            <span class="search-btn">
+            <span class="search-btn" @click="showSearchResult">
                 <i class="iconfont icon-sousuo"></i>
             </span>
         </div>
-        <div class="search-box" v-show="!searchSuggest || !isFocus">
+        <div class="search-box" v-show="!searchSuggest && !showResult">
             <div class="hot">
                 <h2 class="title">热门搜索</h2>
                 <separate></separate>
@@ -25,22 +25,22 @@
                 </ul>
             </div>
         </div>
-        <div class="search-suggest" v-if="searchSuggest && isFocus">
-            <p class="search-text">搜索“{{query}}”</p>
+        <div class="search-suggest" v-if="searchSuggest">
+            <p class="search-text" @click="showSearchResult">搜索“{{query}}”</p>
             <div v-if="showSuggest">
-                <h2 class="suggest-title"><i class="iconfont icon-yinle"></i>单曲</h2>
+                <h2 class="suggest-title" v-if="searchSuggest.songs"><i class="iconfont icon-yinle"></i>单曲</h2>
                 <ul>
                     <li v-for="item in searchSuggest.songs" class="suggest-item">~ {{item.name}}</li>
                 </ul>
-                <h2 class="suggest-title"><i class="iconfont icon-yonghu"></i>歌手</h2>
+                <h2 class="suggest-title" v-if="searchSuggest.artists"><i class="iconfont icon-yonghu"></i>歌手</h2>
                 <ul>
-                    <li v-for="item in searchSuggest.artists" class="suggest-item">~ {{item.name}}</li>
+                    <li v-for="item in searchSuggest.artists" class="suggest-item" @click="selectSinger(item)">~ {{item.name}}</li>
                 </ul>
             </div>
             <p class="no-suggest" v-show="!showSuggest">无搜索建议</p>
         </div>
         <confirm></confirm>
-        <!--<search-result :query="query"></search-result>-->
+        <search-result :query="query" v-show="showResult" :hasShow="showResult"></search-result>
         <router-view></router-view>
     </div>
 </template>
@@ -50,6 +50,7 @@
     import Confirm from '../../base/confirm/Confirm'
     import SearchResult from '../search-result/SearchResult'
     import get from "../../common/js/api";
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "Search",
@@ -58,8 +59,8 @@
                 hots: [],
                 query: '',
                 searchSuggest: null,
-                isFocus: false,
-                showSuggest: false
+                showSuggest: false,
+                showResult: false
             }
         },
         methods: {
@@ -82,8 +83,15 @@
             clearQuery () {
                 this.query = '';
             },
-            focusChange (bool) {
-                this.isFocus = bool;
+            selectSinger (item) {
+                this.setSinger(item);
+                this.$router.push(`/search/${item.id}`);
+            },
+            showSearchResult () {
+                if (!this.query.length) {
+                    return;
+                }
+                this.showResult = true;
             },
             _isEmptyObject (obj) {
                 for (let item in obj) {
@@ -91,6 +99,9 @@
                 }
                 return true;
             },
+            ...mapMutations({
+                setSinger: 'SET_SINGER'
+            })
         },
         created () {
             this.getHotSearch();
@@ -99,9 +110,12 @@
             query (newQuery) {
                 if (newQuery === '') {
                     this.searchSuggest = null;
+                    this.showResult = false;
                     return;
                 }
-                this.getSearchSuggest(newQuery);
+                if (!this.showResult) {
+                    this.getSearchSuggest(newQuery);
+                }
             }
         },
         components: {
@@ -118,7 +132,7 @@
         box-sizing: border-box;
         background-color: #fafafc;
         color: #222222;
-        height: 100vh;
+        height: 100%;
         position: relative;
     }
     .input-wrapper {
@@ -197,11 +211,13 @@
     .search-text {
         color: rgb(27, 103, 170);
         font-size: 15px;
+        padding: 0 20px;
+        border-bottom: 1px solid #eee;
     }
     .suggest-title {
         font-size: 14px;
     }
-    .search-text, .suggest-title {
+    .suggest-title {
         margin: 0 20px;
         border-bottom: 1px solid #eee;
     }
