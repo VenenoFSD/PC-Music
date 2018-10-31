@@ -78,7 +78,7 @@
             alias (alias, trans) {
                 if (alias.length) {
                     let str =  alias.join('; ');
-                    return trans.length ? `${str}; ${trans}` : str;
+                    return (trans === '' || trans === null) ? str : `${str}; ${trans}`;
                 }
                 return trans;
             },
