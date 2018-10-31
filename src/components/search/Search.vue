@@ -25,7 +25,7 @@
                 </ul>
             </div>
         </div>
-        <div class="search-suggest" v-if="searchSuggest">
+        <div class="search-suggest" v-if="searchSuggest && !showResult">
             <p class="search-text" @click="showSearchResult">搜索“{{query}}”</p>
             <div v-if="showSuggest">
                 <h2 class="suggest-title" v-if="searchSuggest.songs"><i class="iconfont icon-yinle"></i>单曲</h2>
@@ -39,8 +39,18 @@
             </div>
             <p class="no-suggest" v-show="!showSuggest">无搜索建议</p>
         </div>
-        <confirm></confirm>
-        <search-result :query="query" v-show="showResult" :hasShow="showResult"></search-result>
+        <!--<confirm></confirm>-->
+        <div class="search-result" v-show="showResult">
+            <div class="st-list-wrapper">
+                <ul class="st-list">
+                    <li v-for="(item, index) in searchType" class="st-item" :class="{'current': index === currentType.index}" @click="selectItem(index)">{{item.name}}</li>
+                </ul>
+            </div>
+            <search-song :currentType="currentType"></search-song>
+            <search-album :currentType="currentType"></search-album>
+            <search-singer :currentType="currentType"></search-singer>
+            <search-song-list :currentType="currentType"></search-song-list>
+        </div>
         <router-view></router-view>
     </div>
 </template>
@@ -48,7 +58,10 @@
 <script>
     import Separate from '../../base/separate/Separate'
     import Confirm from '../../base/confirm/Confirm'
-    import SearchResult from '../search-result/SearchResult'
+    import SearchSong from '../search-song/SearchSong'
+    import SearchAlbum from '../search-album/SearchAlbum'
+    import SearchSinger from '../search-singer/SearchSinger'
+    import SearchSongList from '../search-song-list/SearchSongList'
     import get from "../../common/js/api";
     import {mapMutations} from 'vuex'
 
@@ -60,7 +73,17 @@
                 query: '',
                 searchSuggest: null,
                 showSuggest: false,
-                showResult: false
+                showResult: false,
+                searchType: [
+                    {name: '单曲', code: 1},
+                    {name: '专辑', code: 10},
+                    {name: '歌手', code: 100},
+                    {name: '歌单', code: 1000}
+                ],
+                currentType: {
+                    index: 0,
+                    code: 1
+                }
             }
         },
         methods: {
@@ -93,6 +116,12 @@
                 }
                 this.showResult = true;
             },
+            selectItem (index) {
+                this.currentType = {
+                    index,
+                    code: this.searchType[index].code
+                };
+            },
             _isEmptyObject (obj) {
                 for (let item in obj) {
                     return false;
@@ -116,12 +145,23 @@
                 if (!this.showResult) {
                     this.getSearchSuggest(newQuery);
                 }
+            },
+            showResult (newShow) {
+                if (!newShow) {
+                    this.currentType = {
+                        index: 0,
+                        code: 1
+                    };
+                }
             }
         },
         components: {
             Separate,
             Confirm,
-            SearchResult
+            SearchSong,
+            SearchAlbum,
+            SearchSinger,
+            SearchSongList
         }
     }
 </script>
@@ -235,5 +275,24 @@
     .no-suggest {
         text-align: center;
         font-size: 15px;
+    }
+    .search-result {
+        margin-top: 20px;
+    }
+    .st-list-wrapper {
+        border-bottom: 1px solid #ddd;
+    }
+    .st-list {
+        display: flex;
+        width: 240px;
+        justify-content: space-between;
+    }
+    .st-list .st-item {
+        line-height: 40px;
+        font-size: 15px;
+    }
+    .st-list .st-item.current {
+        color: #d62f2f;
+        border-bottom: 2px solid #d62f2f;
     }
 </style>
