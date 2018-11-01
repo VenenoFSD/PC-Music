@@ -46,10 +46,10 @@
                     <li v-for="(item, index) in searchType" class="st-item" :class="{'current': index === currentType.index}" @click="selectItem(index)">{{item.name}}</li>
                 </ul>
             </div>
-            <search-song :currentType="currentType"></search-song>
-            <search-album :currentType="currentType"></search-album>
-            <search-singer :currentType="currentType"></search-singer>
-            <search-song-list :currentType="currentType"></search-song-list>
+            <search-song :currentType="currentType" :query="query" :showResult="showResult"></search-song>
+            <search-album :currentType="currentType" :query="query"></search-album>
+            <search-singer :currentType="currentType" :query="query"></search-singer>
+            <search-song-list :currentType="currentType" :query="query"></search-song-list>
         </div>
         <router-view></router-view>
     </div>
@@ -277,7 +277,14 @@
         font-size: 15px;
     }
     .search-result {
-        margin-top: 20px;
+        position: fixed;
+        left: 210px;
+        right: 0;
+        top: 90px;
+        bottom: 0;
+        padding: 0 30px;
+        box-sizing: border-box;
+        overflow: auto;
     }
     .st-list-wrapper {
         border-bottom: 1px solid #ddd;

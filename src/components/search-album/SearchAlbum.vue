@@ -15,22 +15,43 @@
                 show: false
             }
         },
+        methods: {
+            getSearchAlbum () {
+                get('/search', {
+                    keywords: this.query,
+                    type: 10,
+                    limit: DEFAULT_LIMIT
+                }).then((res) => {
+
+                });
+            }
+        },
         props: {
-            albums: {
-                type: Array,
-                default: () => []
-            },
             currentType: {
                 type: Object,
                 default: {
                     index: 0,
                     code: 1
                 }
+            },
+            query: {
+                type: String,
+                default: ''
             }
         },
         watch: {
             currentType (newType) {
                 this.show = newType.index === 1;
+            },
+            show (newShow) {
+                if (newShow) {
+                    this.getSearchAlbum();
+                }
+            },
+            query (newQuery) {
+                if (this.show && newQuery.length) {
+                    this.getSearchAlbum();
+                }
             }
         }
     }

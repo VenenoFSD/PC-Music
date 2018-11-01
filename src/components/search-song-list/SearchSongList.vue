@@ -15,22 +15,43 @@
                 show: false
             }
         },
+        methods: {
+            getSearchSongList () {
+                get('/search', {
+                    keywords: this.query,
+                    type: 1000,
+                    limit: DEFAULT_LIMIT
+                }).then((res) => {
+
+                });
+            }
+        },
         props: {
-            songLists: {
-                type: Array,
-                default: () => []
-            },
             currentType: {
                 type: Object,
                 default: {
                     index: 0,
                     code: 1
                 }
+            },
+            query: {
+                type: String,
+                default: ''
             }
         },
         watch: {
             currentType (newType) {
                 this.show = newType.index === 3;
+            },
+            show (newShow) {
+                if (newShow) {
+                    this.getSearchSongList();
+                }
+            },
+            query (newQuery) {
+                if (this.show && newQuery.length) {
+                    this.getSearchSongList();
+                }
             }
         }
     }
