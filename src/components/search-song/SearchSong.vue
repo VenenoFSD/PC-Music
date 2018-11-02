@@ -1,6 +1,6 @@
 <template>
     <div class="search-song" v-show="show">
-        <ul class="song-list">
+        <ul class="song-list" v-show="showSong">
             <li class="sl-item" v-for="(item, index) in songs" :class="{'bg': !(index % 2)}">
                 <p class="song-name">{{item.name}}</p>
                 <p class="artist-name">{{artistsFormat(item.artists)}}</p>
@@ -10,11 +10,18 @@
                 <span class="iconfont icon-bofang-2"></span>
             </li>
         </ul>
+        <load v-show="showLoad"></load>
+        <no-result v-show="NoResult"></no-result>
     </div>
 </template>
 
 <script>
     import get from '../../common/js/api'
+    import Load from '../../base/load/Load'
+    import NoResult from '../../base/no-result/NoResult'
+
+    let timer1 = null,
+        timer2 = null;
 
     const DEFAULT_LIMIT = 30;
     export default {
@@ -22,17 +29,30 @@
         data () {
             return {
                 show: false,
-                songs: []
+                songs: [],
+                showLoad: true,
+                showSong: false,
+                NoResult: false
             }
         },
         methods: {
-            getSearchSong () {
+            getSearchSong (timer) {
                 get('/search', {
                     keywords: this.query,
                     type: 1,
                     limit: DEFAULT_LIMIT
                 }).then((res) => {
                     this.songs = res.result.songs;
+                    this.NoResult = !res.result.songCount;
+                    if (!this.NoResult) {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => {
+                            this.showSong = true;
+                            this.showLoad = false;
+                        }, 1500);
+                    } else {
+                        this.showLoad = false;
+                    }
                 });
             },
             artistsFormat (artists) {
@@ -50,6 +70,11 @@
             },
             _pad (num) {
                 return num < 10 ? '0' + num : num;
+            },
+            _delayShow (timer) {
+                this.showSong = false;
+                this.showLoad = true;
+                this.getSearchSong(timer);
             }
         },
         props: {
@@ -78,14 +103,20 @@
             },
             show (newShow) {
                 if (newShow && this.query.length) {
-                    this.getSearchSong();
+                    this.NoResult = false;
+                    this._delayShow(timer1);
                 }
             },
             query (newQuery) {
                 if (this.show && newQuery.length) {
-                    this.getSearchSong();
+                    this.NoResult = false;
+                    this._delayShow(timer2);
                 }
             }
+        },
+        components: {
+            Load,
+            NoResult
         }
     }
 </script>
