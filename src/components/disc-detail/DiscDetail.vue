@@ -83,6 +83,15 @@
         created () {
             this.getDiscDetail();
         },
+        watch: {
+            '$route.query': function () {
+                if (this.$route.query.id === undefined) {
+                    this.discDetail = {};
+                    return;
+                }
+                this.getDiscDetail();
+            }
+        },
         components: {
             Fade,
             Songs

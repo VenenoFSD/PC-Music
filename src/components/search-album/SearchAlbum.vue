@@ -1,7 +1,7 @@
 <template>
     <div class="search-album" v-show="show">
         <ul class="album-list" v-show="showAlbum">
-            <li class="album-item" v-for="(item, index) in albums" :class="{'bg': !(index % 2)}">
+            <li class="album-item" v-for="(item, index) in albums" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <div class="img-wrapper">
                     <img :src="item.picUrl">
                 </div>
@@ -18,6 +18,7 @@
     import get from '../../common/js/api'
     import Load from '../../base/load/Load'
     import NoResult from '../../base/no-result/NoResult'
+    import {mapMutations} from 'vuex'
 
     let timer1 = null,
         timer2 = null;
@@ -54,11 +55,23 @@
                     }
                 });
             },
+            selectItem (item) {
+                this.setNewDisc(item);
+                this.$router.push({
+                    path: '/album',
+                    query: {
+                        id: item.id
+                    }
+                });
+            },
             _delayShow (timer) {
                 this.showAlbum = false;
                 this.showLoad = true;
                 this.getSearchAlbum(timer);
-            }
+            },
+            ...mapMutations({
+                setNewDisc: 'SET_NEW_DISC'
+            })
         },
         props: {
             currentType: {

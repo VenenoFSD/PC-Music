@@ -2,11 +2,11 @@
     <fade>
         <div class="song-list-detail-wrapper" ref="songListDetailWrapper">
             <div class="song-list-detail">
-                <div class="background" :style="{background: 'url(' + songListDetail.coverImgUrl + ') no-repeat 0 20%'}"></div>
+                <div class="background" :style="{background: 'url(' + songList.coverImgUrl + ') no-repeat 0 20%'}"></div>
                 <p class="title">{{$route.query.title}}</p>
                 <div class="song-list-detail-header">
                     <div class="img-wrapper">
-                        <img :src="songListDetail.coverImgUrl" class="img">
+                        <img :src="songList.coverImgUrl" class="img">
                         <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(songList.playCount)}}</span></div>
                     </div>
                     <div class="desc">
@@ -17,7 +17,7 @@
                             <p class="create-time">{{timeFormat(songListDetail.createTime)}} 创建</p>
                         </div>
                         <div class="tags-wrapper" v-if="songListDetail.tags && songListDetail.tags.length">标签：<span class="tags">{{tagsFormat(songListDetail.tags)}}</span></div>
-                        <div class="description" v-if="songListDetail.description">介绍：{{songListDetail.description}}</div>
+                        <div class="description" v-if="songList.description">介绍：{{songList.description}}</div>
                     </div>
                 </div>
                 <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
@@ -106,6 +106,15 @@
         },
         created () {
             this.getSongListDetail();
+        },
+        watch: {
+            '$route.query': function () {
+                if (this.$route.query.id === undefined) {
+                    this.songListDetail = {};
+                    return;
+                }
+                this.getSongListDetail();
+            }
         },
         components: {
             Fade,

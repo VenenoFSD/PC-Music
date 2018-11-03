@@ -1,7 +1,7 @@
 <template>
     <div class="search-song-list" v-show="show">
         <ul class="song-list" v-show="showSongList">
-            <li class="sl-item" v-for="(item, index) in songLists" :class="{'bg': !(index % 2)}">
+            <li class="sl-item" v-for="(item, index) in songLists" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <img :src="item.coverImgUrl" class="img">
                 <p class="name">{{item.name}}</p>
                 <p class="song-count">{{item.trackCount}}首</p>
@@ -18,6 +18,7 @@
     import get from '../../common/js/api'
     import Load from '../../base/load/Load'
     import NoResult from '../../base/no-result/NoResult'
+    import {mapMutations} from 'vuex'
 
     let timer1 = null,
         timer2 = null;
@@ -65,11 +66,24 @@
                     return playCount.substr(0, cutLen) + '万';
                 }
             },
+            selectItem (item) {
+                this.setSongList(item);
+                this.$router.push({
+                    path: '/songList',
+                    query: {
+                        id: item.id,
+                        title: '歌单'
+                    }
+                });
+            },
             _delayShow (timer) {
                 this.showSongList = false;
                 this.showLoad = true;
                 this.getSearchSongList(timer);
-            }
+            },
+            ...mapMutations({
+                setSongList: 'SET_SONG_LIST'
+            })
         },
         props: {
             currentType: {

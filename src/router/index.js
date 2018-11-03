@@ -91,6 +91,18 @@ export default new Router({
                     component: SingerDetail
                 }
             ]
+        },
+        {
+            path: '/album',
+            component: DiscDetail
+        },
+        {
+            path: '/singer',
+            component: SingerDetail
+        },
+        {
+            path: '/songList',
+            component: SongListDetail
         }
     ]
 });

@@ -1,7 +1,7 @@
 <template>
     <div class="search-singer" v-show="show">
         <ul class="singer-list" v-show="showSinger">
-            <li class="sl-item" v-for="(item, index) in artists" :class="{'bg': !(index % 2)}">
+            <li class="sl-item" v-for="(item, index) in artists" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <img :src="item.img1v1Url" class="img">
                 <p class="name">{{item.name}}<span v-if="item.trans" class="trans">（{{item.trans}}）</span></p>
             </li>
@@ -15,6 +15,7 @@
     import get from '../../common/js/api'
     import Load from '../../base/load/Load'
     import NoResult from '../../base/no-result/NoResult'
+    import {mapMutations} from 'vuex'
 
     let timer1 = null,
         timer2 = null;
@@ -51,11 +52,23 @@
                     }
                 });
             },
+            selectItem (item) {
+                this.setSinger(item);
+                this.$router.push({
+                    path: '/singer',
+                    query: {
+                        id: item.id
+                    }
+                });
+            },
             _delayShow (timer) {
                 this.showSinger = false;
                 this.showLoad = true;
                 this.getSearchSinger(timer);
-            }
+            },
+            ...mapMutations({
+                setSinger: 'SET_SINGER'
+            })
         },
         props: {
             currentType: {

@@ -9,7 +9,7 @@
                     <img :src="singer.img1v1Url" class="img">
                     <div class="desc">
                         <p class="name">{{singer.name}}</p>
-                        <p class="alias"><span v-if="singer.alias.length || singer.trans.length">{{alias(singer.alias, singer.trans)}}</span></p>
+                        <p class="alias"><span v-if="singer.alias.length || (singer.trans && singer.trans.length)">{{alias(singer.alias, singer.trans)}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-diantai"></i>单曲数：<span class="count">{{singerDetail.musicSize}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-cl-music"></i>专辑数：<span class="count">{{singerDetail.albumSize}}</span></p>
                         <p class="count-wrapper"><i class="iconfont icon-mv"></i>MV数：<span class="count">{{singerDetail.mvSize}}</span></p>
@@ -112,6 +112,16 @@
             ...mapGetters([
                 'singer'
             ])
+        },
+        watch: {
+            '$route.query': function () {
+                if (this.$route.query.id === undefined) {
+                    this.singerDetail = {};
+                    this.songs = [];
+                    return;
+                }
+                this.getSingerDetail();
+            }
         },
         created () {
             this.getSingerDetail();

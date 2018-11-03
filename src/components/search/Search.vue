@@ -40,7 +40,7 @@
             <p class="no-suggest" v-show="!showSuggest">无搜索建议</p>
         </div>
         <!--<confirm></confirm>-->
-        <div class="search-result" v-show="showResult">
+        <div class="search-result" v-show="showResult" ref="searchResult">
             <div class="st-list-wrapper">
                 <ul class="st-list">
                     <li v-for="(item, index) in searchType" class="st-item" :class="{'current': index === currentType.index}" @click="selectItem(index)">{{item.name}}</li>
@@ -64,9 +64,11 @@
     import SearchSongList from '../search-song-list/SearchSongList'
     import get from "../../common/js/api";
     import {mapMutations} from 'vuex'
+    import {playlistMixin} from "../../common/js/mixin";
 
     export default {
         name: "Search",
+        mixins: [playlistMixin],
         data () {
             return {
                 hots: [],
@@ -121,6 +123,10 @@
                     index,
                     code: this.searchType[index].code
                 };
+            },
+            handlePlaylist (playlist) {
+                const bottom = playlist.length ? '61px' : '0';
+                this.$refs.searchResult.style.bottom = bottom;
             },
             _isEmptyObject (obj) {
                 for (let item in obj) {
