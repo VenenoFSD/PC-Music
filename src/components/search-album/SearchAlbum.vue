@@ -19,6 +19,7 @@
     import Load from '../../base/load/Load'
     import NoResult from '../../base/no-result/NoResult'
     import {mapMutations} from 'vuex'
+    import {debounce} from "../../common/js/util";
 
     let timer1 = null,
         timer2 = null;
@@ -95,13 +96,15 @@
                     this.NoResult = false;
                     this._delayShow(timer1);
                 }
-            },
-            query (newQuery) {
+            }
+        },
+        created () {
+            this.$watch('query', debounce((newQuery) => {
                 if (this.show && newQuery.length) {
                     this.NoResult = false;
                     this._delayShow(timer2);
                 }
-            }
+            }, 300));
         },
         components: {
             Load,

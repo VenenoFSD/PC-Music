@@ -30,7 +30,7 @@
             <div v-if="showSuggest">
                 <h2 class="suggest-title" v-if="searchSuggest.songs"><i class="iconfont icon-yinle"></i>单曲</h2>
                 <ul>
-                    <li v-for="item in searchSuggest.songs" class="suggest-item">~ {{item.name}}</li>
+                    <li v-for="item in searchSuggest.songs" class="suggest-item" @click="selectSong(item)">~ {{item.name}}</li>
                 </ul>
                 <h2 class="suggest-title" v-if="searchSuggest.artists"><i class="iconfont icon-yonghu"></i>歌手</h2>
                 <ul>
@@ -63,8 +63,9 @@
     import SearchSinger from '../search-singer/SearchSinger'
     import SearchSongList from '../search-song-list/SearchSongList'
     import get from "../../common/js/api";
-    import {mapMutations} from 'vuex'
+    import {mapMutations, mapActions} from 'vuex'
     import {playlistMixin} from "../../common/js/mixin";
+    import {debounce} from "../../common/js/util";
 
     export default {
         name: "Search",
@@ -128,6 +129,13 @@
                 const bottom = playlist.length ? '61px' : '0';
                 this.$refs.searchResult.style.bottom = bottom;
             },
+            selectSong (song) {
+                get('/song/detail', {
+                    ids: song.id
+                }).then((res) => {
+                    this.insertSong(res.songs[0]);
+                });
+            },
             _isEmptyObject (obj) {
                 for (let item in obj) {
                     return false;
@@ -136,13 +144,14 @@
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'
-            })
+            }),
+            ...mapActions([
+                'insertSong'
+            ])
         },
         created () {
             this.getHotSearch();
-        },
-        watch: {
-            query (newQuery) {
+            this.$watch('query', debounce((newQuery) => {
                 if (newQuery === '') {
                     this.searchSuggest = null;
                     this.showResult = false;
@@ -151,7 +160,9 @@
                 if (!this.showResult) {
                     this.getSearchSuggest(newQuery);
                 }
-            },
+            }, 300));
+        },
+        watch: {
             showResult (newShow) {
                 if (!newShow) {
                     this.currentType = {

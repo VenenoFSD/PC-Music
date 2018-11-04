@@ -1,7 +1,7 @@
 <template>
     <div class="search-song" v-show="show">
         <ul class="song-list" v-show="showSong">
-            <li class="sl-item" v-for="(item, index) in songs" :class="{'bg': !(index % 2)}">
+            <li class="sl-item" v-for="(item, index) in songs" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <p class="song-name">{{item.name}}</p>
                 <p class="artist-name">{{artistsFormat(item.artists)}}</p>
                 <p class="album-name">{{item.album.name}}</p>
@@ -19,6 +19,8 @@
     import get from '../../common/js/api'
     import Load from '../../base/load/Load'
     import NoResult from '../../base/no-result/NoResult'
+    import {mapActions} from 'vuex'
+    import {debounce} from "../../common/js/util";
 
     let timer1 = null,
         timer2 = null;
@@ -68,6 +70,13 @@
                 let second = this._pad(time % 60);
                 return `${minute}:${second}`;
             },
+            selectItem (song) {
+                get('/song/detail', {
+                    ids: song.id
+                }).then((res) => {
+                    this.insertSong(res.songs[0]);
+                });
+            },
             _pad (num) {
                 return num < 10 ? '0' + num : num;
             },
@@ -75,7 +84,10 @@
                 this.showSong = false;
                 this.showLoad = true;
                 this.getSearchSong(timer);
-            }
+            },
+            ...mapActions([
+                'insertSong'
+            ])
         },
         props: {
             currentType: {
@@ -106,13 +118,15 @@
                     this.NoResult = false;
                     this._delayShow(timer1);
                 }
-            },
-            query (newQuery) {
+            }
+        },
+        created () {
+            this.$watch('query', debounce((newQuery) => {
                 if (this.show && newQuery.length) {
                     this.NoResult = false;
                     this._delayShow(timer2);
                 }
-            }
+            }, 300));
         },
         components: {
             Load,
