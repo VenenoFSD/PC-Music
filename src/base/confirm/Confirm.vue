@@ -1,10 +1,10 @@
 <template>
-    <div class="confirm" v-if="showConfirm">
+    <div class="confirm" v-show="showConfirm">
         <div class="confirm-box">
             <p class="title">确认清除搜索历史记录？</p>
             <div class="btn-wrapper">
-                <span class="btn clear">清除</span>
-                <span class="btn cancel" @click="cancel">取消</span>
+                <span class="btn clear" @click="confirm">清除</span>
+                <span class="btn cancel" @click="hide">取消</span>
             </div>
         </div>
     </div>
@@ -13,15 +13,21 @@
 <script>
     export default {
         name: "Confirm",
-        props: {
-            showConfirm: {
-                type: Boolean,
-                default: false
+        data () {
+            return {
+                showConfirm: false
             }
         },
         methods: {
-            cancel () {
+            show () {
+                this.showConfirm = true;
+            },
+            hide () {
                 this.showConfirm = false;
+            },
+            confirm () {
+                this.showConfirm = false;
+                this.$emit('confirm');
             }
         }
     }

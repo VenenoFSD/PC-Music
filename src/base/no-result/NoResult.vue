@@ -1,18 +1,24 @@
 <template>
-    <p class="no-result">暂无搜索结果</p>
+    <p class="no-result">{{text}}</p>
 </template>
 
 <script>
     export default {
-        name: "NoResult"
+        name: "NoResult",
+        props: {
+            text: {
+                type: String,
+                default: '暂无搜索结果'
+            }
+        }
     }
 </script>
 
 <style scoped>
     .no-result {
         text-align: center;
-        font-size: 15px;
+        font-size: 14px;
         color: #999;
-        margin-top: 200px;
+        margin-top: 100px;
     }
 </style>

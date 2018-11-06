@@ -18,11 +18,12 @@
                 </ul>
             </div>
             <div class="search-history">
-                <h2 class="title">搜索历史<span class="clear"><i class="iconfont icon-iconfontshanchu1"></i></span></h2>
+                <h2 class="title">搜索历史<span class="clear" @click="showConfirm"><i class="iconfont icon-iconfontshanchu1"></i></span></h2>
                 <separate></separate>
                 <ul class="sh-list">
-                    <!--<li class="sh-item"><span class="delete"><i class="iconfont icon-shanchu"></i></span></li>-->
+                    <li class="sh-item" v-for="item in searchHistory" @click="setQuery(item)">{{item}}<span class="delete" @click.stop="deleteSearchHistory(item)"><i class="iconfont icon-shanchu"></i></span></li>
                 </ul>
+                <no-result text="暂无搜索历史" v-show="!searchHistory.length"></no-result>
             </div>
         </div>
         <div class="search-suggest" v-if="searchSuggest && !showResult">
@@ -39,7 +40,6 @@
             </div>
             <p class="no-suggest" v-show="!showSuggest">无搜索建议</p>
         </div>
-        <!--<confirm></confirm>-->
         <div class="search-result" v-show="showResult" ref="searchResult">
             <div class="st-list-wrapper">
                 <ul class="st-list">
@@ -51,6 +51,7 @@
             <search-singer :currentType="currentType" :query="query"></search-singer>
             <search-song-list :currentType="currentType" :query="query"></search-song-list>
         </div>
+        <confirm ref="confirm" @confirm="clearSearchHistory"></confirm>
         <router-view></router-view>
     </div>
 </template>
@@ -62,8 +63,9 @@
     import SearchAlbum from '../search-album/SearchAlbum'
     import SearchSinger from '../search-singer/SearchSinger'
     import SearchSongList from '../search-song-list/SearchSongList'
+    import NoResult from '../../base/no-result/NoResult'
     import get from "../../common/js/api";
-    import {mapMutations, mapActions} from 'vuex'
+    import {mapMutations, mapActions, mapGetters} from 'vuex'
     import {playlistMixin} from "../../common/js/mixin";
     import {debounce} from "../../common/js/util";
 
@@ -112,12 +114,14 @@
             selectSinger (item) {
                 this.setSinger(item);
                 this.$router.push(`/search/${item.id}`);
+                this.saveSearchHistory(item.name);
             },
             showSearchResult () {
                 if (!this.query.length) {
                     return;
                 }
                 this.showResult = true;
+                this.saveSearchHistory(this.query);
             },
             selectItem (index) {
                 this.currentType = {
@@ -135,6 +139,16 @@
                 }).then((res) => {
                     this.insertSong(res.songs[0]);
                 });
+                this.saveSearchHistory(song.name);
+            },
+            clearHistory () {
+                if (!this.searchHistory.length) {
+                    return;
+                }
+                this.clearSearchHistory();
+            },
+            showConfirm () {
+                this.$refs.confirm.show();
             },
             _isEmptyObject (obj) {
                 for (let item in obj) {
@@ -146,7 +160,10 @@
                 setSinger: 'SET_SINGER'
             }),
             ...mapActions([
-                'insertSong'
+                'insertSong',
+                'saveSearchHistory',
+                'deleteSearchHistory',
+                'clearSearchHistory'
             ])
         },
         created () {
@@ -172,13 +189,19 @@
                 }
             }
         },
+        computed: {
+            ...mapGetters([
+                'searchHistory'
+            ])
+        },
         components: {
             Separate,
             Confirm,
             SearchSong,
             SearchAlbum,
             SearchSinger,
-            SearchSongList
+            SearchSongList,
+            NoResult
         }
     }
 </script>
