@@ -27,6 +27,9 @@ const mutations = {
     },
     [types.SET_NEW_DISC] (state, disc) {
         state.newDisc = disc;
+    },
+    [types.SET_SEARCH_HISTORY] (state, history) {
+        state.searchHistory = history;
     }
 };
 

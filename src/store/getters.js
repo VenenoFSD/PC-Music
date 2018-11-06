@@ -8,3 +8,4 @@ export const currentIndex = state => state.currentIndex;
 export const currentSong = state => state.playlist[state.currentIndex] || {};
 export const songList = state => state.songList;
 export const newDisc = state => state.newDisc;
+export const searchHistory = state => state.searchHistory;
