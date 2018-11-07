@@ -63,43 +63,46 @@
             </div>
         </transition>
         <div class="mini-player">
-                <div class="img-wrapper">
-                    <img :src="currentSong.al.picUrl" width="60" height="60">
-                    <div class="show-normal" @click="showNormal">
-                        <i class="iconfont icon-fangda"></i>
-                    </div>
-                </div>
-                <div class="mlb-wrapper">
-                    <div class="prev m-left-btn" @click="prev">
-                        <i class="iconfont icon-shangyishou"></i>
-                    </div>
-                    <div class="play m-left-btn" @click="togglePlaying">
-                        <i class="iconfont" :class="playIcon"></i>
-                    </div>
-                    <div class="next m-left-btn" @click="next">
-                        <i class="iconfont icon-xiayishou"></i>
-                    </div>
-                </div>
-                <div class="progress-bar-wrapper">
-                    <progress-bar
-                        :songName="currentSong.name"
-                        :artistName="currentSong.ar"
-                        :durationTime="currentSong.dt"
-                        :currentTime="currentTime"
-                        :percent="percent"
-                        @percentChange="changePercent"
-                    ></progress-bar>
-                </div>
-                <div class="playlist">
-                    <i class="iconfont icon-liebiao"></i>
+            <div class="img-wrapper">
+                <img :src="currentSong.al.picUrl" width="60" height="60">
+                <div class="show-normal" @click="showNormal">
+                    <i class="iconfont icon-fangda"></i>
                 </div>
             </div>
+            <div class="mlb-wrapper">
+                <div class="prev m-left-btn" @click="prev">
+                    <i class="iconfont icon-shangyishou"></i>
+                </div>
+                <div class="play m-left-btn" @click="togglePlaying">
+                    <i class="iconfont" :class="playIcon"></i>
+                </div>
+                <div class="next m-left-btn" @click="next">
+                    <i class="iconfont icon-xiayishou"></i>
+                </div>
+            </div>
+            <div class="progress-bar-wrapper">
+                <progress-bar
+                    :songName="currentSong.name"
+                    :artistName="currentSong.ar"
+                    :durationTime="currentSong.dt"
+                    :currentTime="currentTime"
+                    :percent="percent"
+                    @percentChange="changePercent"
+                ></progress-bar>
+            </div>
+            <div class="playlist" @click="showPlaylist">
+                <i class="iconfont icon-liebiao"></i>
+                <div class="song-count">{{sequenceList.length}}</div>
+            </div>
+        </div>
+        <playlist ref="playlist"></playlist>
         <audio :src="songId" ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
 <script>
     import ProgressBar from '../../base/progress-bar/ProgressBar'
+    import Playlist from '../playlist/Playlist'
     import {mapGetters, mapMutations} from 'vuex'
     import playMode from "../../common/js/config";
     import {shuffle} from "../../common/js/util";
@@ -129,6 +132,7 @@
             },
             showNormal () {
                 this.setFullScreen(true);
+                this.$refs.playlist.hide();
             },
             togglePlaying () {
                 if (!this.songReady) {
@@ -285,6 +289,9 @@
                     this.$refs.lyricList.style.transform = `translate3d(0,0,0)`;
                 }
             },
+            showPlaylist () {
+                this.$refs.playlist.show();
+            },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
                 setPlayingState: 'SET_PLAYING_STATE',
@@ -325,11 +332,19 @@
         },
         watch: {
             currentSong (newSong, oldSong) {
+                if (!newSong.id) {
+                    this.currentLyric.stop();
+                    this.currentTime = 0;
+                    this.currentLineNum = 0;
+                    return;
+                }
                 if (newSong.id === oldSong.id) {
                     return;
                 }
                 if (this.currentLyric) {
                     this.currentLyric.stop();
+                    this.currentTime = 0;
+                    this.currentLineNum = 0;
                 }
                 this.$nextTick(() => {
                     if (this.firstPlay) {
@@ -345,6 +360,9 @@
                 }, 1000);
             },
             playingState (newState) {
+                if (!this.currentSong.id) {
+                    return;
+                }
                 this.$nextTick(() => {
                     const audio = this.$refs.audio;
                     newState ? audio.play() : audio.pause();
@@ -352,7 +370,8 @@
             }
         },
         components: {
-            ProgressBar
+            ProgressBar,
+            Playlist
         }
     }
 </script>
@@ -660,11 +679,23 @@
         box-shadow: 0 0 2px #000;
     }
     .mini-player .playlist {
-        padding: 0 30px;
+        margin: 0 30px;
         box-sizing: border-box;
-        flex: 0 0 76px;
+        flex: 0 0 50px;
+        position: relative;
     }
     .mini-player .playlist .iconfont {
         color: #aaa;
+        font-size: 20px;
+    }
+    .mini-player .playlist .song-count {
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        padding: 0 4px;
+        background-color: #999;
+        color: #fff;
+        border-radius: 40px;
+        font-size: 12px;
     }
 </style>

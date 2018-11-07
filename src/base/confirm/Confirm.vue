@@ -3,8 +3,8 @@
         <div class="confirm-box">
             <p class="title">确认清除搜索历史记录？</p>
             <div class="btn-wrapper">
-                <span class="btn clear" @click="confirm">清除</span>
-                <span class="btn cancel" @click="hide">取消</span>
+                <span class="btn clear" @click.stop="confirm">清除</span>
+                <span class="btn cancel" @click.stop="hide">取消</span>
             </div>
         </div>
     </div>
