@@ -15,7 +15,7 @@
                         <h2 class="song-name">{{currentSong.name}}</h2>
                         <p class="desc-wrapper">歌手：<span class="desc">{{artistsFormat(currentSong.ar)}}</span>专辑：<span class="desc">{{currentSong.al.name}}</span></p>
                         <div class="lyric-wrapper">
-                            <p class="no-lyric" v-show="!currentLyric">纯音乐，无歌词</p>
+                            <p class="no-lyric" v-show="noLyric">纯音乐，无歌词</p>
                             <ul v-if="currentLyric" ref="lyricList">
                                 <li v-for="(line, index) in currentLyric.lines" class="lyric-text" :class="{'current': index === currentLineNum}">{{line.txt}}</li>
                             </ul>
@@ -116,7 +116,8 @@
                 songReady: false,
                 currentTime: 0,
                 currentLyric: null,
-                currentLineNum: 0
+                currentLineNum: 0,
+                noLyric: false
             }
         },
         methods: {
@@ -270,7 +271,9 @@
                 }).then((res) => {
                     if (res.nolyric) {
                         this.currentLyric = null;
+                        this.noLyric = true;
                     } else {
+                        this.noLyric = false;
                         this.currentLyric = new Lyric(res.lrc.lyric, this.handleLyric);
                         if (this.playingState) {
                             this.currentLyric.play();
@@ -283,8 +286,8 @@
             },
             handleLyric ({lineNum, txt}) {
                 this.currentLineNum = lineNum;
-                if (this.currentLineNum > 7) {
-                    this.$refs.lyricList.style.transform = `translate3d(0,${-(this.currentLineNum - 7) * 40}px,0)`;
+                if (this.currentLineNum > 5) {
+                    this.$refs.lyricList.style.transform = `translate3d(0,${-(this.currentLineNum - 5) * 46}px,0)`;
                 } else {
                     this.$refs.lyricList.style.transform = `translate3d(0,0,0)`;
                 }
@@ -421,13 +424,14 @@
         padding: 0 20px;
         display: flex;
         box-sizing: border-box;
-        align-items: center;
+        min-height: 680px;
     }
     .top .record {
         width: 340px;
         height: 340px;
         position: relative;
         flex: 0 0 340px;
+        margin-top: 240px;
     }
     .top .img-wrapper {
         font-size: 0;
@@ -486,7 +490,7 @@
     }
     .top .song-wrapper .desc-wrapper {
         margin-top: 14px;
-        font-size: 13px;
+        font-size: 12px;
     }
     .top .song-wrapper .desc-wrapper .desc {
         color: #28619a;
@@ -498,7 +502,7 @@
         flex: 1;
         overflow: hidden;
         margin: 40px 0 20px 0;
-        max-height: 600px;
+        max-height: 506px;
         position: relative;
     }
     .lyric-wrapper .no-lyric {
@@ -514,7 +518,7 @@
     .lyric-wrapper .lyric-text, .lyric-wrapper .no-lyric {
         color: #000;
         font-size: 15px;
-        line-height: 40px;
+        line-height: 46px;
     }
     .lyric-wrapper .lyric-text.current {
         color: #fff;
