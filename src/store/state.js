@@ -11,7 +11,8 @@ const state = {
     currentIndex: -1,
     songList: {},
     newDisc: {},
-    searchHistory: loadSearch()
+    searchHistory: loadSearch(),
+    userFavorite: {}
 };
 
 export default state
