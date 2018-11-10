@@ -13,7 +13,7 @@
                     <router-link tag="li" to="/discovery" class="m-item"><i class="iconfont icon-yinle"></i>发现音乐</router-link>
                     <router-link tag="li" to="/search" class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</router-link>
                     <li class="m-item"><i class="iconfont icon-FM"></i>私人FM</li>
-                    <li class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</li>
+                    <router-link tag="li" to="/recommendSong" class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</router-link>
                 </ul>
             </div>
             <div class="list my-music">
@@ -44,6 +44,7 @@
 <script>
     import get from "../../common/js/api";
     import axios from 'axios'
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "LeftList",
@@ -78,6 +79,7 @@
                     uid
                 }).then((res) => {
                     let list = res.playlist, i = 1;
+                    this.setUserFavorite(list[0]);
                     for (i; i < list.length; i++) {
                         if (!list[i].subscribed) {
                             this.createdSongList.push(list[i]);
@@ -86,10 +88,14 @@
                         }
                     }
                 });
-            }
+            },
+            ...mapMutations({
+                setUserFavorite: 'SET_USER_FAVORITE'
+            })
         },
         created () {
             axios.defaults.withCredentials = true;
+            // this.login(15815048382, 'ygwgbwrk');
             // this.getUserDetail('554398977');
             // this.getUserSongList('554398977');
         }

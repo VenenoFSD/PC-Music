@@ -14,6 +14,7 @@ const Search = () => import('.././components/search/Search');
 const SingerDetail = () => import('.././components/singer-detail/SingerDetail');
 const SongListDetail = () => import('.././components/song-list-detail/SongListDetail');
 const DiscDetail = () => import('.././components/disc-detail/DiscDetail');
+const RecommendSong = () => import('.././components/recommend-song/RecommendSong');
 
 export default new Router({
     routes: [
@@ -103,6 +104,10 @@ export default new Router({
         {
             path: '/songList',
             component: SongListDetail
+        },
+        {
+            path: '/recommendSong',
+            component: RecommendSong
         }
     ]
 });
