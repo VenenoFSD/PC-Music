@@ -100,7 +100,7 @@
     .s-item .song-name {
         font-size: 14px;
         color: #000;
-        flex: 0 0 38%;
+        flex: 0 0 calc(42% - 44px);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -124,18 +124,18 @@
         display: inline-block;
     }
     .s-item .artist-name {
-        flex: 0 0 18%;
+        flex: 0 0 calc(24% - 54px);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
     }
     .s-item .album-name {
-        flex: 0 0 30%;
+        flex: 0 0 28%;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
     }
     .s-item .song-duration {
-        flex: 0 0 26px;
+        flex: 0 0 6%;
     }
 </style>
