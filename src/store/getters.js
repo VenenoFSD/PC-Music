@@ -10,3 +10,4 @@ export const songList = state => state.songList;
 export const newDisc = state => state.newDisc;
 export const searchHistory = state => state.searchHistory;
 export const userFavorite = state => state.userFavorite;
+export const playHistory = state => state.playHistory;

@@ -103,7 +103,7 @@
 <script>
     import ProgressBar from '../../base/progress-bar/ProgressBar'
     import Playlist from '../playlist/Playlist'
-    import {mapGetters, mapMutations} from 'vuex'
+    import {mapGetters, mapMutations, mapActions} from 'vuex'
     import playMode from "../../common/js/config";
     import {shuffle} from "../../common/js/util";
     import get from '../../common/js/api'
@@ -182,6 +182,7 @@
             },
             ready () {
                 this.songReady = true;
+                this.savePlayHistory(this.currentSong);
             },
             error () {
                 alert('该歌曲由于版权问题，暂时无法播放！');
@@ -301,7 +302,10 @@
                 setCurrentIndex: 'SET_CURRENT_INDEX',
                 setPlayMode: 'SET_PLAY_MODE',
                 setPlaylist: 'SET_PLAYLIST'
-            })
+            }),
+            ...mapActions([
+                'savePlayHistory'
+            ])
         },
         created () {
             this.volumeTouch = {};

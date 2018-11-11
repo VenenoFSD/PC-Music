@@ -9,3 +9,4 @@ export const SET_SONG_LIST = 'SET_SONG_LIST';
 export const SET_NEW_DISC = 'SET_NEW_DISC';
 export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY';
 export const SET_USER_FAVORITE = 'SET_USER_FAVORITE';
+export const SET_PLAY_HISTORY = 'SET_PLAY_HISTORY';
