@@ -4,7 +4,7 @@
             <left-list></left-list>
         </div>
         <div class="right-page">
-            <keep-alive>
+            <keep-alive exclude="UserFavorite">
                 <router-view></router-view>
             </keep-alive>
         </div>

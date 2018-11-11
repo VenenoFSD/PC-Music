@@ -19,10 +19,10 @@
             <div class="list my-music">
                 <h2 class="title">我的音乐</h2>
                 <ul>
-                    <li class="m-item"><i class="iconfont icon-shoucang1"></i>我喜欢的</li>
-                    <li class="m-item"><i class="iconfont icon-unif056"></i>我的收藏</li>
-                    <li class="m-item"><i class="iconfont icon-zuijin"></i>播放历史</li>
-                    <li class="m-item"><i class="iconfont icon-yun"></i>我的音乐云盘</li>
+                    <router-link tag="li" to="/userFavorite" class="m-item"><i class="iconfont icon-shoucang1"></i>我喜欢的</router-link>
+                    <router-link tag="li" to="/myCollection" class="m-item"><i class="iconfont icon-unif056"></i>我的收藏</router-link>
+                    <router-link tag="li" to="/recentPlay" class="m-item"><i class="iconfont icon-zuijin"></i>最近播放</router-link>
+                    <router-link tag="li" to="/myCloud" class="m-item"><i class="iconfont icon-yun"></i>我的音乐云盘</router-link>
                 </ul>
             </div>
             <div class="list created-song-list">
@@ -95,9 +95,8 @@
         },
         created () {
             axios.defaults.withCredentials = true;
-            // this.login(15815048382, 'ygwgbwrk');
             // this.getUserDetail('554398977');
-            // this.getUserSongList('554398977');
+            this.getUserSongList('554398977');
         }
     }
 </script>

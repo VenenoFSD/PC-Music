@@ -15,6 +15,10 @@ const SingerDetail = () => import('.././components/singer-detail/SingerDetail');
 const SongListDetail = () => import('.././components/song-list-detail/SongListDetail');
 const DiscDetail = () => import('.././components/disc-detail/DiscDetail');
 const RecommendSong = () => import('.././components/recommend-song/RecommendSong');
+const UserFavorite = () => import('.././components/user-favorite/UserFavorite');
+const MyCollection = () => import('.././components/my-collection/MyCollection');
+const MyCloud = () => import('.././components/my-cloud/MyCloud');
+const RecentPlay = () => import('.././components/recent-play/RecentPlay');
 
 export default new Router({
     routes: [
@@ -108,6 +112,34 @@ export default new Router({
         {
             path: '/recommendSong',
             component: RecommendSong
+        },
+        {
+            path: '/userFavorite',
+            component: UserFavorite,
+            children: [
+                {
+                    path: '/userFavorite/songList',
+                    component: SongListDetail
+                }
+            ]
+        },
+        {
+            path: '/myCollection',
+            component: MyCollection,
+            children: [
+                {
+                    path: '/myCollection/singer/:id',
+                    component: SingerDetail
+                }
+            ]
+        },
+        {
+            path: '/myCloud',
+            component: MyCloud,
+        },
+        {
+            path: '/recentPlay',
+            component: RecentPlay,
         }
     ]
 });

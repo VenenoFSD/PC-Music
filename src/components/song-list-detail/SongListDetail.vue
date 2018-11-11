@@ -20,7 +20,7 @@
                         <div class="description" v-if="songList.description">介绍：{{songList.description}}</div>
                     </div>
                 </div>
-                <div class="back" @click="back"><i class="iconfont icon-you"></i></div>
+                <div class="back" @click="back" v-show="$route.query.desc !== 'user'"><i class="iconfont icon-you"></i></div>
             </div>
             <songs :songs="songListDetail.tracks" @select="selectSong" @playAll="playAll"></songs>
         </div>
