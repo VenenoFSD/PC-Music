@@ -28,13 +28,13 @@
             <div class="list created-song-list">
                 <h2 class="title">创建的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in createdSongList"><i class="iconfont song-list" :class="item.privacy ? 'icon-password' : 'icon-gedan'"></i><p class="text">{{item.name}}</p></li>
+                    <li class="m-item" v-for="item in createdSongList" @click="selectSongList(item)"><i class="iconfont song-list" :class="item.privacy ? 'icon-password' : 'icon-gedan'"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
             <div class="list collected-song-list">
                 <h2 class="title">收藏的歌单</h2>
                 <ul>
-                    <li class="m-item" v-for="item in collectedSongList"><i class="iconfont icon-gedan song-list"></i><p class="text">{{item.name}}</p></li>
+                    <li class="m-item" v-for="item in collectedSongList" @click="selectSongList(item)"><i class="iconfont icon-gedan song-list"></i><p class="text">{{item.name}}</p></li>
                 </ul>
             </div>
         </div>
@@ -89,14 +89,23 @@
                     }
                 });
             },
+            selectSongList (item) {
+                this.setSongList(item);
+                this.$router.push({
+                    path: '/songList',
+                    query: {
+                        id: item.id,
+                        title: '歌单'
+                    }
+                });
+            },
             ...mapMutations({
-                setUserFavorite: 'SET_USER_FAVORITE'
+                setUserFavorite: 'SET_USER_FAVORITE',
+                setSongList: 'SET_SONG_LIST'
             })
         },
         created () {
             axios.defaults.withCredentials = true;
-            // this.getUserDetail('554398977');
-            this.getUserSongList('554398977');
         }
     }
 </script>
