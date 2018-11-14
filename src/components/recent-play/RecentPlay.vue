@@ -1,12 +1,16 @@
 <template>
     <div class="recent-play" ref="recentPlay">
         <h2 class="title">最近播放</h2>
+        <div class="clear" @click="showConfirm" v-show="playHistory.length"><span class="iconfont icon-iconfontshanchu1"></span>全部清空</div>
         <songs :songs="playHistory" @select="selectSong" @playAll="playAll"></songs>
+        <confirm ref="confirm" @confirm="clearPlayHistory"></confirm>
+        <p v-show="!playHistory.length" class="no-play">暂无播放历史</p>
     </div>
 </template>
 
 <script>
     import Songs from '../../base/songs/Songs'
+    import Confirm from '../../base/confirm/Confirm'
     import {playlistMixin} from "../../common/js/mixin";
     import {mapGetters, mapActions} from 'vuex'
 
@@ -29,13 +33,18 @@
                     list: this.playHistory
                 });
             },
+            showConfirm () {
+                this.$refs.confirm.show();
+            },
             ...mapActions([
                 'selectPlay',
-                'sequencePlay'
+                'sequencePlay',
+                'clearPlayHistory'
             ])
         },
         components: {
-            Songs
+            Songs,
+            Confirm
         },
         computed: {
             ...mapGetters([
@@ -62,5 +71,16 @@
         margin: 0 30px;
         padding: 20px 0;
         border-bottom: 1px solid #ddd;
+    }
+    .clear {
+        position: absolute;
+        top: 73px;
+        right: 30px;
+    }
+    .no-play {
+        margin-top: 140px;
+        font-size: 13px;
+        color: #999;
+        text-align: center;
     }
 </style>

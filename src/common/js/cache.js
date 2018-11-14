@@ -46,6 +46,11 @@ export const loadPlay = function () {
     return Storage.get(PLAY_KEY, []);
 };
 
+export const clearPlay = function () {
+    Storage.remove(PLAY_KEY);
+    return [];
+};
+
 function insertArray(arr, val, compare, maxLen) {
     const index = arr.findIndex(compare);
     if (index === 0) {
