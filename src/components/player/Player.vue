@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="bottom">
-                    <div class="prev left-btn" @click="prev">
+                    <div class="prev left-btn" @click="prev" v-show="!isFM">
                         <i class="iconfont icon-shangyishou"></i>
                     </div>
                     <div class="play left-btn" @click="togglePlaying">
@@ -69,8 +69,8 @@
                     <i class="iconfont icon-fangda"></i>
                 </div>
             </div>
-            <div class="mlb-wrapper">
-                <div class="prev m-left-btn" @click="prev">
+            <div class="mlb-wrapper" :class="{'fm': isFM}">
+                <div class="prev m-left-btn" @click="prev" v-show="!isFM">
                     <i class="iconfont icon-shangyishou"></i>
                 </div>
                 <div class="play m-left-btn" @click="togglePlaying">
@@ -80,7 +80,7 @@
                     <i class="iconfont icon-xiayishou"></i>
                 </div>
             </div>
-            <div class="progress-bar-wrapper">
+            <div class="progress-bar-wrapper" :class="{'fm': isFM}">
                 <progress-bar
                     :songName="currentSong.name"
                     :artistName="currentSong.ar"
@@ -90,13 +90,13 @@
                     @percentChange="changePercent"
                 ></progress-bar>
             </div>
-            <div class="playlist" @click="showPlaylist">
+            <div class="playlist" @click="showPlaylist" v-show="!isFM">
                 <i class="iconfont icon-liebiao"></i>
                 <div class="song-count">{{sequenceList.length}}</div>
             </div>
         </div>
         <playlist ref="playlist"></playlist>
-        <audio :src="songId" ref="audio" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+        <audio :src="songId" ref="audio" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
@@ -334,7 +334,8 @@
                 'playingState',
                 'currentIndex',
                 'playMode',
-                'sequenceList'
+                'sequenceList',
+                'isFM'
             ])
         },
         watch: {
@@ -618,6 +619,9 @@
         height: 100%;
         align-items: center;
     }
+    .mlb-wrapper.fm {
+        flex: 0 0 90px;
+    }
     .mini-player .img-wrapper {
         position: relative;
         font-size: 0;
@@ -668,6 +672,9 @@
     .mini-player .progress-bar-wrapper {
         flex: 1;
         height: 100%;
+    }
+    .mini-player .progress-bar-wrapper.fm {
+        margin-right: 30px;
     }
     .mini-player .progress-bar-wrapper >>> .pb {
         margin-top: 2px;

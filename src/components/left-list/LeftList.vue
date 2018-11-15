@@ -12,7 +12,7 @@
                 <ul>
                     <router-link tag="li" to="/discovery" class="m-item"><i class="iconfont icon-yinle"></i>发现音乐</router-link>
                     <router-link tag="li" to="/search" class="m-item"><i class="iconfont icon-sousuo"></i>搜索音乐</router-link>
-                    <li class="m-item"><i class="iconfont icon-FM"></i>私人FM</li>
+                    <li class="m-item" @click="playFM"><i class="iconfont icon-FM"></i>私人FM</li>
                     <router-link tag="li" to="/recommendSong" class="m-item"><i class="iconfont icon-tuijian"></i>每日歌曲推荐</router-link>
                 </ul>
             </div>
@@ -44,7 +44,7 @@
 <script>
     import get from "../../common/js/api";
     import axios from 'axios'
-    import {mapMutations} from 'vuex'
+    import {mapMutations, mapActions, mapGetters} from 'vuex'
 
     export default {
         name: "LeftList",
@@ -53,7 +53,8 @@
                 userAvatar: '',
                 userName: '',
                 createdSongList: [],
-                collectedSongList: []
+                collectedSongList: [],
+                FMSong: []
             }
         },
         methods: {
@@ -99,13 +100,57 @@
                     }
                 });
             },
+            playFM () {
+                this.getFMSong(this.FMFirstPlay);
+            },
+            getFMSong (fn) {
+                get('/personal_fm', {
+                    time: Date.parse(new Date())
+                }).then((res) => {
+                    this.FMSong = this._formatSong(res.data);
+                    fn({
+                        list: this.FMSong
+                    });
+                });
+            },
+            _formatSong (songs) {
+                let result = [];
+                for (let i = 0; i < songs.length; i++) {
+                    result.push({
+                        name: songs[i].name,
+                        id: songs[i].id,
+                        al: songs[i].album,
+                        ar: songs[i].artists,
+                        dt: songs[i].duration,
+                        alia: songs[i].alias
+                    });
+                }
+                return result;
+            },
             ...mapMutations({
                 setUserFavorite: 'SET_USER_FAVORITE',
                 setSongList: 'SET_SONG_LIST'
-            })
+            }),
+            ...mapActions([
+                'FMFirstPlay',
+                'FMContinuePlay'
+            ])
         },
         created () {
             axios.defaults.withCredentials = true;
+        },
+        computed: {
+            ...mapGetters([
+                'currentIndex',
+                'playlist'
+            ])
+        },
+        watch: {
+            currentIndex (newIndex) {
+                if (newIndex === this.playlist.length - 1) {
+                    this.getFMSong(this.FMContinuePlay);
+                }
+            }
         }
     }
 </script>

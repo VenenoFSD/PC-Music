@@ -13,6 +13,7 @@ export const selectPlay = function ({commit, state}, {list, index}) {
         commit(types.SET_PLAYLIST, list);
     }
     commit(types.SET_CURRENT_INDEX, index);
+    commit(types.SET_IS_FM, false);
     commit(types.SET_PLAYING_STATE, true);
 };
 
@@ -21,7 +22,25 @@ export const sequencePlay = function ({commit}, {list}) {
     commit(types.SET_SEQUENCE_LIST, list);
     commit(types.SET_PLAYLIST, list);
     commit(types.SET_CURRENT_INDEX, 0);
+    commit(types.SET_IS_FM, false);
     commit(types.SET_PLAYING_STATE, true);
+};
+
+export const FMFirstPlay = function ({commit}, {list}) {
+    commit(types.SET_PLAY_MODE, playMode.sequence);
+    commit(types.SET_SEQUENCE_LIST, list);
+    commit(types.SET_PLAYLIST, list);
+    commit(types.SET_CURRENT_INDEX, 0);
+    commit(types.SET_IS_FM, true);
+    commit(types.SET_PLAYING_STATE, true);
+    commit(types.SET_FULL_SCREEN, true);
+};
+
+export const FMContinuePlay = function ({commit, state}, {list}) {
+    let playlist = state.playlist.slice();
+    let sequenceList = state.sequenceList.slice();
+    commit(types.SET_SEQUENCE_LIST, sequenceList.concat(list));
+    commit(types.SET_PLAYLIST, playlist.concat(list));
 };
 
 export const insertSong = function ({commit, state}, song) {
@@ -61,6 +80,7 @@ export const insertSong = function ({commit, state}, song) {
     commit(types.SET_PLAYLIST, playlist);
     commit(types.SET_SEQUENCE_LIST, sequenceList);
     commit(types.SET_CURRENT_INDEX, currentIndex);
+    commit(types.SET_IS_FM, false);
     commit(types.SET_PLAYING_STATE, true);
 };
 
@@ -81,6 +101,7 @@ export const deleteSong = function ({commit, state}, song) {
     commit(types.SET_PLAYLIST, playlist);
     commit(types.SET_SEQUENCE_LIST, sequenceList);
     commit(types.SET_CURRENT_INDEX, currentIndex);
+    commit(types.SET_IS_FM, false);
 
     const playingState = playlist.length > 0;
     commit(types.SET_PLAYING_STATE, playingState);

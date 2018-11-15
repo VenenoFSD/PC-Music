@@ -9,6 +9,7 @@ const state = {
     sequenceList: [],
     playMode: playMode.sequence,
     currentIndex: -1,
+    isFM: false,
     songList: {},
     newDisc: {},
     searchHistory: loadSearch(),
