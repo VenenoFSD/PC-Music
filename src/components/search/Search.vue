@@ -51,7 +51,7 @@
             <search-singer :currentType="currentType" :query="query"></search-singer>
             <search-song-list :currentType="currentType" :query="query"></search-song-list>
         </div>
-        <confirm ref="confirm" @confirm="clearSearchHistory"></confirm>
+        <confirm ref="confirm" @confirm="clearHistory"></confirm>
         <router-view></router-view>
     </div>
 </template>
