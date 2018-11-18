@@ -2,11 +2,11 @@
     <fade>
         <div class="song-list-detail-wrapper" ref="songListDetailWrapper">
             <div class="song-list-detail">
-                <div class="background" :style="{background: 'url(' + songList.coverImgUrl + ') no-repeat 0 20%'}"></div>
+                <div class="background" :style="{background: 'url(' + songListImg() + ') no-repeat 0 20%'}"></div>
                 <p class="title">{{$route.query.title}}</p>
                 <div class="song-list-detail-header">
                     <div class="img-wrapper">
-                        <img :src="songList.coverImgUrl" class="img">
+                        <img :src="songListImg()" class="img">
                         <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(songList.playCount)}}</span></div>
                     </div>
                     <div class="desc">
@@ -93,6 +93,9 @@
             handlePlaylist (playlist) {
                 const bottom = playlist.length ? '61px' : '0';
                 this.$refs.songListDetailWrapper.style.bottom = bottom;
+            },
+            songListImg () {
+                return this.songList.coverImgUrl !== undefined ? this.songList.coverImgUrl : this.songList.picUrl;
             },
             ...mapActions([
                 'selectPlay',
