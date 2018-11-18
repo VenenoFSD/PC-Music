@@ -58,21 +58,11 @@
             }
         },
         methods: {
-            login (phone, password) {
-                get('/login/cellphone', {
-                    phone,
-                    password
-                }).then((res) => {
-                    this.getUserDetail(res.account.id);
-                    this.getUserSongList(res.account.id);
-                });
-            },
-            getUserDetail (uid) {
-                get('/user/detail', {
-                    uid
-                }).then((res) => {
+            getUserDetail () {
+                get('/login/status').then((res) => {
                     this.userAvatar = res.profile.avatarUrl;
                     this.userName = res.profile.nickname;
+                    this.getUserSongList(res.profile.userId);
                 });
             },
             getUserSongList (uid) {
@@ -142,13 +132,20 @@
         computed: {
             ...mapGetters([
                 'currentIndex',
-                'playlist'
+                'playlist',
+                'loginStatus',
+                'isFM'
             ])
         },
         watch: {
             currentIndex (newIndex) {
-                if (newIndex === this.playlist.length - 1) {
+                if (this.isFM && newIndex === this.playlist.length - 1) {
                     this.getFMSong(this.FMContinuePlay);
+                }
+            },
+            loginStatus (newStatus) {
+                if (newStatus) {
+                    this.getUserDetail();
                 }
             }
         }

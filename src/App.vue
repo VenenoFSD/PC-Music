@@ -1,12 +1,16 @@
 <template>
     <div id="app" ref="app">
         <div class="left-list-wrapper">
-            <left-list></left-list>
+            <left-list ref="leftList"></left-list>
         </div>
         <div class="right-page">
             <keep-alive exclude="UserFavorite">
                 <router-view></router-view>
             </keep-alive>
+        </div>
+        <div class="check" v-show="showCheck">
+            <load></load>
+            <p class="text">正在检测登录状态...</p>
         </div>
         <player></player>
     </div>
@@ -15,20 +19,47 @@
 <script>
     import LeftList from './components/left-list/LeftList'
     import Player from './components/player/Player'
+    import Load from './base/load/Load'
     import {playlistMixin} from "./common/js/mixin";
+    import {mapMutations} from 'vuex'
 
     export default {
         mixins: [playlistMixin],
         name: 'App',
+        data () {
+            return {
+                showCheck: true
+            }
+        },
         methods: {
             handlePlaylist (playlist) {
                 const bottom = playlist.length ? '61px' : '0';
                 this.$refs.app.style.bottom = bottom;
-            }
+            },
+            checkLoginStatus () {
+                const cookieReg = /__csrf/;
+                if (cookieReg.test(document.cookie)) {
+                    this.setLoginStatus(true);
+                    this.$router.push('/discovery');
+                } else {
+                    this.$router.push('/login');
+                }
+            },
+            ...mapMutations({
+                setLoginStatus: 'SET_LOGIN_STATUS'
+            })
         },
         components: {
             LeftList,
-            Player
+            Player,
+            Load
+        },
+        created () {
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.showCheck = false;
+                this.checkLoginStatus();
+            }, 1000);
         }
     }
 </script>
@@ -46,5 +77,19 @@
         flex: 1;
         border-left: 1px solid #ddd;
         overflow-x: hidden;
+    }
+    .check {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 5;
+        background-color: #fff;
+    }
+    .check .text {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 16px;
     }
 </style>

@@ -19,13 +19,10 @@ const UserFavorite = () => import('.././components/user-favorite/UserFavorite');
 const MyCollection = () => import('.././components/my-collection/MyCollection');
 const MyCloud = () => import('.././components/my-cloud/MyCloud');
 const RecentPlay = () => import('.././components/recent-play/RecentPlay');
+const Login = () => import('.././components/login/Login');
 
 export default new Router({
     routes: [
-        {
-            path: '/',
-            redirect: '/discovery'
-        },
         {
             path: '/discovery',
             redirect: '/discovery/recommend'
@@ -140,6 +137,10 @@ export default new Router({
         {
             path: '/recentPlay',
             component: RecentPlay,
+        },
+        {
+            path: '/login',
+            component: Login,
         }
     ]
 });
