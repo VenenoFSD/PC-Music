@@ -12,3 +12,4 @@ export const newDisc = state => state.newDisc;
 export const searchHistory = state => state.searchHistory;
 export const userFavorite = state => state.userFavorite;
 export const playHistory = state => state.playHistory;
+export const loginStatus = state => state.loginStatus;

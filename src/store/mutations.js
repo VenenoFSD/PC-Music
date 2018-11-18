@@ -39,6 +39,9 @@ const mutations = {
     },
     [types.SET_PLAY_HISTORY] (state, history) {
         state.playHistory = history;
+    },
+    [types.SET_LOGIN_STATUS] (state, flag) {
+        state.loginStatus = flag;
     }
 };
 

@@ -3,6 +3,8 @@ import {loadSearch, loadPlay} from "../common/js/cache";
 
 const state = {
     singer: {},
+
+    //  播放相关
     playingState: false,
     fullScreen: false,
     playlist: [],
@@ -10,11 +12,13 @@ const state = {
     playMode: playMode.sequence,
     currentIndex: -1,
     isFM: false,
+
     songList: {},
     newDisc: {},
     searchHistory: loadSearch(),
     userFavorite: {},
-    playHistory: loadPlay()
+    playHistory: loadPlay(),
+    loginStatus: false
 };
 
 export default state
