@@ -5,6 +5,7 @@
                 <img :src="userAvatar" width="80" height="80">
             </div>
             <p class="user-name">{{userName}}</p>
+            <div class="about-btn" @click="showAbout"><span class="iconfont icon-guanyu"></span></div>
         </div>
         <div class="list-wrapper">
             <div class="list recommend-music">
@@ -38,10 +39,12 @@
                 </ul>
             </div>
         </div>
+        <about ref="about"></about>
     </div>
 </template>
 
 <script>
+    import About from '../about/About'
     import get from "../../common/js/api";
     import axios from 'axios'
     import {mapMutations, mapActions, mapGetters} from 'vuex'
@@ -103,6 +106,9 @@
                     });
                 });
             },
+            showAbout () {
+                this.$refs.about.show();
+            },
             _formatSong (songs) {
                 let result = [];
                 for (let i = 0; i < songs.length; i++) {
@@ -148,6 +154,9 @@
                     this.getUserDetail();
                 }
             }
+        },
+        components: {
+            About
         }
     }
 </script>
@@ -166,6 +175,7 @@
     .left-list .user {
         height: 110px;
         margin: 0 20px 30px 20px;
+        position: relative;
     }
     .left-list .user .user-avatar {
         width: 80px;
@@ -179,6 +189,19 @@
         height: 30px;
         line-height: 30px;
         text-align: center;
+    }
+    .user:hover .about-btn {
+        display: block;
+    }
+    .user .about-btn {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        color: #aaa;
+        display: none;
+    }
+    .user .about-btn .iconfont {
+        font-size: 20px;
     }
     .left-list .list-wrapper {
         flex: 1;
