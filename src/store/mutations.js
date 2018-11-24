@@ -42,6 +42,9 @@ const mutations = {
     },
     [types.SET_LOGIN_STATUS] (state, flag) {
         state.loginStatus = flag;
+    },
+    [types.SET_USER_INFO] (state, info) {
+        state.userInfo = info;
     }
 };
 

@@ -18,7 +18,10 @@ const state = {
     searchHistory: loadSearch(),
     userFavorite: {},
     playHistory: loadPlay(),
-    loginStatus: false
+
+    //  登录/用户
+    loginStatus: false,
+    userInfo: {}
 };
 
 export default state
