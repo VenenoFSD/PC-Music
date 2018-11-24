@@ -49,6 +49,7 @@
                     // console.log(err.config);
                 }).then((res) => {
                     if (res !== undefined) {
+                        this.setUserInfo(res.data);
                         this.setLoginStatus(true);
                         this.$router.push('/discovery');
                     }
@@ -67,7 +68,8 @@
                 this.remindText = '请输入登录密码！';
             },
             ...mapMutations({
-                setLoginStatus: 'SET_LOGIN_STATUS'
+                setLoginStatus: 'SET_LOGIN_STATUS',
+                setUserInfo: 'SET_USER_INFO'
             })
         }
     }
