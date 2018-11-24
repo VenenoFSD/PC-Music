@@ -20,6 +20,7 @@ const MyCollection = () => import('.././components/my-collection/MyCollection');
 const MyCloud = () => import('.././components/my-cloud/MyCloud');
 const RecentPlay = () => import('.././components/recent-play/RecentPlay');
 const Login = () => import('.././components/login/Login');
+const UserDetail = () => import('.././components/user-detail/UserDetail');
 
 export default new Router({
     routes: [
@@ -141,6 +142,10 @@ export default new Router({
         {
             path: '/login',
             component: Login,
+        },
+        {
+            path: '/userDetail',
+            component: UserDetail,
         }
     ]
 });
