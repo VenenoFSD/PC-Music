@@ -5,7 +5,13 @@
                 <img :src="userAvatar" width="80" height="80">
             </div>
             <p class="user-name">{{userName}}</p>
-            <div class="about-btn" @click="showAbout"><span class="iconfont icon-guanyu"></span></div>
+            <div class="user-detail-wrapper">
+                <ul class="user-detail">
+                    <li class="ud-list" @click="showUserDetail"><span class="iconfont icon-yonghu"></span>我的账号</li>
+                    <li class="ud-list" @click="showConfirm"><span class="iconfont icon-tuichu"></span>切换账号</li>
+                    <li @click="showAbout" class="ud-list"><span class="iconfont icon-guanyu"></span>关于此项目</li>
+                </ul>
+            </div>
         </div>
         <div class="list-wrapper">
             <div class="list recommend-music">
@@ -40,11 +46,13 @@
             </div>
         </div>
         <about ref="about"></about>
+        <confirm title="确认切换账号？" confirmText="确认" ref="confirm" @confirm="switchLogin"></confirm>
     </div>
 </template>
 
 <script>
     import About from '../about/About'
+    import Confirm from '../../base/confirm/Confirm'
     import get from "../../common/js/api";
     import axios from 'axios'
     import {mapMutations, mapActions, mapGetters} from 'vuex'
@@ -62,11 +70,9 @@
         },
         methods: {
             getUserDetail () {
-                get('/login/status').then((res) => {
-                    this.userAvatar = res.profile.avatarUrl;
-                    this.userName = res.profile.nickname;
-                    this.getUserSongList(res.profile.userId);
-                });
+                this.userAvatar = this.userInfo.profile.avatarUrl;
+                this.userName = this.userInfo.profile.nickname;
+                this.getUserSongList(this.userInfo.profile.userId);
             },
             getUserSongList (uid) {
                 get('/user/playlist', {
@@ -109,6 +115,19 @@
             showAbout () {
                 this.$refs.about.show();
             },
+            showUserDetail () {
+                this.$router.push('/userDetail');
+            },
+            showConfirm () {
+                this.$refs.confirm.show();
+            },
+            switchLogin () {
+                document.cookie = "__csrf=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                document.cookie = "MUSIC_U=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                document.cookie = "__remember_me=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                this.setLoginStatus(false);
+                this.$router.push('/login');
+            },
             _formatSong (songs) {
                 let result = [];
                 for (let i = 0; i < songs.length; i++) {
@@ -125,7 +144,8 @@
             },
             ...mapMutations({
                 setUserFavorite: 'SET_USER_FAVORITE',
-                setSongList: 'SET_SONG_LIST'
+                setSongList: 'SET_SONG_LIST',
+                setLoginStatus: 'SET_LOGIN_STATUS'
             }),
             ...mapActions([
                 'FMFirstPlay',
@@ -140,7 +160,8 @@
                 'currentIndex',
                 'playlist',
                 'loginStatus',
-                'isFM'
+                'isFM',
+                'userInfo'
             ])
         },
         watch: {
@@ -156,7 +177,8 @@
             }
         },
         components: {
-            About
+            About,
+            Confirm
         }
     }
 </script>
@@ -177,6 +199,42 @@
         margin: 0 20px 30px 20px;
         position: relative;
     }
+    .left-list .user:hover .user-detail-wrapper {
+        display: block;
+    }
+    .user-detail-wrapper {
+        position: absolute;
+        top: 88px;
+        left: 10px;
+        border-radius: 3px;
+        display: none;
+    }
+    .user-detail-wrapper:hover {
+        display: block;
+    }
+    .user-detail {
+        padding: 0 10px;
+        background-color: #fff;
+    }
+    .user-detail .ud-list {
+        line-height: 36px;
+        width: 130px;
+        border-bottom: 1px solid #eee;
+        font-size: 12px;
+        color: #666;
+        padding-left: 20px;
+        box-sizing: border-box;
+    }
+    .user-detail .ud-list:hover {
+        color: #e00000;
+    }
+    .user-detail .ud-list .iconfont {
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    .user-detail .ud-list:last-child {
+        border: none;
+    }
     .left-list .user .user-avatar {
         width: 80px;
         height: 80px;
@@ -189,19 +247,6 @@
         height: 30px;
         line-height: 30px;
         text-align: center;
-    }
-    .user:hover .about-btn {
-        display: block;
-    }
-    .user .about-btn {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        color: #aaa;
-        display: none;
-    }
-    .user .about-btn .iconfont {
-        font-size: 20px;
     }
     .left-list .list-wrapper {
         flex: 1;
