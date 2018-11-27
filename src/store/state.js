@@ -20,8 +20,7 @@ const state = {
     playHistory: loadPlay(),
 
     //  登录/用户
-    loginStatus: false,
-    userInfo: {}
+    loginStatus: false
 };
 
 export default state

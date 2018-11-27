@@ -1,10 +1,10 @@
 <template>
     <div class="left-list">
-        <div class="user">
+        <div class="user" v-if="userInfo.profile">
             <div class="user-avatar">
-                <img :src="userAvatar" width="80" height="80">
+                <img :src="userInfo.profile.avatarUrl" width="80" height="80">
             </div>
-            <p class="user-name">{{userName}}</p>
+            <p class="user-name">{{userInfo.profile.nickname}}</p>
             <div class="user-detail-wrapper">
                 <ul class="user-detail">
                     <li class="ud-list" @click="showUserDetail"><span class="iconfont icon-yonghu"></span>我的账号</li>
@@ -61,8 +61,7 @@
         name: "LeftList",
         data () {
             return {
-                userAvatar: '',
-                userName: '',
+                userInfo: {},
                 createdSongList: [],
                 collectedSongList: [],
                 FMSong: []
@@ -70,9 +69,10 @@
         },
         methods: {
             getUserDetail () {
-                this.userAvatar = this.userInfo.profile.avatarUrl;
-                this.userName = this.userInfo.profile.nickname;
-                this.getUserSongList(this.userInfo.profile.userId);
+                get('/login/status').then((res) => {
+                    this.userInfo = res;
+                    this.getUserSongList(this.userInfo.profile.userId);
+                });
             },
             getUserSongList (uid) {
                 get('/user/playlist', {
@@ -160,8 +160,7 @@
                 'currentIndex',
                 'playlist',
                 'loginStatus',
-                'isFM',
-                'userInfo'
+                'isFM'
             ])
         },
         watch: {
