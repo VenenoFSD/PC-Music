@@ -1,10 +1,10 @@
 <template>
     <div class="left-list">
-        <div class="user" v-if="userInfo.profile">
+        <div class="user" v-if="loginInfo.profile">
             <div class="user-avatar">
-                <img :src="userInfo.profile.avatarUrl" width="80" height="80">
+                <img :src="loginInfo.profile.avatarUrl" width="80" height="80">
             </div>
-            <p class="user-name">{{userInfo.profile.nickname}}</p>
+            <p class="user-name">{{loginInfo.profile.nickname}}</p>
             <div class="user-detail-wrapper">
                 <ul class="user-detail">
                     <li class="ud-list" @click="showUserDetail"><span class="iconfont icon-yonghu"></span>我的账号</li>
@@ -61,7 +61,6 @@
         name: "LeftList",
         data () {
             return {
-                userInfo: {},
                 createdSongList: [],
                 collectedSongList: [],
                 FMSong: []
@@ -69,10 +68,10 @@
         },
         methods: {
             getUserDetail () {
-                get('/login/status').then((res) => {
-                    this.userInfo = res;
-                    this.getUserSongList(this.userInfo.profile.userId);
-                });
+                if (!this.loginInfo.profile) {
+                    return;
+                }
+                this.getUserSongList(this.loginInfo.profile.userId);
             },
             getUserSongList (uid) {
                 get('/user/playlist', {
@@ -122,11 +121,9 @@
                 this.$refs.confirm.show();
             },
             switchLogin () {
-                document.cookie = "__csrf=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                document.cookie = "MUSIC_U=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                document.cookie = "__remember_me=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                this.setLoginStatus(false);
-                this.$router.push('/login');
+                get('/logout').then(() => {
+                    this.$router.push('/login');
+                });
             },
             _formatSong (songs) {
                 let result = [];
@@ -159,7 +156,7 @@
             ...mapGetters([
                 'currentIndex',
                 'playlist',
-                'loginStatus',
+                'loginInfo',
                 'isFM'
             ])
         },
@@ -169,10 +166,8 @@
                     this.getFMSong(this.FMContinuePlay);
                 }
             },
-            loginStatus (newStatus) {
-                if (newStatus) {
-                    this.getUserDetail();
-                }
+            loginInfo () {
+                this.getUserDetail();
             }
         },
         components: {

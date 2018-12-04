@@ -22,12 +22,12 @@
     import Fade from '../../base/fade/Fade'
     import Songs from '../../base/songs/Songs'
     import get from '../../common/js/api'
-    import {playlistMixin} from "../../common/js/mixin";
+    import {playlistMixin, reloadMixin} from "../../common/js/mixin";
     import {mapActions} from 'vuex'
 
     export default {
         name: "RecommendSong",
-        mixins: [playlistMixin],
+        mixins: [playlistMixin, reloadMixin],
         data () {
             return {
                 songs: []
@@ -69,6 +69,9 @@
                 this.sequencePlay({
                     list: this.songs
                 });
+            },
+            reloadInfo () {
+                this.getRecommendSong();
             },
             _getDate () {
                 let date = new Date();

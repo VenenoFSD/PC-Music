@@ -102,9 +102,11 @@
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import get from '../../common/js/api'
     import {mapMutations} from 'vuex'
+    import {reloadMixin} from "../../common/js/mixin";
 
     export default {
         name: "DRecommend",
+        mixins: [reloadMixin],
         data () {
             return {
                 banners: [],
@@ -185,6 +187,9 @@
                 });
                 this.setSongList(item);
             },
+            reloadInfo () {
+                //  this._loadPage();
+            },
             _loadPage() {
                 this.getBanner();
                 this.getRecommendSongList();
@@ -192,6 +197,11 @@
                 this.getNewSong();
                 this.getRecommendMV();
                 this.getRecommendRadio();
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => {
+                    this.showLoad = false;
+                    this.dRecommendShow = true;
+                }, 3000);
             },
             _nsItemClass (item) {
                 if (item === 0 || item === 4 || item === 8) {
@@ -216,12 +226,7 @@
             })
         },
         created () {
-            // this._loadPage();
-            // clearTimeout(this.timer);
-            // this.timer = setTimeout(() => {
-            //     this.showLoad = false;
-            //     this.dRecommendShow = true;
-            // }, 3000);
+            //  this._loadPage();
         },
         computed: {
             showSwiper () {

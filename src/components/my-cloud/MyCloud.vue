@@ -12,13 +12,13 @@
 
 <script>
     import Songs from '../../base/songs/Songs'
-    import {playlistMixin} from "../../common/js/mixin";
+    import {playlistMixin, reloadMixin} from "../../common/js/mixin";
     import {mapActions} from 'vuex'
     import get from '../../common/js/api'
 
     export default {
         name: "MyCloud",
-        mixins: [playlistMixin],
+        mixins: [playlistMixin, reloadMixin],
         data () {
             return {
                 cloudSong: [],
@@ -31,6 +31,7 @@
         methods: {
             getMyCloud () {
                 get('/user/cloud').then((res) => {
+                    this.cloudSong = [];
                     for (let i = 0; i < res.data.length; i++) {
                         this.cloudSong.push(res.data[i].simpleSong);
                     }
@@ -51,6 +52,9 @@
                 this.sequencePlay({
                     list: this.cloudSong
                 });
+            },
+            reloadInfo () {
+                this.getMyCloud();
             },
             _sizeFormat (size, maxSize) {
                 this.capacity.currentSize = (size / 1024 / 1024 / 1024).toFixed(1);

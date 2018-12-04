@@ -16,11 +16,11 @@ const state = {
     songList: {},
     newDisc: {},
     searchHistory: loadSearch(),
-    userFavorite: {},
     playHistory: loadPlay(),
 
     //  登录/用户
-    loginStatus: false
+    userFavorite: {},
+    loginInfo: {}
 };
 
 export default state

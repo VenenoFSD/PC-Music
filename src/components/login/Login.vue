@@ -15,7 +15,6 @@
 </template>
 
 <script>
-    import get from '../../common/js/api'
     import axios from 'axios'
     import {mapMutations} from 'vuex'
 
@@ -49,7 +48,7 @@
                     // console.log(err.config);
                 }).then((res) => {
                     if (res !== undefined) {
-                        this.setLoginStatus(true);
+                        this.setLoginInfo(res.data);
                         this.$router.push('/discovery');
                     }
                 });
@@ -67,7 +66,7 @@
                 this.remindText = '请输入登录密码！';
             },
             ...mapMutations({
-                setLoginStatus: 'SET_LOGIN_STATUS'
+                setLoginInfo: 'SET_LOGIN_INFO'
             })
         }
     }

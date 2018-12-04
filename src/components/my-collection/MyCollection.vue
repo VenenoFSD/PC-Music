@@ -17,13 +17,13 @@
 
 <script>
     import Separate from '../../base/separate/Separate'
-    import {playlistMixin} from "../../common/js/mixin";
-    import {mapMutations} from 'vuex'
+    import {playlistMixin, reloadMixin} from "../../common/js/mixin";
+    import {mapMutations, mapGetters} from 'vuex'
     import get from '../../common/js/api'
 
     export default {
         name: "MyCollection",
-        mixins: [playlistMixin],
+        mixins: [playlistMixin, reloadMixin],
         data () {
             return {
                 collect: []
@@ -42,6 +42,9 @@
             selectItem (item) {
                 this.setSinger(item);
                 this.$router.push(`/myCollection/singer/${item.id}`);
+            },
+            reloadInfo () {
+                this.getMyCollection();
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'

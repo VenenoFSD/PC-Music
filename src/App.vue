@@ -22,6 +22,7 @@
     import Load from './base/load/Load'
     import {playlistMixin} from "./common/js/mixin";
     import {mapMutations} from 'vuex'
+    import get from './common/js/api'
 
     export default {
         mixins: [playlistMixin],
@@ -39,14 +40,16 @@
             checkLoginStatus () {
                 const cookieReg = /__csrf/;
                 if (cookieReg.test(document.cookie)) {
-                    this.setLoginStatus(true);
-                    this.$router.push('/discovery');
+                    get('/login/status').then((res) => {
+                        this.setLoginInfo(res);
+                        this.$router.push('/discovery');
+                    });
                 } else {
                     this.$router.push('/login');
                 }
             },
             ...mapMutations({
-                setLoginStatus: 'SET_LOGIN_STATUS'
+                setLoginInfo: 'SET_LOGIN_INFO'
             })
         },
         components: {
