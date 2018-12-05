@@ -11,11 +11,12 @@
                     <p class="text">~ 感谢 <a href="https://github.com/Binaryify/NeteaseCloudMusicApi" target="_blank">Binaryify</a> 提供网易云音乐接口支持，本项目Github地址：<a href="https://github.com/VenenoFSD/PC-Music" target="_blank">PC-Music</a></p>
                     <p class="text">~ 注意：由于本项目为登陆真实网易云音乐账号获取真实数据，出于安全考虑，本项目只提供读操作（如获取并播放音乐），不提供写操作（如收藏或取消收藏歌曲歌单，私信评论等功能），避免由于接口问题引起冲突</p>
                     <p class="text">~ 由于网易云音乐版权问题，可能会遇到歌曲无法播放的问题</p>
-                    <p class="text">~ 目前暂时不支持MV播放</p>
+                    <p class="text">~ 歌手数据由于接口限制只能获取前100个</p>
+                    <p class="text">~ 暂时不支持MV播放</p>
                 </div>
                 <div class="feature">
                     <h2 class="d-title">功能介绍</h2>
-                    <p class="text">~ 登录网易云音乐（目前暂时只支持手机号登录）</p>
+                    <p class="text">~ 登录网易云音乐（暂时只支持手机号登录）</p>
                     <p class="text">~ 登录后可获取自己收藏和创建的歌单并播放</p>
                     <p class="text">~ 可查看账号信息，切换账号</p>
                     <p class="text">~ 播放歌曲时可调节音量，选择播放或暂停，选择上一首或下一首，可选择播放模式：单曲循环，顺序播放，乱序播放</p>
