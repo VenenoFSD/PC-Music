@@ -54,3 +54,22 @@ export const reloadMixin = {
         }
     }
 };
+
+export const delayShowMixin = {
+    data () {
+        return {
+            showLoad: true,
+            showContent: false
+        }
+    },
+    methods: {
+        delayShow (load, delay) {
+            load();
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.showLoad = false;
+                this.showContent = true;
+            }, delay);
+        }
+    }
+};
