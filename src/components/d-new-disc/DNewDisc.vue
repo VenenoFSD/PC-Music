@@ -1,6 +1,6 @@
 <template>
     <div class="d-new-disc-wrapper" ref="dNewDiscWrapper" @scroll="handleScroll">
-        <div class="d-new-disc" v-show="showDisc" ref="dNewDisc">
+        <div class="d-new-disc" v-show="showContent" ref="dNewDisc">
             <ul class="new-disc">
                 <li class="nd-item" v-for="item in newDisc" @click="selectItem(item)">
                     <div class="img-wrapper">
@@ -15,7 +15,7 @@
             </ul>
         </div>
         <load v-show="showLoad"></load>
-        <continue-load v-show="showDisc && hasMore"></continue-load>
+        <continue-load v-show="showContent && hasMore"></continue-load>
         <router-view></router-view>
     </div>
 </template>
@@ -26,33 +26,26 @@
     import get from "../../common/js/api";
     import scrollToEnd from "../../common/js/scroll";
     import {mapMutations} from 'vuex'
+    import {delayShowMixin} from "../../common/js/mixin";
 
     const DEFAULT_DISC_COUNT = 25;
-    let cTimer = null;
 
     export default {
         name: "DNewDisc",
+        mixins: [delayShowMixin],
         data () {
             return {
                 newDisc: [],
                 offset: 0,
-                showLoad: true,
-                showDisc: false,
                 hasMore: true,
-                total: 0,
-                canLoad: true
+                total: 0
             }
         },
         methods: {
             getNewDisc () {
-                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
-                clearTimeout(cTimer);
-                cTimer = setTimeout(() => {
-                    this.canLoad = true;
-                }, 1500);
                 get('/top/album', {
                     limit: DEFAULT_DISC_COUNT,
                     offset: this.offset
@@ -62,7 +55,7 @@
                 });
             },
             handleScroll () {
-                scrollToEnd(this.$refs.dNewDiscWrapper, this.$refs.dNewDisc, this.getNewDisc, this.canLoad);
+                scrollToEnd(this.$refs.dNewDiscWrapper, this.$refs.dNewDisc, this.getNewDisc);
             },
             selectItem (item) {
                 this.$router.push(`/discovery/newDisc/${item.id}`);
@@ -73,20 +66,13 @@
             })
         },
         watch: {
-            newDisc () {
-                this.offset = this.newDisc.length;
-                if (this.offset < this.total) {
-                    this.hasMore = true;
-                }
+            newDisc (disc) {
+                this.offset = disc.length;
+                this.hasMore = this.offset < this.total;
             }
         },
         created () {
-            this.getNewDisc();
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.showLoad = false;
-                this.showDisc = true;
-            }, 2000);
+            this.delayShow(this.getNewDisc, 2000);
         },
         components: {
             Load,

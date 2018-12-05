@@ -26,7 +26,7 @@
                     <h1 class="title">{{currentSinger}}</h1>
                     <p class="back" v-show="showBack" @click="back">所有热门歌手 >></p>
                 </div>
-                <ul class="single-list" v-show="showList">
+                <ul class="single-list" v-show="showContent">
                     <li v-for="item in singerList" class="sl-item" :key="item.id" @click="selectSinger(item)">
                         <div class="img-wrapper">
                             <img v-lazy="item.img1v1Url" class="img">
@@ -40,26 +40,26 @@
                 </ul>
             </div>
             <load v-show="showLoad"></load>
-            <continue-load v-show="showList && hasMore"></continue-load>
+            <continue-load v-show="showContent && hasMore"></continue-load>
         </div>
         <router-view></router-view>
     </div>
 </template>
 
 <script>
-    //  数据请求受限100个
-
     import Load from '../../base/load/Load'
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import get from '../../common/js/api'
     import {mapMutations} from 'vuex'
     import scrollToEnd from "../../common/js/scroll";
+    import {delayShowMixin} from "../../common/js/mixin";
+    import {isEmptyObject} from "../../common/js/util";
 
     const REQUEST_COUNT = 40;
-    let timer = null;
 
     export default {
         name: "DSinger",
+        mixins: [delayShowMixin],
         data () {
             return {
                 sLang: {
@@ -113,15 +113,11 @@
                 currentFilter: '热门',
                 singerList: [],
                 offset: 0,
-                showLoad: true,
-                showList: false,
-                hasMore: false,
-                canLoad: true
+                hasMore: false
             }
         },
         methods: {
             firstGet () {
-                this.canLoad = true;
                 get('/top/artists', {
                     limit: REQUEST_COUNT
                 }).then((res) => {
@@ -129,8 +125,42 @@
                     this.hasMore = res.more;
                 });
             },
+            langSelect (index) {
+                this.currentLang = this.sLang.lists[index];
+                if (isEmptyObject(this.currentSort)) {  //  第一次进入页面
+                    this.currentSort = this.sSort.lists[0];
+                    this.loadShow(this.changeGet);
+                }
+            },
+            sortSelect (index) {
+                this.currentSort = this.sSort.lists[index];
+                if (isEmptyObject(this.currentLang)) {
+                    this.currentLang = this.sLang.lists[0];
+                    this.loadShow(this.changeGet);
+                }
+            },
+            filterSelect (index) {
+                if (isEmptyObject(this.currentLang)) {
+                    this.currentLang = this.sLang.lists[0];
+                    this.currentSort = this.sSort.lists[0];
+                }
+                this.currentFilter = this.sFilter.lists[index];
+            },
+            back () {
+                this.currentLang = {};
+                this.currentSort = {};
+                if (this.currentFilter === '热门') {
+                    this.loadShow(this.firstGet);
+                } else {
+                    this.currentFilter = '热门';
+                }
+            },
+            loadShow (fn) {
+                this.showLoad = true;
+                this.showContent = false;
+                this.delayShow(fn, 2500);
+            },
             changeGet () {
-                this.canLoad = true;
                 let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
                 get('/artist/list', {
                     limit: REQUEST_COUNT,
@@ -141,56 +171,11 @@
                     this.hasMore = res.more;
                 });
             },
-            langSelect (index) {
-                this.currentLang = this.sLang.lists[index];
-                if (this._isEmptyObject(this.currentSort)) {  //  第一次进入页面
-                    this.currentSort = this.sSort.lists[0];
-                    this._changeGet();
-                }
-            },
-            sortSelect (index) {
-                this.currentSort = this.sSort.lists[index];
-                if (this._isEmptyObject(this.currentLang)) {
-                    this.currentLang = this.sLang.lists[0];
-                    this._changeGet();
-                }
-            },
-            filterSelect (index) {
-                if (this._isEmptyObject(this.currentLang)) {
-                    this.currentLang = this.sLang.lists[0];
-                    this.currentSort = this.sSort.lists[0];
-                }
-                this.currentFilter = this.sFilter.lists[index];
-            },
-            back () {
-                this.currentLang = {};
-                this.currentSort = {};
-                if (this.currentFilter === '热门') {
-                    this._firstGet();
-                } else {
-                    this.currentFilter = '热门';
-                }
-            },
-            loadShow (fn) {
-                this.showLoad = true;
-                this.showList = false;
-                fn();
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    this.showLoad = false;
-                    this.showList = true;
-                }, 2500);
-            },
             getMore () {
-                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
                 let initial = this.currentFilter === '热门' ? '' : this.currentFilter;
-                clearTimeout(this.timer);
-                this.timer = setTimeout(() => {
-                    this.canLoad = true;
-                }, 1500);
                 get('/artist/list', {
                     limit: 30,
                     offset: this.offset,
@@ -199,27 +184,14 @@
                 }).then((res) => {
                     this.singerList = this.singerList.concat(res.artists);
                     this.hasMore = res.more;
-                    this.canLoad = true;
                 });
             },
             handleScroll () {
-                scrollToEnd(this.$refs.dSingerWrapper, this.$refs.dSinger, this.getMore, this.canLoad);
+                scrollToEnd(this.$refs.dSingerWrapper, this.$refs.dSinger, this.getMore);
             },
             selectSinger (singer) {
                 this.setSinger(singer);
                 this.$router.push(`/discovery/singer/${singer.id}`);
-            },
-            _isEmptyObject (obj) {
-                for (let item in obj) {
-                    return false;
-                }
-                return true;
-            },
-            _changeGet () {
-                this.loadShow(this.changeGet);
-            },
-            _firstGet () {
-                this.loadShow(this.firstGet);
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'
@@ -227,17 +199,17 @@
         },
         computed: {
             currentSinger () {
-                if (this._isEmptyObject(this.currentLang)) {
+                if (isEmptyObject(this.currentLang)) {
                     return '所有热门歌手';
                 } else {
                     return this.currentLang.name + this.currentSort.name;
                 }
             },
             showBack () {
-                return !(this._isEmptyObject(this.currentLang));
+                return !(isEmptyObject(this.currentLang));
             },
             requestCode () {
-                if (this._isEmptyObject(this.currentLang)) {
+                if (isEmptyObject(this.currentLang)) {
                     return '';
                 }
                 return this.currentLang.code + this.currentSort.code;
@@ -245,26 +217,26 @@
         },
         watch: {
             currentLang (newSort, oldSort) {
-                if (this._isEmptyObject(newSort) || this._isEmptyObject(oldSort)) {  //  返回全部热门页面或者第一次进入页面的情况
+                if (isEmptyObject(newSort) || isEmptyObject(oldSort)) {  //  返回全部热门页面或者第一次进入页面的情况
                     return;
                 }
-                this._changeGet();
+                this.loadShow(this.changeGet);
             },
             currentSort (newSort, oldSort) {
-                if (this._isEmptyObject(newSort) || this._isEmptyObject(oldSort)) {
+                if (isEmptyObject(newSort) || isEmptyObject(oldSort)) {
                     return;
                 }
-                this._changeGet();
+                this.loadShow(this.changeGet);
             },
             currentFilter () {
-                this._changeGet();
+                this.loadShow(this.changeGet);
             },
             singerList (newList) {
                 this.offset = newList.length;
             }
         },
         created () {
-            this._firstGet();
+            this.loadShow(this.firstGet);
         },
         components: {
             Load,

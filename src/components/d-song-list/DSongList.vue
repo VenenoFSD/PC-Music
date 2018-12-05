@@ -1,13 +1,13 @@
 <template>
     <div class="d-song-list-wrapper" @scroll="handleScroll" ref="DSongListWrapper">
-        <div class="d-song-list" ref="DSongList" v-show="showPage">
+        <div class="d-song-list" ref="DSongList">
             <div class="tags-wrapper">
                 <div class="current-tag">{{currentTag}}<span class="right">&gt;</span></div>
                 <ul class="tags">
                     <li v-for="item in songListTags" class="tags-item" @click="selectItem(item)">{{item.name}}</li>
                 </ul>
             </div>
-            <ul class="song-list" v-show="showList">
+            <ul class="song-list" v-show="showContent">
                 <li v-for="item in songList" class="sl-item" @click="selectList(item)">
                     <div class="img-wrapper">
                         <img v-lazy="item.coverImgUrl" class="img">
@@ -22,7 +22,7 @@
             </ul>
         </div>
         <load v-show="showLoad"></load>
-        <continue-load v-show="showPage && showList && hasMore"></continue-load>
+        <continue-load v-show="showContent && hasMore"></continue-load>
         <router-view></router-view>
     </div>
 </template>
@@ -33,24 +33,20 @@
     import get from "../../common/js/api";
     import scrollToEnd from "../../common/js/scroll";
     import {mapMutations} from 'vuex'
+    import {delayShowMixin} from "../../common/js/mixin";
 
     const SINGLE_LOAD_COUNT = 30;
-    let timer_1 = null,
-        timer_2 = null;
 
     export default {
         name: "DSongList",
+        mixins: [delayShowMixin],
         data () {
             return {
                 songListTags: [],
                 songList: [],
                 currentTag: '',
-                canLoad: true,
                 offset: 0,
-                hasMore: false,
-                showLoad: true,
-                showPage: false,
-                showList: true
+                hasMore: true
             }
         },
         methods: {
@@ -62,34 +58,25 @@
                 });
             },
             getSongList () {
+                if (!this.hasMore) {
+                    return;
+                }
                 get('/top/playlist', {
                     cat: this.currentTag,
                     limit: SINGLE_LOAD_COUNT,
                     offset: this.offset
                 }).then((res) => {
                     this.songList = this.songList.concat(res.playlists);
-                    this.offset = this.songList.length;
                     this.hasMore = res.more;
                 });
             },
             selectItem (item) {
                 this.currentTag = item.name;
             },
-            getMore () {
-                this.canLoad = false;
-                if (!this.hasMore) {
-                    return;
-                }
-                clearTimeout(timer_1);
-                timer_1 = setTimeout(() => {
-                    this.canLoad = true;
-                }, 1500);
-                this.getSongList();
-            },
             handleScroll () {
-                scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getMore, this.canLoad);
+                scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getSongList);
             },
-            selectList(item) {
+            selectList (item) {
                 this.$router.push({
                     path: `/discovery/songList/${item.id}`,
                     query: {
@@ -103,12 +90,7 @@
             })
         },
         created () {
-            this.firstGet();
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.showLoad = false;
-                this.showPage = true;
-            }, 2000);
+            this.delayShow(this.firstGet, 2000);
         },
         watch: {
             currentTag (newTag, oldTag) {
@@ -116,15 +98,14 @@
                     return;
                 }
                 this.offset = 0;
-                this.showLoad = true;
-                this.showList = false;
                 this.songList = [];
-                this.getSongList();
-                clearTimeout(timer_2);
-                timer_2 = setTimeout(() => {
-                    this.showLoad = false;
-                    this.showList = true;
-                }, 2000);
+                this.hasMore = true;
+                this.showLoad = true;
+                this.showContent = false;
+                this.delayShow(this.getSongList, 2000);
+            },
+            songList (newList) {
+                this.offset = newList.length;
             }
         },
         components: {

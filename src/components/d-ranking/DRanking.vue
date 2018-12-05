@@ -1,6 +1,6 @@
 <template>
     <div class="d-ranking-wrapper">
-        <div class="d-ranking" v-show="showList">
+        <div class="d-ranking" v-show="showContent">
             <div class="official-ranking">
                 <h2 class="title">官方榜</h2>
                 <separate></separate>
@@ -44,15 +44,15 @@
     import Load from '../../base/load/Load'
     import get from '../../common/js/api'
     import {mapMutations} from 'vuex'
+    import {delayShowMixin} from "../../common/js/mixin";
 
     export default {
         name: "DRanking",
+        mixins: [delayShowMixin],
         data () {
             return {
                 officialList: [],
-                globalList: [],
-                showList: false,
-                showLoad: true
+                globalList: []
             }
         },
         methods: {
@@ -76,12 +76,7 @@
             })
         },
         created () {
-            this.getRankingList();
-            clearTimeout(this.timer);
-            setTimeout(() => {
-                this.showList = true;
-                this.showLoad = false;
-            }, 2000);
+            this.delayShow(this.getRankingList, 2000);
         },
         components: {
             Separate,

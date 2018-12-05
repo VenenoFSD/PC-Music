@@ -1,6 +1,6 @@
 <template>
     <div class="d-recommend-wrapper">
-        <div class="d-recommend" v-show="dRecommendShow">
+        <div class="d-recommend" v-show="showContent">
             <div class="banner-wrapper">
                 <swiper :options="swiperOption" v-if="showSwiper">
                     <swiper-slide v-for="(item, index) in banners" :key="index">
@@ -29,7 +29,7 @@
                 <ul class="list">
                     <li v-for="item in privateContent" class="item pc-item">
                         <div class="img-wrapper">
-                            <img :src="item.sPicUrl" class="img">
+                            <img v-lazy="item.sPicUrl" class="img">
                             <div class="cover"></div>
                         </div>
                         <p class="text">{{item.name}}</p>
@@ -42,7 +42,7 @@
                 <ul class="list">
                     <li v-for="(item, index) in newSong" class="ns-item" :class="_nsItemClass(index)">
                         <p class="num">{{_rankFormat(index)}}</p>
-                        <img :src="item.song.album.blurPicUrl" class="ns-img">
+                        <img v-lazy="item.song.album.blurPicUrl" class="ns-img">
                         <div class="desc">
                             <p class="song-name-wrapper">
                                 <span class="song-name">{{item.name}}</span>
@@ -59,7 +59,7 @@
                 <ul class="list">
                     <li v-for="item in recommendMV" class="item mv-item">
                         <div class="img-wrapper">
-                            <img :src="item.picUrl" class="img">
+                            <img v-lazy="item.picUrl" class="img">
                             <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
                             <div class="cover"></div>
                         </div>
@@ -76,7 +76,7 @@
                 <ul class="list r-list">
                     <li v-for="item in recommendRadio" class="item r-item">
                         <div class="img-wrapper">
-                            <img :src="item.picUrl" class="img">
+                            <img v-lazy="item.picUrl" class="img">
                             <div class="cover"></div>
                             <div class="icon">
                                 <i class="iconfont icon-play"></i>
@@ -102,11 +102,12 @@
     import { swiper, swiperSlide } from 'vue-awesome-swiper'
     import get from '../../common/js/api'
     import {mapMutations} from 'vuex'
-    import {reloadMixin} from "../../common/js/mixin";
+    import {reloadMixin, delayShowMixin} from "../../common/js/mixin";
+    import {playCountFormat, rankFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "DRecommend",
-        mixins: [reloadMixin],
+        mixins: [reloadMixin, delayShowMixin],
         data () {
             return {
                 banners: [],
@@ -131,9 +132,7 @@
                     autoplay: 5000,
                     speed: 800,
                     autoplayDisableOnInteraction: false
-                },
-                showLoad: true,
-                dRecommendShow: false
+                }
             }
         },
         methods: {
@@ -167,17 +166,6 @@
                     this.recommendRadio = res.result;
                 });
             },
-            playCountFormat (playCount) {
-                playCount = Math.floor(playCount);
-                if (playCount < 100000) {
-                    return playCount;
-                } else {
-                    playCount = playCount.toString();
-                    let len = playCount.length;
-                    let cutLen = len - 4;
-                    return playCount.substr(0, cutLen) + '万';
-                }
-            },
             selectItem (item) {
                 this.$router.push({
                     path: `/discovery/recommend/${item.id}`,
@@ -188,45 +176,46 @@
                 this.setSongList(item);
             },
             reloadInfo () {
-                //  this._loadPage();
+                //  this.delayShow(this._getAll, 3000);
             },
-            _loadPage() {
+            playCountFormat (playCount) {
+                return playCountFormat(playCount);
+            },
+            _getAll () {
                 this.getBanner();
                 this.getRecommendSongList();
                 this.getPrivateContent();
                 this.getNewSong();
                 this.getRecommendMV();
                 this.getRecommendRadio();
-                clearTimeout(this.timer);
-                this.timer = setTimeout(() => {
-                    this.showLoad = false;
-                    this.dRecommendShow = true;
-                }, 3000);
             },
-            _nsItemClass (item) {
-                if (item === 0 || item === 4 || item === 8) {
-                    return 'bgc border';
-                } else if (item === 2 || item === 6) {
-                    return 'border';
-                } else if (item === 1 || item === 5 || item === 9) {
-                    return 'bgc';
-                } else {
-                    return '';
+            _nsItemClass (index) {
+                let className = '';
+                switch (index % 4) {
+                    case 0:
+                        className =  'bgc border';
+                        break;
+                    case 1:
+                        className = 'bgc';
+                        break;
+                    case 2:
+                        className =  'border';
+                        break;
+                    case 3:
+                        className = '';
+                        break;
                 }
+                return className
             },
             _rankFormat (index) {
-                if (index < 9) {
-                    return '0' + (index + 1);
-                } else {
-                    return index + 1;
-                }
+                return rankFormat(index);
             },
             ...mapMutations({
                 setSongList: 'SET_SONG_LIST'
             })
         },
         created () {
-            //  this._loadPage();
+            //  this.delayShow(this._getAll, 3000);
         },
         computed: {
             showSwiper () {
