@@ -26,3 +26,11 @@ export function debounce(func, delay) {
         }, delay);
     }
 }
+
+//  空对象判断
+export function isEmptyObject (obj) {
+    for (let item in obj) {
+        return false;
+    }
+    return true;
+}
