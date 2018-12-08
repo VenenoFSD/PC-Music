@@ -8,7 +8,7 @@
                 </div>
                 <div class="desc">
                     <p class="name">{{item.name}}<span v-if="item.alias.length">（{{item.alias[0]}}）</span></p>
-                    <p class="time">{{timeFormat(item.publishTime)}}</p>
+                    <p class="time">{{_timeFormat(item.publishTime)}}</p>
                 </div>
             </li>
             <li class="empty"></li>
@@ -25,6 +25,7 @@
     import get from "../../common/js/api";
     import scrollToEnd from "../../common/js/scroll";
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
+    import {timeFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "SingerAlbum",
@@ -33,8 +34,7 @@
                 hadLoad: false,
                 album: [],
                 hasMore: true,
-                offset: 0,
-                canLoad: true
+                offset: 0
             }
         },
         props: {
@@ -49,14 +49,9 @@
         },
         methods: {
             getSingerDesc () {
-                this.canLoad = false;
                 if (!this.hasMore) {
                     return;
                 }
-                clearTimeout(this.timer);
-                this.timer = setTimeout(() => {
-                    this.canLoad = true;
-                }, 1500);
                 get('/artist/album', {
                     id: this.singerId,
                     limit: 48,
@@ -67,15 +62,11 @@
                     this.offset = this.album.length;
                 });
             },
-            timeFormat (time) {
-                let date = new Date(time);
-                let year = date.getFullYear();
-                let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
-                let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-                return `${year}-${month}-${day}`;
-            },
             handleScroll () {
-                scrollToEnd(this.$refs.singerAlbum, this.$refs.singerAlbumList, this.getSingerDesc, this.canLoad);
+                scrollToEnd(this.$refs.singerAlbum, this.$refs.singerAlbumList, this.getSingerDesc);
+            },
+            _timeFormat (time) {
+                return timeFormat(time);
             }
         },
         watch: {
