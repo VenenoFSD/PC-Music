@@ -56,6 +56,7 @@
     import get from "../../common/js/api";
     import axios from 'axios'
     import {mapMutations, mapActions, mapGetters} from 'vuex'
+    import {songFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "LeftList",
@@ -105,7 +106,7 @@
                 get('/personal_fm', {
                     time: Date.parse(new Date())
                 }).then((res) => {
-                    this.FMSong = this._formatSong(res.data);
+                    this.FMSong = songFormat(res.data);
                     fn({
                         list: this.FMSong
                     });
@@ -124,20 +125,6 @@
                 get('/logout').then(() => {
                     this.$router.push('/login');
                 });
-            },
-            _formatSong (songs) {
-                let result = [];
-                for (let i = 0; i < songs.length; i++) {
-                    result.push({
-                        name: songs[i].name,
-                        id: songs[i].id,
-                        al: songs[i].album,
-                        ar: songs[i].artists,
-                        dt: songs[i].duration,
-                        alia: songs[i].alias
-                    });
-                }
-                return result;
             },
             ...mapMutations({
                 setUserFavorite: 'SET_USER_FAVORITE',
