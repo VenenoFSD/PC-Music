@@ -44,6 +44,14 @@ export function songFormat (songs) {
     return result;
 }
 
+export function timeFormat(time) {
+    let date = new Date(time);
+    let year = date.getFullYear();
+    let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
+    let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    return `${year}-${month}-${day}`;
+}
+
 function pad (num) {
     return num < 10 ? '0' + num : num;
 }
