@@ -32,7 +32,7 @@
             <separate></separate>
             <ul class="play-count-list">
                 <li v-for="(item, index) in playRecord" class="pc-item" :class="{'bg': index % 2 === 0}">
-                    <p class="num">{{numFormat(index)}}</p>
+                    <p class="num">{{_rankFormat(index)}}</p>
                     <p class="song-name">{{item.name}}<span v-if="item.aliaName && item.aliaName.length">（{{item.aliaName}}）</span></p>
                     <div class="play-count">{{item.playCount}}次
                         <div class="play-count-inner" :style="{'width': item.widthPercent}"></div>
@@ -47,6 +47,7 @@
     import Separate from '../../base/separate/Separate'
     import {mapGetters} from 'vuex'
     import get from '../../common/js/api'
+    import {rankFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "UserDetail",
@@ -85,9 +86,6 @@
                     }
                 }, 300);
             },
-            numFormat (index) {
-                return index < 9 ? '0' + (index + 1) : index + 1;
-            },
             getUserDetail () {
                 get('/user/detail', {
                     uid: this.userFavorite.userId
@@ -109,6 +107,9 @@
                 let year = date.getFullYear();
                 let prevYear = Math.floor(year / 5) * 5 + '';
                 return prevYear.substring(2, 4);
+            },
+            _rankFormat (index) {
+                return rankFormat(index);
             }
         },
         computed: {
