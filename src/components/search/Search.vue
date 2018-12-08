@@ -67,7 +67,7 @@
     import get from "../../common/js/api";
     import {mapMutations, mapActions, mapGetters} from 'vuex'
     import {playlistMixin} from "../../common/js/mixin";
-    import {debounce} from "../../common/js/util";
+    import {debounce, isEmptyObject} from "../../common/js/util";
 
     export default {
         name: "Search",
@@ -102,7 +102,7 @@
                     keywords: newQuery
                 }).then((res) => {
                     this.searchSuggest = res.result;
-                    this.showSuggest = !this._isEmptyObject(this.searchSuggest);
+                    this.showSuggest = !isEmptyObject(this.searchSuggest);
                 });
             },
             setQuery(query) {
@@ -149,12 +149,6 @@
             },
             showConfirm () {
                 this.$refs.confirm.show();
-            },
-            _isEmptyObject (obj) {
-                for (let item in obj) {
-                    return false;
-                }
-                return true;
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'

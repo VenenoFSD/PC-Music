@@ -1,11 +1,11 @@
 <template>
     <div class="search-song" v-show="show">
-        <ul class="song-list" v-show="showSong">
-            <li class="sl-item" v-for="(item, index) in songs" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
+        <ul class="song-list" v-show="showList">
+            <li class="sl-item" v-for="(item, index) in result" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <p class="song-name">{{item.name}}</p>
-                <p class="artist-name">{{artistsFormat(item.artists)}}</p>
+                <p class="artist-name">{{_artistsFormat(item.artists)}}</p>
                 <p class="album-name">{{item.album.name}}</p>
-                <p class="duration-time">{{durationFormat(item.duration)}}</p>
+                <p class="duration-time">{{_durationFormat(item.duration)}}</p>
                 <p v-show="item.alias.length" class="alias">{{item.alias[0]}}</p>
                 <span class="iconfont icon-bofang-2"></span>
             </li>
@@ -17,59 +17,20 @@
 
 <script>
     import get from '../../common/js/api'
-    import Load from '../../base/load/Load'
-    import NoResult from '../../base/no-result/NoResult'
     import {mapActions} from 'vuex'
-    import {debounce} from "../../common/js/util";
+    import {artistsFormat, durationFormat} from "../../common/js/dataFormat";
+    import {searchMixin} from "../../common/js/mixin";
 
-    let timer1 = null,
-        timer2 = null;
-
-    const DEFAULT_LIMIT = 30;
     export default {
         name: "SearchSongs",
-        data () {
-            return {
-                show: false,
-                songs: [],
-                showLoad: true,
-                showSong: false,
-                NoResult: false
+        mixins: [searchMixin],
+        props: {
+            showResult: {
+                type: Boolean,
+                default: false
             }
         },
         methods: {
-            getSearchSong (timer) {
-                get('/search', {
-                    keywords: this.query,
-                    type: 1,
-                    limit: DEFAULT_LIMIT
-                }).then((res) => {
-                    this.songs = res.result.songs;
-                    this.NoResult = !res.result.songCount;
-                    if (!this.NoResult) {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            this.showSong = true;
-                            this.showLoad = false;
-                        }, 1500);
-                    } else {
-                        this.showLoad = false;
-                    }
-                });
-            },
-            artistsFormat (artists) {
-                let arr = [];
-                for (let i = 0; i < artists.length; i++) {
-                    arr.push(artists[i].name);
-                }
-                return arr.join('/');
-            },
-            durationFormat (time) {
-                time = time / 1000 | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
-            },
             selectItem (song) {
                 get('/song/detail', {
                     ids: song.id
@@ -77,34 +38,18 @@
                     this.insertSong(res.songs[0]);
                 });
             },
-            _pad (num) {
-                return num < 10 ? '0' + num : num;
+            _getSearch (timer) {
+                this.getSearch(timer, 1, 'songs', 'songCount');
             },
-            _delayShow (timer) {
-                this.showSong = false;
-                this.showLoad = true;
-                this.getSearchSong(timer);
+            _artistsFormat (artists) {
+                return artistsFormat(artists);
+            },
+            _durationFormat (time) {
+                return durationFormat(time);
             },
             ...mapActions([
                 'insertSong'
             ])
-        },
-        props: {
-            currentType: {
-                type: Object,
-                default: {
-                    index: 0,
-                    code: 1
-                }
-            },
-            query: {
-                type: String,
-                default: ''
-            },
-            showResult: {
-                type: Boolean,
-                default: false
-            }
         },
         watch: {
             currentType (newType) {
@@ -112,25 +57,7 @@
             },
             showResult (newShow) {
                 this.show = newShow;
-            },
-            show (newShow) {
-                if (newShow && this.query.length) {
-                    this.NoResult = false;
-                    this._delayShow(timer1);
-                }
             }
-        },
-        created () {
-            this.$watch('query', debounce((newQuery) => {
-                if (this.show && newQuery.length) {
-                    this.NoResult = false;
-                    this._delayShow(timer2);
-                }
-            }, 300));
-        },
-        components: {
-            Load,
-            NoResult
         }
     }
 </script>

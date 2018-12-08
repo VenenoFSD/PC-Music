@@ -1,4 +1,8 @@
 import {mapGetters} from 'vuex'
+import {debounce} from "./util";
+import Load from '../../base/load/Load'
+import NoResult from '../../base/no-result/NoResult'
+import get from './api'
 
 export const playlistMixin = {
     computed: {
@@ -71,5 +75,79 @@ export const delayShowMixin = {
                 this.showContent = true;
             }, delay);
         }
+    }
+};
+
+export const searchMixin = {
+    data () {
+        return {
+            show: false,
+            result: [],
+            NoResult: false,
+            showLoad: true,
+            showList: false
+        }
+    },
+    props: {
+        currentType: {
+            type: Object,
+            default: {
+                index: 0,
+                code: 1
+            }
+        },
+        query: {
+            type: String,
+            default: ''
+        },
+    },
+    methods: {
+        getSearch(timer, code, type, countType) {
+            get('/search', {
+                keywords: this.query,
+                type: code,
+                limit: 30
+            }).then((res) => {
+                this.result = res.result[type];
+                this.NoResult = !res.result[countType];
+                if (!this.NoResult) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        this.showList = true;
+                        this.showLoad = false;
+                    }, 1500);
+                } else {
+                    this.showLoad = false;
+                }
+            });
+        },
+        _getSearch () {
+            throw new Error('_getSearch() is not defined!');
+        },
+        _delayShow (timer) {
+            this.showList = false;
+            this.showLoad = true;
+            this._getSearch(timer);
+        },
+    },
+    watch: {
+        show (newShow) {
+            if (newShow) {
+                this._delayShow(this.timer_1);
+            }
+        }
+    },
+    created () {
+        this.timer_1 = null;
+        this.timer_2 = null;
+        this.$watch('query', debounce((newQuery) => {
+            if (this.show && newQuery.length) {
+                this._delayShow(this.timer_2);
+            }
+        }, 300));
+    },
+    components: {
+        Load,
+        NoResult
     }
 };

@@ -1,7 +1,7 @@
 <template>
     <div class="search-singer" v-show="show">
-        <ul class="singer-list" v-show="showSinger">
-            <li class="sl-item" v-for="(item, index) in artists" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
+        <ul class="singer-list" v-show="showList">
+            <li class="sl-item" v-for="(item, index) in result" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <img :src="item.img1v1Url" class="img">
                 <p class="name">{{item.name}}<span v-if="item.trans" class="trans">（{{item.trans}}）</span></p>
             </li>
@@ -12,47 +12,13 @@
 </template>
 
 <script>
-    import get from '../../common/js/api'
-    import Load from '../../base/load/Load'
-    import NoResult from '../../base/no-result/NoResult'
     import {mapMutations} from 'vuex'
-    import {debounce} from "../../common/js/util";
+    import {searchMixin} from "../../common/js/mixin";
 
-    let timer1 = null,
-        timer2 = null;
-
-    const DEFAULT_LIMIT = 30;
     export default {
         name: "SearchSinger",
-        data () {
-            return {
-                show: false,
-                artists: [],
-                showLoad: true,
-                showSinger: false,
-                NoResult: false
-            }
-        },
+        mixins: [searchMixin],
         methods: {
-            getSearchSinger (timer) {
-                get('/search', {
-                    keywords: this.query,
-                    type: 100,
-                    limit: DEFAULT_LIMIT
-                }).then((res) => {
-                    this.artists = res.result.artists;
-                    this.NoResult = !res.result.artistCount;
-                    if (!this.NoResult) {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            this.showSinger = true;
-                            this.showLoad = false;
-                        }, 1500);
-                    } else {
-                        this.showLoad = false;
-                    }
-                });
-            },
             selectItem (item) {
                 this.setSinger(item);
                 this.$router.push({
@@ -62,50 +28,17 @@
                     }
                 });
             },
-            _delayShow (timer) {
-                this.showSinger = false;
-                this.showLoad = true;
-                this.getSearchSinger(timer);
+            _getSearch (timer) {
+                this.getSearch(timer, 100, 'artists', 'artistCount');
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'
             })
         },
-        props: {
-            currentType: {
-                type: Object,
-                default: {
-                    index: 0,
-                    code: 1
-                }
-            },
-            query: {
-                type: String,
-                default: ''
-            }
-        },
         watch: {
             currentType (newType) {
                 this.show = newType.index === 2;
-            },
-            show (newShow) {
-                if (newShow) {
-                    this.NoResult = false;
-                    this._delayShow(timer1);
-                }
             }
-        },
-        created () {
-            this.$watch('query', debounce((newQuery) => {
-                if (this.show && newQuery.length) {
-                    this.NoResult = false;
-                    this._delayShow(timer2);
-                }
-            }, 300));
-        },
-        components: {
-            Load,
-            NoResult
         }
     }
 </script>

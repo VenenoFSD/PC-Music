@@ -1,7 +1,7 @@
 <template>
     <div class="search-album" v-show="show">
-        <ul class="album-list" v-show="showAlbum">
-            <li class="album-item" v-for="(item, index) in albums" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
+        <ul class="album-list" v-show="showList">
+            <li class="album-item" v-for="(item, index) in result" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <div class="img-wrapper">
                     <img :src="item.picUrl">
                 </div>
@@ -15,47 +15,13 @@
 </template>
 
 <script>
-    import get from '../../common/js/api'
-    import Load from '../../base/load/Load'
-    import NoResult from '../../base/no-result/NoResult'
     import {mapMutations} from 'vuex'
-    import {debounce} from "../../common/js/util";
+    import {searchMixin} from "../../common/js/mixin";
 
-    let timer1 = null,
-        timer2 = null;
-
-    const DEFAULT_LIMIT = 30;
     export default {
         name: "SearchAlbum",
-        data () {
-            return {
-                show: false,
-                albums: [],
-                showLoad: true,
-                showAlbum: false,
-                NoResult: false
-            }
-        },
+        mixins: [searchMixin],
         methods: {
-            getSearchAlbum (timer) {
-                get('/search', {
-                    keywords: this.query,
-                    type: 10,
-                    limit: DEFAULT_LIMIT
-                }).then((res) => {
-                    this.albums = res.result.albums;
-                    this.NoResult = !res.result.albumCount;
-                    if (!this.NoResult) {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            this.showAlbum = true;
-                            this.showLoad = false;
-                        }, 1500);
-                    } else {
-                        this.showLoad = false;
-                    }
-                });
-            },
             selectItem (item) {
                 this.setNewDisc(item);
                 this.$router.push({
@@ -65,50 +31,17 @@
                     }
                 });
             },
-            _delayShow (timer) {
-                this.showAlbum = false;
-                this.showLoad = true;
-                this.getSearchAlbum(timer);
+            _getSearch (timer) {
+                this.getSearch(timer, 10, 'albums', 'albumCount');
             },
             ...mapMutations({
                 setNewDisc: 'SET_NEW_DISC'
             })
         },
-        props: {
-            currentType: {
-                type: Object,
-                default: {
-                    index: 0,
-                    code: 1
-                }
-            },
-            query: {
-                type: String,
-                default: ''
-            }
-        },
         watch: {
             currentType (newType) {
                 this.show = newType.index === 1;
-            },
-            show (newShow) {
-                if (newShow) {
-                    this.NoResult = false;
-                    this._delayShow(timer1);
-                }
             }
-        },
-        created () {
-            this.$watch('query', debounce((newQuery) => {
-                if (this.show && newQuery.length) {
-                    this.NoResult = false;
-                    this._delayShow(timer2);
-                }
-            }, 300));
-        },
-        components: {
-            Load,
-            NoResult
         }
     }
 </script>

@@ -16,7 +16,7 @@
                     <li v-for="item in recommendSongList" :key="item.id" class="item sl-item" @click="selectItem(item)">
                         <div class="img-wrapper">
                             <img :src="item.picUrl" class="img">
-                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
+                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{_playCountFormat(item.playCount)}}</span></div>
                             <div class="cover"></div>
                         </div>
                         <p class="text">{{item.name}}</p>
@@ -60,7 +60,7 @@
                     <li v-for="item in recommendMV" class="item mv-item">
                         <div class="img-wrapper">
                             <img v-lazy="item.picUrl" class="img">
-                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(item.playCount)}}</span></div>
+                            <div class="playCount"><i class="iconfont icon-headset"></i><span>{{_playCountFormat(item.playCount)}}</span></div>
                             <div class="cover"></div>
                         </div>
                         <div class="desc">
@@ -178,7 +178,7 @@
             reloadInfo () {
                 //  this.delayShow(this._getAll, 3000);
             },
-            playCountFormat (playCount) {
+            _playCountFormat (playCount) {
                 return playCountFormat(playCount);
             },
             _getAll () {

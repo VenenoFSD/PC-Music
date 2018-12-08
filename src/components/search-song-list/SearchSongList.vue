@@ -1,12 +1,12 @@
 <template>
     <div class="search-song-list" v-show="show">
-        <ul class="song-list" v-show="showSongList">
-            <li class="sl-item" v-for="(item, index) in songLists" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
+        <ul class="song-list" v-show="showList">
+            <li class="sl-item" v-for="(item, index) in result" :class="{'bg': !(index % 2)}" @click="selectItem(item)">
                 <img :src="item.coverImgUrl" class="img">
                 <p class="name">{{item.name}}</p>
                 <p class="song-count">{{item.trackCount}}首</p>
                 <p class="author">By {{item.creator.nickname}}</p>
-                <p class="playCount">播放：{{playCountFormat(item.playCount)}}</p>
+                <p class="playCount">播放：{{_playCountFormat(item.playCount)}}</p>
             </li>
         </ul>
         <load v-show="showLoad"></load>
@@ -15,58 +15,14 @@
 </template>
 
 <script>
-    import get from '../../common/js/api'
-    import Load from '../../base/load/Load'
-    import NoResult from '../../base/no-result/NoResult'
     import {mapMutations} from 'vuex'
-    import {debounce} from "../../common/js/util";
+    import {playCountFormat} from "../../common/js/dataFormat";
+    import {searchMixin} from "../../common/js/mixin";
 
-    let timer1 = null,
-        timer2 = null;
-
-    const DEFAULT_LIMIT = 30;
     export default {
         name: "SearchSongList",
-        data () {
-            return {
-                show: false,
-                songLists: [],
-                showLoad: true,
-                showSongList: false,
-                NoResult: false
-            }
-        },
+        mixins: [searchMixin],
         methods: {
-            getSearchSongList (timer) {
-                get('/search', {
-                    keywords: this.query,
-                    type: 1000,
-                    limit: DEFAULT_LIMIT
-                }).then((res) => {
-                    this.songLists = res.result.playlists;
-                    this.NoResult = !res.result.playlistCount;
-                    if (!this.NoResult) {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => {
-                            this.showSongList = true;
-                            this.showLoad = false;
-                        }, 1500);
-                    } else {
-                        this.showLoad = false;
-                    }
-                });
-            },
-            playCountFormat (playCount) {
-                playCount = Math.floor(playCount);
-                if (playCount < 100000) {
-                    return playCount;
-                } else {
-                    playCount = playCount.toString();
-                    let len = playCount.length;
-                    let cutLen = len - 4;
-                    return playCount.substr(0, cutLen) + '万';
-                }
-            },
             selectItem (item) {
                 this.setSongList(item);
                 this.$router.push({
@@ -77,50 +33,20 @@
                     }
                 });
             },
-            _delayShow (timer) {
-                this.showSongList = false;
-                this.showLoad = true;
-                this.getSearchSongList(timer);
+            _playCountFormat (playCount) {
+                return playCountFormat(playCount);
+            },
+            _getSearch (timer) {
+                this.getSearch(timer, 1000, 'playlists', 'playlistCount');
             },
             ...mapMutations({
                 setSongList: 'SET_SONG_LIST'
             })
         },
-        props: {
-            currentType: {
-                type: Object,
-                default: {
-                    index: 0,
-                    code: 1
-                }
-            },
-            query: {
-                type: String,
-                default: ''
-            }
-        },
         watch: {
             currentType (newType) {
                 this.show = newType.index === 3;
-            },
-            show (newShow) {
-                if (newShow) {
-                    this.NoResult = false;
-                    this._delayShow(timer1);
-                }
             }
-        },
-        created () {
-            this.$watch('query', debounce((newQuery) => {
-                if (this.show && newQuery.length) {
-                    this.NoResult = false;
-                    this._delayShow(timer2);
-                }
-            }, 300));
-        },
-        components: {
-            Load,
-            NoResult
         }
     }
 </script>
