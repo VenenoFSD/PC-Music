@@ -14,12 +14,12 @@ export function rankFormat(index) {
     return index < 9 ? '0' + (index + 1) : index + 1;
 }
 
-export function artistsFormat (artists) {
+export function artistsFormat (artists, wide = false) {
     let arr = [];
     for (let i = 0; i < artists.length; i++) {
         arr.push(artists[i].name);
     }
-    return arr.join('/');
+    return wide ? arr.join(' / ') : arr.join('/');
 }
 
 export function durationFormat (time, longFlag = true) {

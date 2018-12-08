@@ -13,7 +13,7 @@
                     </div>
                     <div class="song-wrapper">
                         <h2 class="song-name">{{currentSong.name}}</h2>
-                        <p class="desc-wrapper">歌手：<span class="desc">{{artistsFormat(currentSong.ar)}}</span>专辑：<span class="desc">{{currentSong.al.name}}</span></p>
+                        <p class="desc-wrapper">歌手：<span class="desc">{{_artistsFormat(currentSong.ar)}}</span>专辑：<span class="desc">{{currentSong.al.name}}</span></p>
                         <div class="lyric-wrapper">
                             <p class="no-lyric" v-show="noLyric">纯音乐，无歌词</p>
                             <ul v-if="currentLyric" ref="lyricList">
@@ -108,6 +108,7 @@
     import {shuffle} from "../../common/js/util";
     import get from '../../common/js/api'
     import Lyric from 'lyric-parser'
+    import {artistsFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "Player",
@@ -123,13 +124,6 @@
         methods: {
             hide () {
                 this.setFullScreen(false);
-            },
-            artistsFormat (artists) {
-                let arr = [];
-                for (let i = 0; i < artists.length; i++) {
-                    arr.push(artists[i].name);
-                }
-                return arr.join(' / ');
             },
             showNormal () {
                 this.setFullScreen(true);
@@ -295,6 +289,9 @@
             },
             showPlaylist () {
                 this.$refs.playlist.show();
+            },
+            _artistsFormat (artists) {
+                return artistsFormat(artists, true);
             },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
