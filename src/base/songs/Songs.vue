@@ -3,18 +3,20 @@
         <div class="play" @click="playAll"><i class="iconfont icon-bofang-2"></i>播放全部({{songs.length}})</div>
         <ul class="song-list">
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
-                <p class="num">{{numFormat(index)}}</p>
+                <p class="num">{{_rankFormat(index)}}</p>
                 <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia.length">（{{item.alia[0]}}）</span></p>
                 <p class="play-wrapper"><span class="iconfont icon-bofang-2" @click="selectItem(item, index)"></span></p>
-                <p class="artist-name">{{artistsFormat(item.ar)}}</p>
+                <p class="artist-name">{{_artistsFormat(item.ar)}}</p>
                 <p class="album-name">{{item.al.name}}</p>
-                <p class="song-duration">{{durationFormat(item.dt)}}</p>
+                <p class="song-duration">{{_durationFormat(item.dt)}}</p>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
+    import {artistsFormat, durationFormat, rankFormat} from "../../common/js/dataFormat";
+
     export default {
         name: "Songs",
         props: {
@@ -24,22 +26,6 @@
             }
         },
         methods: {
-            numFormat (index) {
-                return index < 9 ? '0' + (index + 1) : index + 1;
-            },
-            artistsFormat (artists) {
-                let arr = [];
-                for (let i = 0; i < artists.length; i++) {
-                    arr.push(artists[i].name);
-                }
-                return arr.join('/');
-            },
-            durationFormat (time) {
-                time = time / 1000 | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
-            },
             isOdd (index) {
                 return (index + 1) % 2;
             },
@@ -49,8 +35,14 @@
             playAll () {
                 this.$emit('playAll');
             },
-            _pad (num) {
-                return num < 10 ? '0' + num : num;
+            _rankFormat (index) {
+                return rankFormat(index);
+            },
+            _artistsFormat (artists) {
+                return artistsFormat(artists);
+            },
+            _durationFormat (time) {
+                return durationFormat(time);
             }
         }
     }
@@ -130,12 +122,13 @@
         overflow: hidden;
     }
     .s-item .album-name {
-        flex: 0 0 28%;
+        flex: 0 0 calc(29% - 20px);
+        margin-right: 20px;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
     }
     .s-item .song-duration {
-        flex: 0 0 6%;
+        flex: 0 0 5%;
     }
 </style>
