@@ -4,8 +4,8 @@
          @mouseup="mouseEnd">
         <div class="pb-content">
             <div class="progress-bar-desc">
-                <p class="song-desc">{{songName}}<span class="desc-normal"> - {{artistsFormat(artistName)}}</span></p>
-                <p class="time-desc">{{currentTimeFormat(currentTime)}}<span class="desc-normal"> / {{durationFormat(durationTime)}}</span></p>
+                <p class="song-desc">{{songName}}<span class="desc-normal"> - {{_artistsFormat(artistName)}}</span></p>
+                <p class="time-desc">{{_currentTimeFormat(currentTime)}}<span class="desc-normal"> / {{_durationFormat(durationTime)}}</span></p>
             </div>
             <div class="pb" @click="progressClick">
                 <div class="progress-bar" ref="progressBar">
@@ -19,6 +19,8 @@
 </template>
 
 <script>
+    import {artistsFormat, durationFormat} from "../../common/js/dataFormat";
+
     export default {
         name: "ProgressBar",
         props: {
@@ -44,24 +46,14 @@
             }
         },
         methods: {
-            artistsFormat (artists) {
-                let arr = [];
-                for (let i = 0; i < artists.length; i++) {
-                    arr.push(artists[i].name);
-                }
-                return arr.join(' / ');
+            _artistsFormat (artists) {
+                return artistsFormat(artists);
             },
-            durationFormat (time) {
-                time = time / 1000 | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
+            _durationFormat (time) {
+                return durationFormat(time);
             },
-            currentTimeFormat (time) {
-                time = time | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
+            _currentTimeFormat (time) {
+                return durationFormat(time, false);
             },
             mouseStart (e) {
                 this.touch.initiated = true;
@@ -88,9 +80,6 @@
                 const offsetWidth = e.pageX - rect.left;
                 this._offset(offsetWidth);
                 this._triggerPercent();
-            },
-            _pad (num) {
-                return num < 10 ? '0' + num : num;
             },
             _offset (offsetWidth) {
                 this.$refs.progress.style.width = `${offsetWidth}px`;

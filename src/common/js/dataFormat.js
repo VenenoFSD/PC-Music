@@ -22,8 +22,8 @@ export function artistsFormat (artists) {
     return arr.join('/');
 }
 
-export function durationFormat (time) {
-    time = time / 1000 | 0;
+export function durationFormat (time, longFlag = true) {
+    time = longFlag ? time / 1000 | 0 : time | 0;
     let minute = time / 60 | 0;
     let second = pad(time % 60);
     return `${minute}:${second}`;
