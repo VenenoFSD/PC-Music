@@ -11,7 +11,7 @@
                         <p class="song-name">{{item.name}}</p>
                         <div class="play" @click="selectItem(item, index)"><span class="iconfont icon-bofang" v-show="item.id !== currentSong.id"></span></div>
                         <p class="singer">{{item.ar[0].name}}</p>
-                        <p class="duration-time">{{durationFormat(item.dt)}}</p>
+                        <p class="duration-time">{{_durationFormat(item.dt)}}</p>
                         <div class="delete" @click="deleteOne(item)"><span class="iconfont icon-shanchu"></span></div>
                     </li>
                 </ul>
@@ -25,6 +25,7 @@
     import Confirm from '../../base/confirm/Confirm'
     import {mapGetters, mapMutations, mapActions} from 'vuex'
     import playMode from "../../common/js/config";
+    import {durationFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "Playlist",
@@ -39,12 +40,6 @@
             },
             hide () {
                 this.showFlag = false;
-            },
-            durationFormat (time) {
-                time = time /1000 | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
             },
             selectItem (item, index) {
                 if (this.playMode === playMode.random) {
@@ -76,8 +71,8 @@
                 this.clearPlaylist();
                 this.hide();
             },
-            _pad (num) {
-                return num < 10 ? '0' + num : num;
+            _durationFormat (time) {
+                return durationFormat(time);
             },
             ...mapMutations({
                 setCurrentIndex: 'SET_CURRENT_INDEX',
