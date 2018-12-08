@@ -18,7 +18,7 @@
 <script>
     import Separate from '../../base/separate/Separate'
     import {playlistMixin, reloadMixin} from "../../common/js/mixin";
-    import {mapMutations, mapGetters} from 'vuex'
+    import {mapMutations} from 'vuex'
     import get from '../../common/js/api'
 
     export default {
