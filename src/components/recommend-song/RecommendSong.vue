@@ -24,6 +24,7 @@
     import get from '../../common/js/api'
     import {playlistMixin, reloadMixin} from "../../common/js/mixin";
     import {mapActions} from 'vuex'
+    import {songFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "RecommendSong",
@@ -36,24 +37,8 @@
         methods: {
             getRecommendSong () {
                 get('/recommend/songs').then((res) => {
-                     this.songs = this._formatSong(res.recommend);
+                     this.songs = songFormat(res.recommend);
                 });
-            },
-            numFormat (index) {
-                return index < 9 ? '0' + (index + 1) : index + 1;
-            },
-            artistsFormat (artists) {
-                let arr = [];
-                for (let i = 0; i < artists.length; i++) {
-                    arr.push(artists[i].name);
-                }
-                return arr.join('/');
-            },
-            durationFormat (time) {
-                time = time / 1000 | 0;
-                let minute = time / 60 | 0;
-                let second = this._pad(time % 60);
-                return `${minute}:${second}`;
             },
             handlePlaylist (playlist) {
                 const bottom = playlist.length ? '61px' : '0';
@@ -76,23 +61,6 @@
             _getDate () {
                 let date = new Date();
                 return date.getDate();
-            },
-            _pad (num) {
-                return num < 10 ? '0' + num : num;
-            },
-            _formatSong (songs) {
-                let result = [];
-                for (let i = 0; i < songs.length; i++) {
-                    result.push({
-                        name: songs[i].name,
-                        id: songs[i].id,
-                        al: songs[i].album,
-                        ar: songs[i].artists,
-                        dt: songs[i].duration,
-                        alia: songs[i].alias
-                    });
-                }
-                return result;
             },
             ...mapActions([
                 'selectPlay',
