@@ -29,6 +29,21 @@ export function durationFormat (time, longFlag = true) {
     return `${minute}:${second}`;
 }
 
+export function songFormat (songs) {
+    let result = [];
+    for (let i = 0; i < songs.length; i++) {
+        result.push({
+            name: songs[i].name,
+            id: songs[i].id,
+            al: songs[i].album,
+            ar: songs[i].artists,
+            dt: songs[i].duration,
+            alia: songs[i].alias
+        });
+    }
+    return result;
+}
+
 function pad (num) {
     return num < 10 ? '0' + num : num;
 }
