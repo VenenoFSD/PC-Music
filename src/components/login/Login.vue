@@ -8,7 +8,6 @@
                 <input type="password" placeholder="请输入密码" class="input" v-model="password">
                 <div class="login-btn" @click="login">登录</div>
             </div>
-            <!--<div class="close"><span class="iconfont icon-shanchu"></span></div>-->
             <p class="remind" v-show="remindShow">{{remindText}}</p>
         </div>
     </div>
@@ -40,11 +39,8 @@
                 axios.get(`http://localhost:3000/login/cellphone?phone=${this.phoneNum}&password=${this.password}`).catch((err)  => {
                     if (err.response) {
                         This.remindUser('账号或密码错误！');
-                    } else if (err.request) {
-                        // console.log(err.request);
-                    } else {
-                        // console.log('Error', err.message);
-                    }
+                    } else if (err.request) {  // console.log(err.request);
+                    } else {}  // console.log('Error', err.message);
                     // console.log(err.config);
                 }).then((res) => {
                     if (res !== undefined) {
