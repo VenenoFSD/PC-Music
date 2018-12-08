@@ -11,7 +11,7 @@
                     <div class="desc">
                         <p class="name">{{newDisc.name}}<span v-if="newDisc.alias.length">（{{newDisc.alias[0]}}）</span></p>
                         <div class="creator">
-                            <p>歌手：<span class="singer-name">{{newDisc.artist.name}}</span>发行时间：{{timeFormat(newDisc.publishTime)}}</p>
+                            <p>歌手：<span class="singer-name">{{newDisc.artist.name}}</span>发行时间：{{_timeFormat(newDisc.publishTime)}}</p>
                         </div>
                         <div class="description" v-if="discDetail && discDetail.album">介绍：{{discDetail.album.description}}</div>
                     </div>
@@ -29,6 +29,7 @@
     import get from "../../common/js/api";
     import {mapGetters, mapActions} from 'vuex'
     import {playlistMixin} from "../../common/js/mixin";
+    import {timeFormat} from "../../common/js/dataFormat";
 
     export default {
         name: "DiscDetail",
@@ -57,13 +58,6 @@
             back () {
                 this.$router.back();
             },
-            timeFormat (time) {
-                let date = new Date(time);
-                let year = date.getFullYear();
-                let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
-                let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-                return `${year}-${month}-${day}`;
-            },
             selectSong (song, index) {
                 this.selectPlay({
                     list: this.discDetail.songs,
@@ -74,6 +68,9 @@
                 this.sequencePlay({
                     list: this.discDetail.songs
                 });
+            },
+            _timeFormat (time) {
+                return timeFormat(time);
             },
             ...mapActions([
                 'selectPlay',
