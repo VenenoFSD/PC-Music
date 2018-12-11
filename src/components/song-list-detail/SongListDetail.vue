@@ -7,14 +7,14 @@
                 <div class="song-list-detail-header">
                     <div class="img-wrapper">
                         <img :src="songListImg()" class="img">
-                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{playCountFormat(songList.playCount)}}</span></div>
+                        <div class="playCount"><i class="iconfont icon-headset"></i><span>{{_playCountFormat(songList.playCount)}}</span></div>
                     </div>
                     <div class="desc">
                         <p class="name">{{songList.name}}</p>
                         <div class="creator" v-if="songListDetail.creator">
                             <img :src="songListDetail.creator.avatarUrl" class="creator-avatar">
                             <p class="creator-name">{{songListDetail.creator.nickname}}</p>
-                            <p class="create-time">{{timeFormat(songListDetail.createTime)}} 创建</p>
+                            <p class="create-time">{{_timeFormat(songListDetail.createTime)}} 创建</p>
                         </div>
                         <div class="tags-wrapper" v-if="songListDetail.tags && songListDetail.tags.length">标签：<span class="tags">{{tagsFormat(songListDetail.tags)}}</span></div>
                         <div class="description" v-if="songList.description">介绍：{{songList.description}}</div>
@@ -34,6 +34,7 @@
     import {mapGetters, mapActions} from 'vuex'
     import get from '../../common/js/api'
     import {playlistMixin} from "../../common/js/mixin";
+    import {timeFormat, playCountFormat} from "../../common/js/dataFormat";
 
     export default {
         mixins: [playlistMixin],
@@ -58,27 +59,6 @@
             back () {
                 this.$router.back();
             },
-            timeFormat (time) {
-                let date = new Date(time);
-                let year = date.getFullYear();
-                let month = (date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1);
-                let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-                return `${year}-${month}-${day}`;
-            },
-            tagsFormat(tags) {
-                return tags.join(' / ');
-            },
-            playCountFormat (playCount) {
-                playCount = Math.floor(playCount);
-                if (playCount < 100000) {
-                    return playCount;
-                } else {
-                    playCount = playCount.toString();
-                    let len = playCount.length;
-                    let cutLen = len - 4;
-                    return playCount.substr(0, cutLen) + '万';
-                }
-            },
             selectSong (song, index) {
                 this.selectPlay({
                     list: this.songListDetail.tracks,
@@ -96,6 +76,15 @@
             },
             songListImg () {
                 return this.songList.coverImgUrl !== undefined ? this.songList.coverImgUrl : this.songList.picUrl;
+            },
+            tagsFormat(tags) {
+                return tags.join(' / ');
+            },
+            _playCountFormat (playCount) {
+                return playCountFormat(playCount);
+            },
+            _timeFormat (time) {
+                return timeFormat(time);
             },
             ...mapActions([
                 'selectPlay',
