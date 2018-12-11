@@ -1,7 +1,7 @@
 <template>
     <div class="singer-album" @scroll="handleScroll" ref="singerAlbum">
         <ul class="singer-album-list" ref="singerAlbumList">
-            <li v-for="item in album" class="sb-item">
+            <li v-for="item in album" class="sb-item" @click="selectItem(item)">
                 <div class="img-wrapper">
                     <img v-lazy="item.picUrl" class="img">
                     <div class="cover"></div>
@@ -17,7 +17,7 @@
             <li class="empty"></li>
         </ul>
         <p v-show="album && !album.length" class="no-album">暂无该歌手的专辑</p>
-        <continue-load v-show="this.album.length && this.hasMore"></continue-load>
+        <continue-load v-show="album.length && hasMore"></continue-load>
     </div>
 </template>
 
@@ -26,6 +26,7 @@
     import scrollToEnd from "../../common/js/scroll";
     import ContinueLoad from '../../base/continue-load/ContinueLoad'
     import {timeFormat} from "../../common/js/dataFormat";
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "SingerAlbum",
@@ -65,9 +66,21 @@
             handleScroll () {
                 scrollToEnd(this.$refs.singerAlbum, this.$refs.singerAlbumList, this.getSingerDesc);
             },
+            selectItem (item) {
+                this.setNewDisc(item);
+                this.$router.push({
+                    path: '/album',
+                    query: {
+                        id: item.id
+                    }
+                });
+            },
             _timeFormat (time) {
                 return timeFormat(time);
-            }
+            },
+            ...mapMutations({
+                setNewDisc: 'SET_NEW_DISC'
+            })
         },
         watch: {
             currentSelect (newSelect) {
