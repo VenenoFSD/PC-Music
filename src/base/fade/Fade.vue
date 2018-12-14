@@ -11,11 +11,11 @@
 </script>
 
 <style scoped>
-    .v-enter, .v-leave-to{
+    .v-enter{
         opacity: 0;
         transform: translate3d(10%, 0, 0)
     }
-    .v-enter-active, .v-leave-active{
+    .v-enter-active{
         transition: all .5s;
     }
 </style>
