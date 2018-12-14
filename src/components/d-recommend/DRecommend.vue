@@ -167,16 +167,11 @@
                 });
             },
             selectItem (item) {
-                this.$router.push({
-                    path: `/discovery/recommend/${item.id}`,
-                    query: {
-                        title: '歌单'
-                    }
-                });
+                this.$router.push(`/discovery/recommend/${item.id}`);
                 this.setSongList(item);
             },
             reloadInfo () {
-                //  this.delayShow(this._getAll, 3000);
+                 this.delayShow(this._getAll, 3000);
             },
             _playCountFormat (playCount) {
                 return playCountFormat(playCount);
@@ -215,7 +210,7 @@
             })
         },
         created () {
-            //  this.delayShow(this._getAll, 3000);
+             this.delayShow(this._getAll, 3000);
         },
         computed: {
             showSwiper () {

@@ -95,7 +95,7 @@
                     path: '/songList',
                     query: {
                         id: item.id,
-                        title: '歌单'
+                        nb: 1
                     }
                 });
             },

@@ -1,10 +1,9 @@
 <template>
-    <div class="user-favorite">
-        <router-view></router-view>
-    </div>
+    <song-list-detail v-bind:backTo="false"></song-list-detail>
 </template>
 
 <script>
+    import SongListDetail from '.././song-list-detail/SongListDetail'
     import {mapGetters, mapMutations} from 'vuex'
 
     export default {
@@ -12,17 +11,6 @@
         methods: {
             getUserFavorite () {
                 this.setSongList(this.userFavorite);
-                clearTimeout(this.timer);
-                this.timer = setTimeout(() => {
-                    this.$router.push({
-                        path: '/userFavorite/songList',
-                        query: {
-                            id: this.userFavorite.id,
-                            title: '歌单',
-                            desc: 'user'
-                        }
-                    });
-                }, 20);
             },
             ...mapMutations({
                 setSongList: 'SET_SONG_LIST'
@@ -35,6 +23,9 @@
             ...mapGetters([
                 'userFavorite'
             ])
+        },
+        components: {
+            SongListDetail
         }
     }
 </script>

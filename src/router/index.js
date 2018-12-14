@@ -113,13 +113,7 @@ export default new Router({
         },
         {
             path: '/userFavorite',
-            component: UserFavorite,
-            children: [
-                {
-                    path: '/userFavorite/songList',
-                    component: SongListDetail
-                }
-            ]
+            component: UserFavorite
         },
         {
             path: '/myCollection',

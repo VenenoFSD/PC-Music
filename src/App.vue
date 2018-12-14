@@ -4,7 +4,7 @@
             <left-list ref="leftList"></left-list>
         </div>
         <div class="right-page">
-            <keep-alive exclude="UserFavorite,UserDetail">
+            <keep-alive exclude="UserDetail,UserFavorite">
                 <router-view></router-view>
             </keep-alive>
         </div>
