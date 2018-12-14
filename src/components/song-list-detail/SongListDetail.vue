@@ -3,7 +3,7 @@
         <div class="song-list-detail-wrapper" ref="songListDetailWrapper">
             <div class="song-list-detail">
                 <div class="background" :style="{background: 'url(' + songListImg() + ') no-repeat 0 20%'}"></div>
-                <p class="title">{{$route.query.title}}</p>
+                <p class="title">{{$route.query.title || '歌单'}}</p>
                 <div class="song-list-detail-header">
                     <div class="img-wrapper">
                         <img :src="songListImg()" class="img">
@@ -20,7 +20,7 @@
                         <div class="description" v-if="songList.description">介绍：{{songList.description}}</div>
                     </div>
                 </div>
-                <div class="back" @click="back" v-show="$route.query.desc !== 'user'"><i class="iconfont icon-you"></i></div>
+                <div class="back" @click="back" v-show="showBack()"><i class="iconfont icon-you"></i></div>
             </div>
             <songs :songs="songListDetail.tracks" @select="selectSong" @playAll="playAll"></songs>
         </div>
@@ -42,6 +42,12 @@
         data () {
             return {
                 songListDetail: {}
+            }
+        },
+        props: {
+            backTo: {
+                type: Boolean,
+                default: true
             }
         },
         methods: {
@@ -79,6 +85,9 @@
             },
             tagsFormat(tags) {
                 return tags.join(' / ');
+            },
+            showBack () {
+                return this.backTo && this.$route.query.nb === undefined;
             },
             _playCountFormat (playCount) {
                 return playCountFormat(playCount);
@@ -143,7 +152,7 @@
         top: 16px;
     }
     .back .iconfont {
-        font-size: 36px;
+        font-size: 30px;
         color: #888;
     }
     .background {
@@ -172,12 +181,18 @@
     .img-wrapper .playCount {
         position: absolute;
         z-index: 2;
+        left: 0;
         right: 0;
         top: 0;
         font-size: 12px;
-        padding: 1px 4px 0 2px;
+        padding: 0 4px;
+        box-sizing: border-box;
         color: #fff;
-        background: linear-gradient(to right, transparent , rgba(0,0,0,.2));
+        text-align: right;
+        background: linear-gradient(to right, transparent , rgba(0,0,0,.3));
+    }
+    .img-wrapper .playCount span {
+        vertical-align: top;
     }
     .song-list-detail-header .img {
         width: 200px;

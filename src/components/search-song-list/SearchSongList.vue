@@ -28,8 +28,7 @@
                 this.$router.push({
                     path: '/songList',
                     query: {
-                        id: item.id,
-                        title: '歌单'
+                        id: item.id
                     }
                 });
             },

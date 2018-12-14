@@ -77,13 +77,8 @@
                 scrollToEnd(this.$refs.DSongListWrapper, this.$refs.DSongList, this.getSongList);
             },
             selectList (item) {
-                this.$router.push({
-                    path: `/discovery/songList/${item.id}`,
-                    query: {
-                        title: '歌单'
-                    }
-                });
                 this.setSongList(item);
+                this.$router.push(`/discovery/songList/${item.id}`);
             },
             ...mapMutations({
                 setSongList: 'SET_SONG_LIST'
