@@ -120,7 +120,7 @@ export default new Router({
             component: MyCollection,
             children: [
                 {
-                    path: '/myCollection/singer/:id',
+                    path: 'singer/:id',
                     component: SingerDetail
                 }
             ]
