@@ -4,7 +4,7 @@
         <ul class="song-list">
             <li v-for="(item, index) in songs" class="s-item" :class="{'bg': isOdd(index)}">
                 <p class="num">{{_rankFormat(index)}}</p>
-                <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia.length">（{{item.alia[0]}}）</span></p>
+                <p class="song-name">{{item.name}}<span class="song-alia" v-if="item.alia && item.alia.length">（{{item.alia[0]}}）</span></p>
                 <p class="play-wrapper"><span class="iconfont icon-bofang-2" @click="selectItem(item, index)"></span></p>
                 <p class="artist-name">{{_artistsFormat(item.ar)}}</p>
                 <p class="album-name">{{item.al.name}}</p>

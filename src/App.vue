@@ -17,54 +17,54 @@
 </template>
 
 <script>
-    import LeftList from './components/left-list/LeftList'
-    import Player from './components/player/Player'
-    import Load from './base/load/Load'
-    import {playlistMixin} from "./common/js/mixin";
-    import {mapMutations} from 'vuex'
-    import get from './common/js/api'
+  import LeftList from './components/left-list/LeftList'
+  import Player from './components/player/Player'
+  import Load from './base/load/Load'
+  import {playlistMixin} from "./common/js/mixin";
+  import {mapMutations} from 'vuex'
+  import get from './common/js/api'
 
-    export default {
-        mixins: [playlistMixin],
-        name: 'App',
-        data () {
-            return {
-                showCheck: true
-            }
-        },
-        methods: {
-            handlePlaylist (playlist) {
-                const bottom = playlist.length ? '61px' : '0';
-                this.$refs.app.style.bottom = bottom;
-            },
-            checkLoginStatus () {
-                const cookieReg = /__csrf/;
-                if (cookieReg.test(document.cookie)) {
-                    get('/login/status').then((res) => {
-                        this.setLoginInfo(res);
-                        this.$router.push('/discovery');
-                    });
-                } else {
-                    this.$router.push('/login');
-                }
-            },
-            ...mapMutations({
-                setLoginInfo: 'SET_LOGIN_INFO'
-            })
-        },
-        components: {
-            LeftList,
-            Player,
-            Load
-        },
-        created () {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                this.showCheck = false;
-                this.checkLoginStatus();
-            }, 1000);
+  export default {
+    mixins: [playlistMixin],
+    name: 'App',
+    data () {
+      return {
+        showCheck: true
+      }
+    },
+    methods: {
+      handlePlaylist (playlist) {
+        const bottom = playlist.length ? '61px' : '0';
+        this.$refs.app.style.bottom = bottom;
+      },
+      checkLoginStatus () {
+        const cookieReg = /__csrf/;
+        if (cookieReg.test(document.cookie)) {
+          get('/login/status').then((res) => {
+            this.setLoginInfo(res);
+            this.$router.push('/discovery');
+          });
+        } else {
+          this.$router.push('/login');
         }
+      },
+      ...mapMutations({
+        setLoginInfo: 'SET_LOGIN_INFO'
+      })
+    },
+    components: {
+      LeftList,
+      Player,
+      Load
+    },
+    created () {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.showCheck = false;
+        this.checkLoginStatus();
+      }, 1000);
     }
+  }
 </script>
 
 <style scoped>
